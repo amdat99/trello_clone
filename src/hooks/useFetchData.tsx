@@ -78,7 +78,7 @@ const useFetchData = (
     try {
       cacheUpdateOptions.length && setQueriedCacheData([]);
       cacheUpdateOptions.forEach(async (cache) => {
-        const req = await localStorage.getItem(cache.id);
+        const req: any = await localStorage.getItem(cache.id);
         const data = await JSON.parse(req);
         if (data && data !== undefined) {
           setQueriedCacheData((prev) => [...prev, { id: cache.id, data: data }]);
