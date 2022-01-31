@@ -1,11 +1,12 @@
 import { serverUrl } from "./urlConfig";
+import Cookies from "js-cookie";
 
 type Params = {
   url?: string;
   route: string;
   type: string;
   body?: any;
-  credentials?: "same-origin" | "include" | "omit" | undefined;
+  credentials?: "same-origin" | "include" | "omit";
   contentType?: string;
 };
 

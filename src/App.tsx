@@ -1,110 +1,33 @@
-import React, { useState } from "react";
-import Inputs from "./components/Inputs";
-import TodoList from "./components/TodoList";
-import { Todo } from "./components/models";
+import React, { Suspense } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useUserStore } from "./store";
+import shallow from "zustand/shallow";
+
+// import { ThemeProvider } from "@mui/material/styles";
 import "./App.css";
-import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
+
+const Board = React.lazy(() => import("./pages/board/Board"));
+const Authentication = React.lazy(() => import("./pages/authentication/Authentication"));
+const Landing = React.lazy(() => import("./pages/landing/Landing"));
 
 const App: React.FC = () => {
-  const [todo, setTodo] = useState("");
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [inProgressTodos, setInProgressTodos] = useState<Todo[]>([]);
-  const [doneTodos, setDoneTodos] = useState<Todo[]>([]);
+  const user = useUserStore((state) => state.user, shallow);
 
-  const handleAdd = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (todo) {
-      setTodos([...todos, { id: Date.now(), todo: todo, isDone: false }]);
-    }
-    setTodo("");
-  };
-  const onDragEnd = (result: DropResult) => {
-    const { destination, source, draggableId } = result;
-
-    if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) return;
-    let add;
-    let active = todos;
-    let inprogresslist = inProgressTodos;
-    let complete = doneTodos;
-
-    if (source.droppableId === "todolist") {
-      add = active[source.index];
-      active.splice(source.index, 1);
-    } else if (source.droppableId === "inprogresslist") {
-      add = inprogresslist[source.index];
-      inprogresslist.splice(source.index, 1);
-    } else {
-      add = complete[source.index];
-      complete.splice(source.index, 1);
-    }
-
-    if (destination.droppableId === "todolist") {
-      active.splice(destination.index, 0, add);
-    } else if (destination.droppableId === "inprogresslist") {
-      inprogresslist.splice(destination.index, 0, add);
-    } else {
-      complete.splice(destination.index, 0, add);
-    }
-    setDoneTodos(complete);
-    setInProgressTodos(inprogresslist);
-    setTodos(active);
-  };
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className="App">
-        <span className="heading">Board</span>
-        <Inputs todo={todo} setTodo={setTodo} handleAdd={handleAdd} />
-        <div className="container">
-          <Droppable droppableId="todolist">
-            {(provided, snapshot) => (
-              <div
-                className={`todos ${snapshot.isDraggingOver ? "tododrop" : "todor"}`}
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                <span>pending tasks</span>
-                {todos?.map((todo, i) => (
-                  <TodoList key={todo.id} todo={todo} setTodos={setTodos} todos={todos} i={i} />
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-          <Droppable droppableId="inprogresslist">
-            {(provided, snapshot) => (
-              <div
-                style={{ backgroundColor: "orange" }}
-                className={`todos ${snapshot.isDraggingOver ? "tododrop" : "todor"}`}
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                <span>In progress tasks</span>
-                {inProgressTodos?.map((todo, i) => (
-                  <TodoList key={todo.id} todo={todo} setTodos={setInProgressTodos} todos={inProgressTodos} i={i} />
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-          <Droppable droppableId="removetodolist">
-            {(provided, snapshot) => (
-              <div
-                style={{ backgroundColor: "red" }}
-                className={`todos ${snapshot.isDraggingOver ? "tododrop" : "todor"}`}
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                <span>Completed tasks</span>
-                {doneTodos?.map((todo, i) => (
-                  <TodoList key={todo.id} todo={todo} setTodos={setDoneTodos} todos={doneTodos} i={i} />
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </div>
-      </div>
-    </DragDropContext>
+    <BrowserRouter>
+      <Suspense fallback={<div>Loading...</div>}>
+        {user ? (
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/board" element={<Board />}>
+              <Route path=":orgName" element={<Board />} />
+            </Route>
+          </Routes>
+        ) : (
+          <Authentication />
+        )}
+      </Suspense>
+    </BrowserRouter>
   );
 };
 

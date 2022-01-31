@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { requestHandler } from "../helpers/requestHandler";
+import { useRequestStore } from "../store";
 type Options = {
   url?: string;
   route: string;
@@ -21,25 +22,27 @@ type Error = {
 const useFetchData = (
   options: Options,
   id: string,
+  shouldPersist = false,
   shouldCache = true,
-  shouldPersist = true,
   cacheUpdateOptions: CacheData[] = [],
   timesToFetch = 1
 ) => {
   const [currentData, setCurrentData] = useState<any>([]);
-  const [currentCacheData, setCurrentCacheData] = useState("");
   const [error, setError] = useState<Error | null>(null);
   const [isFetching, setIsFetching] = useState(false);
   const [queriedCacheData, setQueriedCacheData] = useState<CacheData[]>([]);
+  const [currentCacheData, setCurrentCacheData] = useRequestStore((state) => [state[id], state.setCurrentCacheData]);
 
   const getItem = async () => {
     let item = await localStorage.getItem(id);
     if (item && item !== undefined && item !== currentCacheData) {
       let parsed = await JSON.parse(item);
       setCurrentData(parsed);
-      setCurrentCacheData(item);
+      setCurrentCacheData(item, id);
     }
   };
+
+  console.log("curremt", currentCacheData);
 
   useEffect(() => {
     if (shouldPersist) {
@@ -55,7 +58,7 @@ const useFetchData = (
         });
       // cache check is reset on bulk cache update
       if (refreshCurrentCache) getItem();
-      setCurrentCacheData("");
+      setCurrentCacheData("", id);
     } catch (err) {
       setError({ type: "updateCache", errors: err });
       console.log(err);
@@ -78,7 +81,7 @@ const useFetchData = (
     try {
       cacheUpdateOptions.length && setQueriedCacheData([]);
       cacheUpdateOptions.forEach(async (cache) => {
-        const req: any = await localStorage.getItem(cache.id);
+        const req: any = localStorage.getItem(cache.id);
         const data = await JSON.parse(req);
         if (data && data !== undefined) {
           setQueriedCacheData((prev) => [...prev, { id: cache.id, data: data }]);
@@ -91,22 +94,22 @@ const useFetchData = (
   };
 
   const fetchData = () => {
-    let dataString;
+    let dataString: string;
     setIsFetching(true);
     for (let i = 0; i < timesToFetch; i++) {
       try {
         requestHandler(options).then((data) => {
           if (shouldCache) dataString = JSON.stringify(data);
-          if (data?.errors || data === undefined) {
-            setError(data?.errors ? data.errors : "No data found");
+          if (data?.errors || data === undefined || !data) {
+            return setError(data?.errors ? data.errors : "No data found");
           } else {
             if (dataString !== currentCacheData && shouldCache) {
               // only re-render and cache if data has changed
               setCurrentData(data);
-              setCurrentCacheData(dataString);
+              setCurrentCacheData(dataString, id);
 
               if (shouldPersist) localStorage.setItem(id, dataString);
-            } else if (!shouldCache) {
+            } else if (!currentData.length) {
               setCurrentData(data);
             }
             setError(null);

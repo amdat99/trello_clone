@@ -1,0 +1,6 @@
+.input__box {
+  width: 100%;
+}
+
+.input__box:focus {
+}

@@ -1,25 +1,3 @@
-.input {
-  display: flex;
-  width: 95%;
-  position: relative;
-  align-items: center;
-}
-
-.input__box {
-  width: 100%;
-  border-radius: 50px;
-  padding: 20px 30px;
-  font-size: 25px;
-  border: none;
-  transition: 0.2s;
-  box-shadow: inset 0 0 5px black;
-}
-
-.input__box:focus {
-  box-shadow: 0 0 10px 1000px rgba(0, 0, 0, 0.5);
-  outline: none;
-}
-
 .input_submit {
   position: absolute;
   width: 50px;
@@ -44,6 +22,9 @@
   box-shadow: 0 0 5px black;
 }
 
+.todos__single {
+  background-image: url("https://image.freepik.com/free-vector/white-abstract-background-design_23-2148825582.jpg");
+}
 .container {
   width: 95%;
   display: flex;
@@ -112,13 +93,6 @@
 }
 
 @media (max-width: 700px) {
-  .input {
-    width: 95%;
-  }
-  .container {
-    width: 95%;
-    flex-direction: column;
-  }
   .todos {
     width: 95%;
     margin-bottom: 10px;
