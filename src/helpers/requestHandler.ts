@@ -21,7 +21,8 @@ export const requestHandler = async ({
   try {
     const response = await fetch(url + route, {
       method: type,
-      headers: { "Content-Type": contentType, "Access-Control-Allow-Origin": "*" },
+      credentials: credentials,
+      headers: { "Content-Type": contentType },
       body: body && JSON.stringify(body),
     });
     const data = await response.json();
