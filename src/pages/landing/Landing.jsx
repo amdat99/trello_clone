@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Card from "@mui/material/Card";
-import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -17,7 +16,6 @@ import { Link } from "react-router-dom";
 import useFetchData from "../../hooks/useFetchData";
 
 function Landing(props) {
-  const navigate = useNavigate();
   const [logout, user] = useUserStore((state) => [state.logout, state.user], shallow);
   const [testOrg, setTestOrg] = useState([]);
   const { data, fetchData, error, isFetching } = useFetchData(
@@ -26,8 +24,7 @@ function Landing(props) {
       route: "org/user",
     },
     "org/user",
-    true,
-    true
+    false
   );
 
   React.useEffect(() => {
@@ -45,17 +42,6 @@ function Landing(props) {
         logout();
       } else {
         alert("error logging out");
-      }
-    });
-  };
-
-  const enterOrg = (name) => {
-    requestHandler({ route: "org/enter", type: "post", body: { name: name } }).then((data) => {
-      if (data === "entered organisation successfully") {
-        navigate(`/board/${name}`);
-      } else {
-        navigate("/");
-        alert("error entering org");
       }
     });
   };
@@ -82,9 +68,11 @@ function Landing(props) {
           <Card sx={{ maxWidth: "60%", p: 2, position: "absolute", left: 10, top: 10 }}>
             <Typography variant="h6"> Organisations for {user.name} </Typography>
             {data.map((org) => (
-              <Button onClick={() => enterOrg(org.name)} variant="contained" key={org.name}>
-                {org.name}
-              </Button>
+              <Link to={`/board/${org.name}`}>
+                <Button variant="contained" key={org.name}>
+                  {org.name}
+                </Button>
+              </Link>
             ))}
           </Card>
         </>

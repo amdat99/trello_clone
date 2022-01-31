@@ -1,6 +1,4 @@
 import { serverUrl } from "./urlConfig";
-import Cookies from "js-cookie";
-
 type Params = {
   url?: string;
   route: string;
@@ -26,6 +24,9 @@ export const requestHandler = async ({
       body: body && JSON.stringify(body),
     });
     const data = await response.json();
+    if (data?.errors === "unauthorised access") {
+      return localStorage.removeItem("user_data");
+    }
     return data;
   } catch (err) {
     console.log(err);

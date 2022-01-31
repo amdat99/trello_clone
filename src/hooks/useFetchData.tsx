@@ -42,8 +42,6 @@ const useFetchData = (
     }
   };
 
-  console.log("curremt", currentCacheData);
-
   useEffect(() => {
     if (shouldPersist) {
       getItem();
@@ -109,7 +107,7 @@ const useFetchData = (
               setCurrentCacheData(dataString, id);
 
               if (shouldPersist) localStorage.setItem(id, dataString);
-            } else if (!currentData.length) {
+            } else if (!currentData.length || !shouldCache) {
               setCurrentData(data);
             }
             setError(null);
@@ -127,7 +125,6 @@ const useFetchData = (
     isFetching,
     error,
     fetchData,
-    resetError: () => setError(null),
     updateCache,
     queriedCacheData,
     getCachedValues,

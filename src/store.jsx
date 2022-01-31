@@ -19,3 +19,15 @@ requestStore = devtools(requestStore);
 
 export const useUserStore = create(userStore);
 export const useRequestStore = create(requestStore);
+
+export const onLogout = () => {
+  console.log("runs");
+  userStore = (set) => ({
+    user: null,
+    setUserData: (data) => set({ user: data }),
+    logout: () => set({ user: null }),
+  });
+
+  userStore = devtools(userStore);
+  userStore = persist(userStore, { name: "user_data" });
+};

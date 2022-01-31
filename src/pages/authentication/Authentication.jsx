@@ -74,10 +74,10 @@ function Authentication({}) {
     const login = (data) => {
       requestHandler({ route: "auth/login", type: "post", body: data }).then((data) => {
         setLoading(false);
-        if (data?.errors || !data || data === undefined) {
-          setNotify({ message: data?.errors ? data.errors : "error logging in", type: "error" });
-        } else if (data?.email) {
+        if (data.email) {
           setUserData(data);
+        } else {
+          setNotify({ type: "error", message: data.errors ? data.errors : "error logging in" });
         }
       });
     };
@@ -87,10 +87,10 @@ function Authentication({}) {
     } else {
       requestHandler({ route: "auth/register", type: "post", body: registerData }).then((data) => {
         setLoading(false);
-        if (data?.errors || !data || data === undefined) {
-          setNotify({ message: data?.errors ? data.errors : "error logging in", type: "error" });
-        } else if (data === "registered successfully") {
+        if (data === "registered successfully") {
           login(registerData);
+        } else {
+          setNotify({ type: "error", message: data.errors ? data.errors : "error registering" });
         }
       });
     }
@@ -100,12 +100,8 @@ function Authentication({}) {
   return (
     <>
       <div
+        className="background"
         style={{
-          width: "100%",
-          height: "100%",
-          position: "absolute",
-          backgroundPosition: "center",
-          backgroundSize: "cover",
           backgroundImage:
             "url(" +
             "https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
