@@ -55,7 +55,7 @@ function Authentication({}) {
     {
       type: "password",
       name: "confirmPassword",
-      minLength: "6",
+      minLength: 6,
       value: registerData.confirmPassword,
       helperText: "Atleast 6 characters are required for the password",
     },

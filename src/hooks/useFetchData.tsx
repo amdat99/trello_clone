@@ -98,7 +98,7 @@ const useFetchData = (
       try {
         requestHandler(options).then((data) => {
           if (shouldCache) dataString = JSON.stringify(data);
-          if (data?.errors || data === undefined || !data) {
+          if (data?.errors || data === undefined) {
             return setError(data?.errors ? data.errors : "No data found");
           } else {
             if (dataString !== currentCacheData && shouldCache) {
