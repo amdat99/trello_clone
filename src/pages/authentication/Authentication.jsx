@@ -74,10 +74,10 @@ function Authentication({}) {
     const login = (data) => {
       requestHandler({ route: "auth/login", type: "post", body: data }).then((data) => {
         setLoading(false);
-        if (data.email) {
+        if (data?.email) {
           setUserData(data);
         } else {
-          setNotify({ type: "error", message: data.errors ? data.errors : "error logging in" });
+          setNotify({ type: "error", message: data?.errors ? data.errors : "error logging in" });
         }
       });
     };
@@ -87,10 +87,10 @@ function Authentication({}) {
     } else {
       requestHandler({ route: "auth/register", type: "post", body: registerData }).then((data) => {
         setLoading(false);
-        if (data === "registered successfully") {
+        if (data && data === "registered successfully") {
           login(registerData);
         } else {
-          setNotify({ type: "error", message: data.errors ? data.errors : "error registering" });
+          setNotify({ type: "error", message: data?.errors ? data.errors : "error registering" });
         }
       });
     }
