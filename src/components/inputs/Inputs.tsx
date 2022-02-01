@@ -5,8 +5,8 @@ import "./styles.css";
 type InputProps = {
   value: string;
   handleChange: (value: string, name: string) => void;
-  type: string;
-  props?: any;
+  type?: string;
+  [x: string]: any;
 };
 function Inputs({ value, handleChange, type = "text", ...props }: InputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);

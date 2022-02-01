@@ -57,11 +57,13 @@ function Landing(props) {
   };
   return (
     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 10 }}>
-      <Card sx={{ maxWidth: "60%", p: 2, position: "absolute", right: 10, top: 10 }}>
-        <Button variant="contained" onClick={onLogout} sx={{ mr: 2 }}>
-          Logout
-        </Button>
-      </Card>
+      <Button
+        variant="contained"
+        onClick={onLogout}
+        sx={{ mr: 2, maxWidth: "60%", position: "absolute", right: 10, top: 10 }}
+      >
+        Logout
+      </Button>
 
       {data.length && (
         <>

@@ -1,10 +1,11 @@
 .input_submit {
-  position: absolute;
   width: 50px;
   height: 50px;
-  margin: 12px;
   border-radius: 50px;
-  right: 0px;
+  margin-left: 5px;
+  position: absolute;
+  top: 10%;
+  left: 46%;
   border: none;
   font-size: 15px;
   background-color: #2f74c0;
@@ -24,6 +25,7 @@
 
 .todos__single {
   background-image: url("https://image.freepik.com/free-vector/white-abstract-background-design_23-2148825582.jpg");
+  margin-bottom: 5px;
 }
 .container {
   width: 95%;
@@ -31,15 +33,6 @@
   margin-top: 10px;
   justify-content: space-between;
   align-items: flex-start;
-}
-
-.todos {
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  width: 47.5%;
-  padding: 15px;
-  background-color: rgb(50, 195, 205);
 }
 
 .dragactive {
@@ -84,20 +77,4 @@
   margin-left: 10px;
   font-size: 25px;
   cursor: pointer;
-}
-
-@media (max-width: 1100px) {
-  .todos {
-    width: 45%;
-  }
-}
-
-@media (max-width: 700px) {
-  .todos {
-    width: 95%;
-    margin-bottom: 10px;
-  }
-}
-.done {
-  color: green;
 }

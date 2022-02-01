@@ -48,7 +48,7 @@ const useFetchData = (
     }
   }, [id]);
 
-  const updateCache = (refreshCurrentCache = false) => {
+  const updateStorage = (refreshCurrentCache = false) => {
     try {
       cacheUpdateOptions.length &&
         cacheUpdateOptions.forEach((cache) => {
@@ -75,7 +75,7 @@ const useFetchData = (
     }
   };
 
-  const getCachedValues = () => {
+  const getStoredValues = () => {
     try {
       cacheUpdateOptions.length && setQueriedCacheData([]);
       cacheUpdateOptions.forEach(async (cache) => {
@@ -125,9 +125,9 @@ const useFetchData = (
     isFetching,
     error,
     fetchData,
-    updateCache,
+    updateStorage,
     queriedCacheData,
-    getCachedValues,
+    getStoredValues,
     refresh: getItem,
     removeItems,
   };
