@@ -8,6 +8,10 @@ type Params = {
   contentType?: string;
 };
 
+const onUnAuthorised = () => {
+  localStorage.removeItem("user_data");
+  window.location.reload();
+};
 export const requestHandler = async ({
   url = serverUrl,
   route,
@@ -17,16 +21,17 @@ export const requestHandler = async ({
   contentType = "application/json",
 }: Params) => {
   try {
+    console.log("route: ", route, "type: ", type, "body: ", body);
     const response = await fetch(url + route, {
       method: type,
       credentials: credentials,
       headers: { "Content-Type": contentType },
-      body: body && JSON.stringify(body),
+      body: body && contentType == "application/json" ? JSON.stringify(body) : body,
     });
-    const data = await response.json();
-    if (data?.errors === "unauthorised access") {
-      return localStorage.removeItem("user_data");
+    if (response.status === 404) {
+      return onUnAuthorised();
     }
+    const data = await response.json();
     return data;
   } catch (err) {
     console.log(err);

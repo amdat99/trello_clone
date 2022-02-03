@@ -27,7 +27,7 @@ const useFetchData = (
   cacheUpdateOptions: CacheData[] = [],
   timesToFetch = 1
 ) => {
-  const [currentData, setCurrentData] = useState<any>([]);
+  const [currentData, setCurrentData] = useState<any>(null);
   const [error, setError] = useState<Error | null>(null);
   const [isFetching, setIsFetching] = useState(false);
   const [queriedCacheData, setQueriedCacheData] = useState<CacheData[]>([]);
@@ -98,16 +98,17 @@ const useFetchData = (
       try {
         requestHandler(options).then((data) => {
           if (shouldCache) dataString = JSON.stringify(data);
-          if (data?.errors || data === undefined) {
-            return setError(data?.errors ? data.errors : "No data found");
+          if (!data || data?.errors || data === undefined) {
+            return setError(data?.errors ? data : { errors: "No data found" });
           } else {
             if (dataString !== currentCacheData && shouldCache) {
               // only re-render and cache if data has changed
+              console.log("d", data);
               setCurrentData(data);
               setCurrentCacheData(dataString, id);
 
               if (shouldPersist) localStorage.setItem(id, dataString);
-            } else if (!currentData.length || !shouldCache) {
+            } else if (!currentData?.length || !shouldCache) {
               setCurrentData(data);
             }
             setError(null);

@@ -34,7 +34,8 @@ function Authentication({}) {
       helperText: "Atleast 6 characters are required for the password",
     },
   ];
-
+  const passwordUnMatch =
+    registerData.password !== registerData.confirmPassword && registerData.confirmPassword && registerData.password;
   const registerInputs = [
     {
       type: "text",
@@ -57,7 +58,8 @@ function Authentication({}) {
       name: "confirmPassword",
       minLength: 6,
       value: registerData.confirmPassword,
-      helperText: "Atleast 6 characters are required for the password",
+      helperText: passwordUnMatch ? "Passwords do not match" : "Atleast 6 characters are required for the password",
+      error: passwordUnMatch,
     },
   ];
 
@@ -66,6 +68,7 @@ function Authentication({}) {
   };
 
   const onSubmit = (e) => {
+    console.log("runs");
     e.preventDefault();
     if (!showLogin && registerData.password !== registerData.confirmPassword) {
       return setNotify({ type: "error", message: "Password and confirm password does not match" });
@@ -115,23 +118,23 @@ function Authentication({}) {
         }}
       >
         <Notification message={notify.message} type={notify.type} show={notify.type !== ""} setNotify={setNotify} />
-        <Grow in={currentInputs.length}>
+        <Grow in={currentInputs.length !== 0}>
           <Card
             raised
             sx={{
               maxWidth: min1000 ? "40%" : "55%",
+              maxHeight: "67vh",
               p: 5,
               pb: 4,
               zIndex: 999,
-              mt: 5,
-              top: "15vh",
+              mt: min1000 ? "10vh" : "5vh",
               position: "relative",
             }}
           >
             <Typography variant={"h5"} sx={{ mb: 2 }} color="primary">
               {showLogin ? "Login" : "Register"}
             </Typography>
-            <form onSubmit={onSubmit}>
+            <Box component="form" onSubmit={onSubmit} autoComplete="off">
               {currentInputs.map((input) => (
                 <Inputs
                   key={input.name}
@@ -144,13 +147,14 @@ function Authentication({}) {
                   inputProps={input.minLength && { minLength: input.minLength }}
                   helperText={input.helperText && input.helperText}
                   required
+                  error={input.error && input.error}
                   sx={{ mb: 1 }}
                 />
               ))}
               <Button type={"submit"} variant="contained" disabled={loading}>
                 Submit
               </Button>
-            </form>
+            </Box>
             <Typography
               color="primary"
               onClick={() => setShowLogin(!showLogin)}

@@ -5,6 +5,8 @@ let userStore = (set) => ({
   user: null,
   setUserData: (data) => set({ user: data }),
   logout: () => set({ user: null }),
+  currentBoard: null,
+  setCurrentBoard: (data) => set({ currentBoard: data }),
 });
 
 let requestStore = (set) => ({

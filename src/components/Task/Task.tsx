@@ -7,8 +7,8 @@ import { Draggable } from "react-beautiful-dnd";
 
 type Props = {
   todo: Todo;
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  todos: Todo[];
+  setTodos: React.Dispatch<React.SetStateAction<object>>;
+  todos: object;
   i: number;
   id: string;
 };

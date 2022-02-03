@@ -65,7 +65,7 @@ function Landing(props) {
         Logout
       </Button>
 
-      {data.length && (
+      {data && (
         <>
           <Card sx={{ maxWidth: "60%", p: 2, position: "absolute", left: 10, top: 10 }}>
             <Typography variant="h6"> Organisations for {user.name} </Typography>

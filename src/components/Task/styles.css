@@ -3,9 +3,7 @@
   height: 50px;
   border-radius: 50px;
   margin-left: 5px;
-  position: absolute;
-  top: 10%;
-  left: 46%;
+
   border: none;
   font-size: 15px;
   background-color: #2f74c0;
@@ -77,4 +75,22 @@
   margin-left: 10px;
   font-size: 25px;
   cursor: pointer;
+}
+
+.sideBar {
+  position: absolute;
+  height: 91vh;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  top: 20px;
+  margin: 10px 10px 10px 10px;
+  margin-left: 0px;
+  padding: 10px;
+  transition: all 0.75s cubic-bezier(0, 0.95, 0.16, 0.9);
+}
+
+.sideBar:hover {
+  padding-right: 90px;
+  transition: all 1s cubic-bezier(0, 0.95, 0.16, 0.9);
 }

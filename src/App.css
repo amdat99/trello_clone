@@ -17,6 +17,8 @@ a:visited {
 }
 .container {
   overflow-x: scroll;
+  overflow-y: scroll;
+  max-height: 80vh;
 }
 
 .background {
@@ -37,6 +39,7 @@ a:visited {
   background-color: rgb(50, 195, 205);
   overflow: scroll;
   max-height: 72vh;
+  min-width: 28vh;
 }
 @media (min-width: 1100px) {
   .todos {
