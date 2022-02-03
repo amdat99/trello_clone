@@ -13,6 +13,7 @@ const Board: React.FC = () => {
   let params = useParams();
   const [todo, setTodo] = useState("");
   const [showDetail, setShowDetail] = useState<boolean>(false);
+  const [stickyMenu, setStickyMenu] = useState<boolean>(false);
   const { data: boards, fetchData: fetchBoards } = useFetchData(
     {
       type: "post",
@@ -62,10 +63,17 @@ const Board: React.FC = () => {
         todo={todo}
         setTodo={setTodo}
       />
-      <Card className="sideBar" onMouseOver={() => setShowDetail(true)} onMouseOut={() => setShowDetail(false)}>
+      <Card
+        onClick={() => setStickyMenu(!stickyMenu)}
+        className={stickyMenu ? "sideBar1" : "sideBar"}
+        onMouseOver={() => setShowDetail(true)}
+        onMouseOut={() => setShowDetail(false)}
+      >
         <div style={{ display: "flex", flexDirection: "row" }}>
           <CorporateFareIcon />
-          <span style={showDetail ? { display: "flex", marginLeft: "10px" } : { display: "none" }}>Detail message</span>
+          <span style={showDetail || stickyMenu ? { display: "flex", marginLeft: "10px" } : { display: "none" }}>
+            Detail message
+          </span>
         </div>
 
         <CorporateFareIcon />

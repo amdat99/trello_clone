@@ -9,6 +9,7 @@ import "./App.css";
 const Board = React.lazy(() => import("./pages/board/Board"));
 const Authentication = React.lazy(() => import("./pages/authentication/Authentication"));
 const Landing = React.lazy(() => import("./pages/landing/Landing"));
+const Reset = React.lazy(() => import("./pages/reset/Reset"));
 
 const App: React.FC = () => {
   const user = useUserStore((state) => state.user, shallow);
@@ -19,6 +20,7 @@ const App: React.FC = () => {
         {user ? (
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/reset" element={<Reset />} />
             <Route path="/board" element={<Board />}>
               <Route path=":orgName" element={<Board />} />
             </Route>

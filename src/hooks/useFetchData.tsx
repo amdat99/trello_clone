@@ -103,7 +103,6 @@ const useFetchData = (
           } else {
             if (dataString !== currentCacheData && shouldCache) {
               // only re-render and cache if data has changed
-              console.log("d", data);
               setCurrentData(data);
               setCurrentCacheData(dataString, id);
 

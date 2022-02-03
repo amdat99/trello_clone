@@ -2,8 +2,10 @@
   width: 50px;
   height: 50px;
   border-radius: 50px;
-  margin-left: 5px;
-
+  position: absolute;
+  top: 0;
+  right: 40px;
+  z-index: 9999;
   border: none;
   font-size: 15px;
   background-color: #2f74c0;
@@ -78,10 +80,13 @@
 }
 
 .sideBar {
-  position: absolute;
+  position: relative;
   height: 91vh;
   z-index: 9999;
   display: flex;
+  width: 10px;
+  cursor: pointer;
+  opacity: 0.8;
   flex-direction: column;
   top: 20px;
   margin: 10px 10px 10px 10px;
@@ -90,7 +95,25 @@
   transition: all 0.75s cubic-bezier(0, 0.95, 0.16, 0.9);
 }
 
+.sideBar1 {
+  position: relative;
+  height: 91vh;
+  z-index: 9999;
+  display: flex;
+  width: 10px;
+  flex-direction: column;
+  top: 20px;
+  margin: 10px 10px 10px 10px;
+  cursor: pointer;
+  margin-left: 0px;
+  padding: 10px;
+  padding-right: 180px;
+  opacity: 0.98;
+  transition: all 0.75s cubic-bezier(0, 0.95, 0.16, 0.9);
+}
+
 .sideBar:hover {
-  padding-right: 90px;
+  padding-right: 180px;
+  opacity: 0.98;
   transition: all 1s cubic-bezier(0, 0.95, 0.16, 0.9);
 }

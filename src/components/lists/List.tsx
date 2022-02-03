@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
+import Button from "@mui/material/Button";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { DragDropContext, Droppable, DropResult, Draggable } from "react-beautiful-dnd";
 import shallow from "zustand/shallow";
@@ -128,19 +129,25 @@ const List = ({ taskId, boards, fetchBoards, createBoard, todo, setTodo }: Props
             {currentBoard ? currentBoard?.name : "Board"}
           </Typography>
           <Box component="form" onSubmit={handleAdd} sx={{ flexDirection: "row", display: "flex" }}>
-            <Card
-              sx={{
-                width: "75%",
-                p: 1,
-                ":hover": {
-                  boxShadow: 6,
-                },
-              }}
-            >
+            <Card sx={cardStyles}>
               <div style={{ flexDirection: "row", display: "flex" }}>
-                <Inputs select={false} label="add" value={todo} handleChange={setTodo} type={"text"} sx={{ mr: 1 }} />
+                <Inputs
+                  select={false}
+                  label="add"
+                  value={todo}
+                  handleChange={setTodo}
+                  type={"text"}
+                  sx={{ mr: 1 }}
+                  size="small"
+                />
                 {boards && (
-                  <Inputs value={currentBoard} handleChange={setCurrentBoard} select={true} label={"select board"}>
+                  <Inputs
+                    value={currentBoard}
+                    handleChange={setCurrentBoard}
+                    select={true}
+                    label={"select board"}
+                    size="small"
+                  >
                     {boards.map((option) => (
                       // @ts-ignore
                       <MenuItem key={option.public_id} value={option}>
@@ -149,20 +156,18 @@ const List = ({ taskId, boards, fetchBoards, createBoard, todo, setTodo }: Props
                     ))}
                   </Inputs>
                 )}
+                <Button sx={buttonStyles} size="small" type="button" onClick={createBoard}>
+                  Create board
+                </Button>
+                <Button size="small" type="button" onClick={createList} sx={buttonStyles}>
+                  Create List
+                </Button>
               </div>
             </Card>
-            <button onClick={handleAdd} className="input_submit">
-              Add
-            </button>
           </Box>
-
-          <button type="button" onClick={createBoard}>
-            Create board
+          <button onClick={handleAdd} className="input_submit">
+            Add
           </button>
-          <button type="button" onClick={createList}>
-            Create List
-          </button>
-
           <div className="container">
             <Droppable droppableId="board" type="ROW" direction="horizontal">
               {(provided) => (
@@ -208,6 +213,24 @@ const List = ({ taskId, boards, fetchBoards, createBoard, todo, setTodo }: Props
       </div>
     </DragDropContext>
   );
+};
+const cardStyles = {
+  width: "35%",
+  height: 30,
+  opacity: 0.93,
+  minWidth: "300px",
+  position: "absolute",
+  top: 0,
+  right: "10%",
+  p: 1,
+  ":hover": {
+    boxShadow: 6,
+  },
+};
+
+const buttonStyles = {
+  fontSize: 10,
+  height: 30,
 };
 
 export default List;

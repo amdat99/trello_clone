@@ -13,7 +13,6 @@ import { requestHandler } from "../../helpers/requestHandler";
 
 function Authentication({}) {
   const setUserData = useUserStore((state) => state.setUserData);
-  const min1000 = useMediaQuery("(min-width:1000px)");
   const [showLogin, setShowLogin] = useState(true);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
@@ -99,7 +98,6 @@ function Authentication({}) {
     }
   };
   const currentInputs = showLogin ? loginInputs : registerInputs;
-
   return (
     <>
       <div
@@ -110,27 +108,10 @@ function Authentication({}) {
             "https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
         }}
       ></div>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={boxStyles}>
         <Notification message={notify.message} type={notify.type} show={notify.type !== ""} setNotify={setNotify} />
         <Grow in={currentInputs.length !== 0}>
-          <Card
-            raised
-            sx={{
-              maxWidth: min1000 ? "40%" : "55%",
-              maxHeight: "67vh",
-              p: 5,
-              pb: 4,
-              zIndex: 999,
-              mt: min1000 ? "10vh" : "5vh",
-              position: "relative",
-            }}
-          >
+          <Card raised sx={cardStyles}>
             <Typography variant={"h5"} sx={{ mb: 2 }} color="primary">
               {showLogin ? "Login" : "Register"}
             </Typography>
@@ -170,5 +151,27 @@ function Authentication({}) {
     </>
   );
 }
+
+const cardStyles = {
+  minWidth: 300,
+  maxWidth: 300,
+  maxHeight: "67vh",
+  p: 4,
+  mt: "20vh",
+  mb: "20vh",
+  zIndex: 999,
+  position: "relative",
+  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)",
+  borderRadius: "10px",
+  backgroundColor: "white",
+  display: "flex",
+  flexDirection: "column",
+};
+
+const boxStyles = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+};
 
 export default Authentication;
