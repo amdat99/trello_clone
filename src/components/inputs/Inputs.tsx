@@ -15,12 +15,12 @@ function Inputs({ select = false, value, handleChange, type = "text", ...props }
     <TextField
       {...props}
       type={type}
-      autoComplete={type === "password" ? "new-password" : "on"}
       className="input__box"
       select={select}
       value={value}
       onChange={(e) => handleChange(e.target.value, e.target.name)}
       ref={inputRef}
+      data-testid="input"
     />
   );
 }

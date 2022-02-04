@@ -126,7 +126,6 @@ const List = ({
       }
     );
   };
-  console.log(lists);
 
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -219,7 +218,7 @@ const List = ({
               <div ref={provided.innerRef} {...provided.droppableProps} className="container">
                 {boardIds.length &&
                   boardIds.map((id, i) => (
-                    <Draggable key={id} draggableId={id.id.toString()} index={i}>
+                    <Draggable key={id.id} draggableId={id.id.toString()} index={i}>
                       {(provided) => (
                         <div
                           ref={provided.innerRef}
