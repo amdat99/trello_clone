@@ -39,7 +39,11 @@ function AuthenticationMain({}) {
               </Grid>
             </Card>
           )}
-          <Authentication formType={formType} setShowFormType={setShowFormType} />
+          {formType === "Forgot Password" ? (
+            <div>forgot password</div>
+          ) : (
+            <Authentication formType={formType} setShowFormType={setShowFormType} />
+          )}
         </Box>
       </Grow>
     </div>

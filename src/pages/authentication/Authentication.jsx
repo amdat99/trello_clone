@@ -160,6 +160,11 @@ function Authentication({ formType, setShowFormType }) {
               >
                 {formType === "login" ? "I want to Register" : "I want to login"}
               </Typography>
+              {formType === "login" && (
+                <Typography onClick={() => setShowFormType("Forgot Password")} variant={"caption"}>
+                  Forgot password
+                </Typography>
+              )}
               {loading && <LinearProgress sx={{ mt: 1 }} />}
             </Card>
           </Grow>
