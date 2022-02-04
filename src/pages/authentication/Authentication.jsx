@@ -13,7 +13,6 @@ import { requestHandler } from "../../helpers/requestHandler";
 
 function Authentication({ formType, setShowFormType }) {
   const setUserData = useUserStore((state) => state.setUserData);
-  const [showLogin, setShowLogin] = useState(true);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [loading, setLoading] = useState(false);
@@ -30,7 +29,7 @@ function Authentication({ formType, setShowFormType }) {
       minLength: 6,
       name: "password",
       value: loginData.password,
-      helperText: "Atleast 6 characters are required for the password",
+      helperText: "6 characters are required for password",
     },
   ];
   const passwordUnMatch =
@@ -57,7 +56,7 @@ function Authentication({ formType, setShowFormType }) {
       name: "confirmPassword",
       minLength: 6,
       value: registerData.confirmPassword,
-      helperText: passwordUnMatch ? "Passwords do not match" : "Atleast 6 characters are required for the password",
+      helperText: passwordUnMatch ? "Passwords do not match" : "6 characters are required for password",
       error: passwordUnMatch,
     },
   ];
@@ -130,7 +129,7 @@ function Authentication({ formType, setShowFormType }) {
           <Grow in={currentInputs.length !== 0}>
             <Card raised sx={cardStyles}>
               <Typography variant={"h5"} sx={{ mb: 2 }} color="primary">
-                {formType}
+                {formType.charAt(0).toUpperCase() + formType.slice(1)}
               </Typography>
               <Box component="form" onSubmit={onSubmit} autoComplete="off">
                 {currentInputs.map((input) => (
@@ -159,7 +158,7 @@ function Authentication({ formType, setShowFormType }) {
                 variant={"caption"}
                 sx={{ mb: 2, cursor: "pointer" }}
               >
-                {showLogin ? "I don't have an account" : "I want to login"}
+                {formType === "login" ? "I want to Register" : "I want to login"}
               </Typography>
               {loading && <LinearProgress sx={{ mt: 1 }} />}
             </Card>

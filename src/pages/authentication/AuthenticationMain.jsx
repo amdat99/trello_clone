@@ -5,8 +5,10 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
+import Grow from "@mui/material/Grow";
 
 function AuthenticationMain({}) {
+  let show = true;
   const [formType, setShowFormType] = React.useState("");
   return (
     <div
@@ -17,27 +19,29 @@ function AuthenticationMain({}) {
           "https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
       }}
     >
-      <Box sx={boxStyles}>
-        {formType === "" && (
-          <Card raised sx={cardStyles}>
-            <Typography variant={"h6"} sx={{ textAlign: "center" }} color="primary">
-              Welcome to
-            </Typography>
-            <Typography variant={"h2"} sx={{ mb: 2, textAlign: "center" }} color="primary">
-              Tasker
-            </Typography>
-            <Grid container sx={{ mt: 4, justifyContent: "center" }}>
-              <Button sx={{ mr: 2 }} onClick={() => setShowFormType("login")} variant="contained">
-                Sign in
-              </Button>
-              <Button onClick={() => setShowFormType("register")} variant="contained">
-                Register
-              </Button>
-            </Grid>
-          </Card>
-        )}
-        <Authentication formType={formType} setShowFormType={setShowFormType} />
-      </Box>
+      <Grow in={show}>
+        <Box sx={boxStyles}>
+          {formType === "" && (
+            <Card raised sx={cardStyles}>
+              <Typography variant={"h6"} sx={{ textAlign: "center" }} color="primary">
+                Welcome to
+              </Typography>
+              <Typography variant={"h2"} sx={{ mb: 2, textAlign: "center" }} color="primary">
+                Tasker
+              </Typography>
+              <Grid container sx={{ mt: 4, justifyContent: "center" }}>
+                <Button sx={{ mr: 2 }} onClick={() => setShowFormType("login")} variant="contained">
+                  Sign in
+                </Button>
+                <Button onClick={() => setShowFormType("register")} variant="contained">
+                  Register
+                </Button>
+              </Grid>
+            </Card>
+          )}
+          <Authentication formType={formType} setShowFormType={setShowFormType} />
+        </Box>
+      </Grow>
     </div>
   );
 }
