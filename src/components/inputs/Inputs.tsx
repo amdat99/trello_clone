@@ -3,10 +3,10 @@ import TextField from "@mui/material/TextField";
 import "./styles.css";
 
 type InputProps = {
-  value: string;
+  value: any;
   handleChange: (value: string, name: string) => void;
   type?: string;
-  select: boolean;
+  select?: boolean;
   [x: string]: any;
 };
 function Inputs({ select = false, value, handleChange, type = "text", ...props }: InputProps) {

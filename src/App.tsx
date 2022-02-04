@@ -2,8 +2,9 @@ import React, { Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useUserStore } from "./store";
 import shallow from "zustand/shallow";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
-// import { ThemeProvider } from "@mui/material/styles";
+import getTheme from "./theme";
 import "./App.css";
 
 const Board = React.lazy(() => import("./pages/board/Board"));
@@ -11,24 +12,27 @@ const Authentication = React.lazy(() => import("./pages/authentication/Authentic
 const Landing = React.lazy(() => import("./pages/landing/Landing"));
 const Reset = React.lazy(() => import("./pages/reset/Reset"));
 
-const App: React.FC = () => {
-  const user = useUserStore((state) => state.user, shallow);
+const App = () => {
+  const [user, colorMode] = useUserStore((state) => [state.user, state.colorMode], shallow);
+  const theme = createTheme(getTheme(colorMode));
 
   return (
     <BrowserRouter>
-      <Suspense fallback={<div>Loading...</div>}>
-        {user ? (
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/reset" element={<Reset />} />
-            <Route path="/board" element={<Board />}>
-              <Route path=":orgName" element={<Board />} />
-            </Route>
-          </Routes>
-        ) : (
-          <Authentication />
-        )}
-      </Suspense>
+      <ThemeProvider theme={theme}>
+        <Suspense fallback={<div>Loading...</div>}>
+          {user ? (
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/reset" element={<Reset />} />
+              <Route path="/board" element={<Board />}>
+                <Route path=":orgName" element={<Board />} />
+              </Route>
+            </Routes>
+          ) : (
+            <Authentication />
+          )}
+        </Suspense>
+      </ThemeProvider>
     </BrowserRouter>
   );
 };

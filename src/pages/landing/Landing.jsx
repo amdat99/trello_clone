@@ -68,7 +68,7 @@ function Landing(props) {
       {data && (
         <>
           <Card sx={{ maxWidth: "60%", p: 2, position: "absolute", left: 10, top: 10 }}>
-            <Typography variant="h6"> Organisations for {user.name} </Typography>
+            {user && <Typography variant="h6"> Organisations for {user.name} </Typography>}
             {data.map((org) => (
               <Link to={`/board/${org.name}`}>
                 <Button variant="contained" key={org.name}>

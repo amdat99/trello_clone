@@ -80,7 +80,7 @@
 }
 
 .sideBar {
-  position: relative;
+  position: absolute;
   height: 91vh;
   z-index: 9999;
   display: flex;
@@ -96,7 +96,7 @@
 }
 
 .sideBar1 {
-  position: relative;
+  position: absolute;
   height: 91vh;
   z-index: 9999;
   display: flex;

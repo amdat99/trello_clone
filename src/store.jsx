@@ -7,6 +7,8 @@ let userStore = (set) => ({
   logout: () => set({ user: null }),
   currentBoard: null,
   setCurrentBoard: (data) => set({ currentBoard: data }),
+  colorMode: "light",
+  setColorMode: (color) => set({ colorMode: color }),
 });
 
 let requestStore = (set) => ({

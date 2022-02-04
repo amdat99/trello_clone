@@ -98,6 +98,29 @@ function Authentication({}) {
     }
   };
   const currentInputs = showLogin ? loginInputs : registerInputs;
+
+  const cardStyles = {
+    minWidth: 300,
+    maxWidth: 300,
+    maxHeight: "67vh",
+    p: 4,
+    mt: "20vh",
+    mb: "20vh",
+    zIndex: 999,
+    position: "relative",
+    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)",
+    borderRadius: "10px",
+    backgroundColor: "white",
+    display: "flex",
+    flexDirection: "column",
+  };
+
+  const boxStyles = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  };
+
   return (
     <>
       <div
@@ -151,27 +174,5 @@ function Authentication({}) {
     </>
   );
 }
-
-const cardStyles = {
-  minWidth: 300,
-  maxWidth: 300,
-  maxHeight: "67vh",
-  p: 4,
-  mt: "20vh",
-  mb: "20vh",
-  zIndex: 999,
-  position: "relative",
-  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)",
-  borderRadius: "10px",
-  backgroundColor: "white",
-  display: "flex",
-  flexDirection: "column",
-};
-
-const boxStyles = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-};
 
 export default Authentication;
