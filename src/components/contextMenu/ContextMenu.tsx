@@ -26,7 +26,9 @@ function ContextMenu({ x, y, children, showCtxMenu }: Props) {
   return (
     showCtxMenu && (
       <Grow in={showCtxMenu}>
-        <Card sx={actionStyles}>{children}</Card>
+        <Card data-testid="ctx-menu" sx={actionStyles}>
+          {children}
+        </Card>
       </Grow>
     )
   );
