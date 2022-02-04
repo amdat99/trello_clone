@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Todo } from "../models";
+import { Draggable } from "react-beautiful-dnd";
 import { AiFillEdit, AiFillDelete, AiOutlinePullRequest } from "react-icons/ai";
 import { MdDone } from "react-icons/md";
+import useFetchData from "../../hooks/useFetchData";
+import { Todo } from "../models";
 import "./styles.css";
-import { Draggable } from "react-beautiful-dnd";
 
 type Props = {
   todo: Todo;
@@ -16,7 +17,14 @@ function Task({ todo, setTodos, todos, i, id }: Props) {
   const [onEdit, setOnEdit] = useState(false);
   const [editTodo, setEditTodo] = useState(todo.todo);
   const inputRef = React.useRef<HTMLInputElement>(null);
-
+  const {
+    data: tasks,
+    fetchData: fetchTasks,
+    error: taskError,
+  } = useFetchData(
+    { type: "post", route: "task/all", body: { list_id: todo?.id && todo.id } },
+    todo?.id && todo.id.toString()
+  );
   const handleDone = (id: number) => {
     // setTodos(
     //   todos.map((todo) => {

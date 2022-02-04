@@ -8,7 +8,7 @@ import getTheme from "./theme";
 import "./App.css";
 
 const Board = React.lazy(() => import("./pages/board/Board"));
-const Authentication = React.lazy(() => import("./pages/authentication/Authentication"));
+const AuthenticationMain = React.lazy(() => import("./pages/authentication/AuthenticationMain"));
 const Landing = React.lazy(() => import("./pages/landing/Landing"));
 const Reset = React.lazy(() => import("./pages/reset/Reset"));
 
@@ -29,7 +29,7 @@ const App = () => {
               </Route>
             </Routes>
           ) : (
-            <Authentication />
+            <AuthenticationMain />
           )}
         </Suspense>
       </ThemeProvider>

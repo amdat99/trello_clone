@@ -17,6 +17,11 @@ const getTheme = (mode) => ({
           info: {
             main: "#275881",
           },
+          typography: {
+            button: {
+              textTransform: "none",
+            },
+          },
         }
       : {
           // palette values for dark mode
@@ -32,6 +37,11 @@ const getTheme = (mode) => ({
           },
           info: {
             main: "#275881",
+          },
+          typography: {
+            button: {
+              textTransform: "none",
+            },
           },
         }),
   },

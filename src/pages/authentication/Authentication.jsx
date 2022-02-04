@@ -11,7 +11,7 @@ import Notification from "../../components/notification/Notifications";
 import { useUserStore } from "../../store";
 import { requestHandler } from "../../helpers/requestHandler";
 
-function Authentication({}) {
+function Authentication({ formType, setShowFormType }) {
   const setUserData = useUserStore((state) => state.setUserData);
   const [showLogin, setShowLogin] = useState(true);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
@@ -63,13 +63,14 @@ function Authentication({}) {
   ];
 
   const onHandleChange = (value, name) => {
-    showLogin ? setLoginData({ ...loginData, [name]: value }) : setRegisterData({ ...registerData, [name]: value });
+    formType === "login"
+      ? setLoginData({ ...loginData, [name]: value })
+      : setRegisterData({ ...registerData, [name]: value });
   };
 
   const onSubmit = (e) => {
-    console.log("runs");
     e.preventDefault();
-    if (!showLogin && registerData.password !== registerData.confirmPassword) {
+    if (formType === "register" && registerData.password !== registerData.confirmPassword) {
       return setNotify({ type: "error", message: "Password and confirm password does not match" });
     }
     setLoading(true);
@@ -84,7 +85,7 @@ function Authentication({}) {
       });
     };
 
-    if (showLogin) {
+    if (formType === "login") {
       login(loginData);
     } else {
       requestHandler({ route: "auth/register", type: "post", body: registerData }).then((data) => {
@@ -97,7 +98,7 @@ function Authentication({}) {
       });
     }
   };
-  const currentInputs = showLogin ? loginInputs : registerInputs;
+  const currentInputs = formType === "login" ? loginInputs : registerInputs;
 
   const cardStyles = {
     minWidth: 300,
@@ -123,54 +124,48 @@ function Authentication({}) {
 
   return (
     <>
-      <div
-        className="background"
-        style={{
-          backgroundImage:
-            "url(" +
-            "https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-        }}
-      ></div>
-      <Box sx={boxStyles}>
-        <Notification message={notify.message} type={notify.type} show={notify.type !== ""} setNotify={setNotify} />
-        <Grow in={currentInputs.length !== 0}>
-          <Card raised sx={cardStyles}>
-            <Typography variant={"h5"} sx={{ mb: 2 }} color="primary">
-              {showLogin ? "Login" : "Register"}
-            </Typography>
-            <Box component="form" onSubmit={onSubmit} autoComplete="off">
-              {currentInputs.map((input) => (
-                <Inputs
-                  key={input.name}
-                  type={input.type}
-                  label={input.name}
-                  name={input.name}
-                  value={input.value}
-                  handleChange={onHandleChange}
-                  placeholder={input.placeholder && input.placeholder}
-                  inputProps={input.minLength && { minLength: input.minLength }}
-                  helperText={input.helperText && input.helperText}
-                  required
-                  error={input.error && input.error}
-                  sx={{ mb: 1 }}
-                />
-              ))}
-              <Button type={"submit"} variant="contained" disabled={loading}>
-                Submit
-              </Button>
-            </Box>
-            <Typography
-              color="primary"
-              onClick={() => setShowLogin(!showLogin)}
-              variant={"caption"}
-              sx={{ mb: 2, cursor: "pointer" }}
-            >
-              {showLogin ? "I don't have an account" : "I want to login"}
-            </Typography>
-            {loading && <LinearProgress sx={{ mt: 1 }} />}
-          </Card>
-        </Grow>
-      </Box>
+      {formType && (
+        <Box sx={boxStyles}>
+          <Notification message={notify.message} type={notify.type} show={notify.type !== ""} setNotify={setNotify} />
+          <Grow in={currentInputs.length !== 0}>
+            <Card raised sx={cardStyles}>
+              <Typography variant={"h5"} sx={{ mb: 2 }} color="primary">
+                {formType}
+              </Typography>
+              <Box component="form" onSubmit={onSubmit} autoComplete="off">
+                {currentInputs.map((input) => (
+                  <Inputs
+                    key={input.name}
+                    type={input.type}
+                    label={input.name}
+                    name={input.name}
+                    value={input.value}
+                    handleChange={onHandleChange}
+                    placeholder={input.placeholder && input.placeholder}
+                    inputProps={input.minLength && { minLength: input.minLength }}
+                    helperText={input.helperText && input.helperText}
+                    required
+                    error={input.error && input.error}
+                    sx={{ mb: 1 }}
+                  />
+                ))}
+                <Button type={"submit"} variant="contained" disabled={loading}>
+                  Submit
+                </Button>
+              </Box>
+              <Typography
+                color="primary"
+                onClick={() => setShowFormType(formType === "login" ? "register" : "login")}
+                variant={"caption"}
+                sx={{ mb: 2, cursor: "pointer" }}
+              >
+                {showLogin ? "I don't have an account" : "I want to login"}
+              </Typography>
+              {loading && <LinearProgress sx={{ mt: 1 }} />}
+            </Card>
+          </Grow>
+        </Box>
+      )}
     </>
   );
 }

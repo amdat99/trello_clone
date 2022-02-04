@@ -3,7 +3,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import Modal from "@mui/material/Modal";
+import AddTaskIcon from "@mui/icons-material/AddTask";
 import Divider from "@mui/material/Divider";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { DragDropContext, Droppable, DropResult, Draggable } from "react-beautiful-dnd";
@@ -12,7 +15,8 @@ import useFetchData from "../../hooks/useFetchData";
 import { requestHandler } from "../../helpers/requestHandler";
 import { useUserStore } from "../../store";
 import Inputs from "../inputs/Inputs";
-import TodoList from "../Task/Task";
+import Task from "../Task/Task";
+import ListContent from "./ListContent";
 import ContextMenu from "../contextMenu/ContextMenu";
 import BoardMenu from "../boardMenu/BoardMenu";
 import { Todo, Board } from "../models";
@@ -46,7 +50,13 @@ const List = ({
 }: Props) => {
   const [todos, setTodos] = useState({});
   const [createType, setCreateType] = useState("");
-  const [currentBoard, setCurrentBoard] = useUserStore((state) => [state.currentBoard, state.setCurrentBoard], shallow);
+  const [currentListId, setCurrentListId] = useState("");
+  const [currentResId, setCurrentResId] = useState("");
+  const [currentBoard, setCurrentBoard, user] = useUserStore(
+    (state) => [state.currentBoard, state.setCurrentBoard, state.user],
+    shallow
+  );
+  const [boardIds, setBoardIds] = useState([]);
   const {
     data: lists,
     fetchData: fetchLists,
@@ -55,20 +65,10 @@ const List = ({
     { type: "post", route: "list/all", body: currentBoard && { board_id: currentBoard.id } },
     "list/all"
   );
+
   const min1000 = useMediaQuery("(min-width:1000px)");
   const min700 = useMediaQuery("(min-width:700px)");
   const createRef = useRef<HTMLInputElement>(null);
-
-  const handleAdd = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log(lists[0].name);
-    if (todo) {
-      todos[lists[0].id].push({ id: Date.now(), todo: todo, isDone: false });
-    }
-    setTodo("");
-  };
-
-  const [boardIds, setBoardIds] = useState([]);
 
   useEffect(() => {
     const getLists = () => {
@@ -94,6 +94,25 @@ const List = ({
       fetchLists();
     }
   }, [currentBoard]);
+
+  const handleAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+    requestHandler({
+      type: "post",
+      route: "task/create",
+      body: { name: todo, list_id: currentListId, assigned_users: JSON.stringify([user.name]) },
+    }).then((res) => {
+      if (res === "task created successfully") {
+        // fetchTasks();
+      } else {
+        alert(res?.errors ? res.errors : "something went wrong");
+      }
+    });
+    // if (todo) {
+    //   todos[lists[0].id].push({ id: Date.now(), todo: todo, isDone: false });
+    // }
+    setTodo("");
+  };
 
   const createList = () => {
     requestHandler({ type: "post", route: "list/create", body: { board_id: currentBoard.id, name: createValue } }).then(
@@ -150,6 +169,7 @@ const List = ({
       },
     },
   ];
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <ContextMenu x={position.x} y={position.y} showCtxMenu={showCtxMenu}>
@@ -209,20 +229,40 @@ const List = ({
                         >
                           <Droppable key={id.id} droppableId={id.id} type="COLUMN" direction="vertical">
                             {(provided, snapshot) => (
-                              <div ref={provided.innerRef} {...provided.droppableProps}>
-                                <span>{id.name}</span>
-                                {todos[id.id] &&
-                                  todos[id.id].map((todo, i) => (
-                                    <TodoList
-                                      key={todo.id}
-                                      todo={todo}
-                                      setTodos={setTodos}
-                                      todos={todos}
-                                      i={i}
-                                      id={id.id}
-                                    />
-                                  ))}
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                                style={{ display: "flex", flexDirection: "column" }}
+                              >
+                                <Typography sx={{ ml: 1 }}>{id.name}</Typography>
+                                <ListContent id={id} todos={todos} setTodos={setTodos} />
                                 {provided.placeholder}
+                                {currentListId !== id.id && (
+                                  <Button
+                                    sx={{ mr: min1000 ? 15 : "75%", textTransform: "none" }}
+                                    size={"small"}
+                                    variant="text"
+                                    startIcon={<AddTaskIcon />}
+                                    onClick={() => {
+                                      setCurrentListId(id.id);
+                                    }}
+                                  >
+                                    Add Todo
+                                  </Button>
+                                )}
+                                {currentListId === id.id && (
+                                  <Box component={"form"} onSubmit={handleAdd}>
+                                    <Inputs type="text" value={todo} handleChange={setTodo} />
+                                    <Box>
+                                      <Button type="submit" variant="contained" size="small">
+                                        Add
+                                      </Button>
+                                      <IconButton onClick={() => setCurrentListId("")}>
+                                        <CloseIcon />
+                                      </IconButton>
+                                    </Box>
+                                  </Box>
+                                )}
                               </div>
                             )}
                           </Droppable>

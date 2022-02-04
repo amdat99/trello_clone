@@ -26,7 +26,6 @@ const Board: React.FC = () => {
     },
     "board/all"
   );
-  console.log(x, y);
 
   let orgName = params.orgName;
   const taskId = searchParams.get("task");
