@@ -3,13 +3,13 @@ import Inputs from "../../components/inputs/Inputs";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 import Grow from "@mui/material/Grow";
 import Notification from "../../components/notification/Notifications";
 import { useUserStore } from "../../store";
 import { requestHandler } from "../../helpers/requestHandler";
+import { colours } from "./utils";
 
 function Authentication({ formType, setShowFormType }) {
   const setUserData = useUserStore((state) => state.setUserData);
@@ -22,13 +22,11 @@ function Authentication({ formType, setShowFormType }) {
     {
       type: "email",
       name: "email",
-      value: loginData.email,
     },
     {
       type: "password",
       minLength: 6,
       name: "password",
-      value: loginData.password,
       helperText: "6 characters are required for password",
     },
   ];
@@ -38,24 +36,20 @@ function Authentication({ formType, setShowFormType }) {
     {
       type: "text",
       name: "name",
-      value: registerData.name,
     },
     {
       type: "email",
       name: "email",
-      value: registerData.email,
     },
     {
       type: "password",
       name: "password",
       minLength: 6,
-      value: registerData.password,
     },
     {
       type: "password",
       name: "confirmPassword",
       minLength: 6,
-      value: registerData.confirmPassword,
       helperText: passwordUnMatch ? "Passwords do not match" : "6 characters are required for password",
       error: passwordUnMatch,
     },
@@ -87,6 +81,7 @@ function Authentication({ formType, setShowFormType }) {
     if (formType === "login") {
       login(loginData);
     } else {
+      registerData.color = colours[Math.floor(Math.random() * 6) + 1];
       requestHandler({ route: "auth/register", type: "post", body: registerData }).then((data) => {
         setLoading(false);
         if (data && data === "registered successfully") {
@@ -138,7 +133,7 @@ function Authentication({ formType, setShowFormType }) {
                     type={input.type}
                     label={input.name}
                     name={input.name}
-                    value={input.value}
+                    value={formType === "login" ? loginData[input.name] : registerData[input.name]}
                     handleChange={onHandleChange}
                     placeholder={input.placeholder && input.placeholder}
                     inputProps={input.minLength && { minLength: input.minLength }}

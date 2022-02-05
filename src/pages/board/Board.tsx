@@ -1,11 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import Card from "@mui/material/Card";
-import CorporateFareIcon from "@mui/icons-material/CorporateFare";
-import List from "../../components/lists/List";
+import Box from "@mui/material/Box";
 import { requestHandler } from "../../helpers/requestHandler";
 import useFetchData from "../../hooks/useFetchData";
 import useMousePosition from "../../hooks/useMousePosition";
+import { useUserStore } from "../../store";
+import shallow from "zustand/shallow";
+import List from "../../components/lists/List";
+import BoardMenu from "../../components/boardMenu/BoardMenu";
+import Sidebar from "../../components/sidebar/Sidebar";
+import { BorderHorizontal } from "@mui/icons-material";
 
 const Board: React.FC = () => {
   const navigate = useNavigate();
@@ -13,12 +17,19 @@ const Board: React.FC = () => {
   const { x, y } = useMousePosition();
   let params = useParams();
   const [todo, setTodo] = useState("");
-  const [createValue, setCreateValue] = useState("");
+  const [rerender, setRerender] = useState(0);
+  const [createValue, setCreateValue] = useState({ name: "", image: "" });
+  const [currentResId, setCurrentResId] = useState({ id: "", rerender: 0 });
   const [showDetail, setShowDetail] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [createType, setCreateType] = useState("");
   const [showCtxMenu, setCtxShowMenu] = useState(false);
-
+  const [currentListId, setCurrentListId] = useState({ id: "", has_tasks: false });
+  const [currentBoard, setCurrentBoard, user] = useUserStore(
+    (state) => [state.currentBoard, state.setCurrentBoard, state.user],
+    shallow
+  );
   const { data: boards, fetchData: fetchBoards } = useFetchData(
     {
       type: "post",
@@ -26,19 +37,11 @@ const Board: React.FC = () => {
     },
     "board/all"
   );
-
+  let background =
+    "https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940";
   let orgName = params.orgName;
   const taskId = searchParams.get("task");
-
-  const createBoard = () => {
-    requestHandler({ route: "board/create", type: "post", body: { name: createValue } }).then((data) => {
-      if (data === "board created successfully") {
-        fetchBoards();
-      } else {
-        alert(data?.errors ? data.errors : "no data found");
-      }
-    });
-  };
+  const board = searchParams.get("board");
 
   useEffect(() => {
     let notMounted = false;
@@ -57,53 +60,106 @@ const Board: React.FC = () => {
       notMounted = true;
     };
   }, []);
+  console.log(currentBoard);
+  console.log(currentBoard);
+  useEffect(() => {
+    if (board && boards && currentBoard.name !== board) {
+      boards.forEach((b) => {
+        if (b.name === board) {
+          setCurrentBoard(b);
+        }
+      });
+    }
+  }, [boards, board]);
 
+  const createBoard = () => {
+    requestHandler({
+      route: "board/create",
+      type: "post",
+      body: { name: createValue.name, image: createValue.image },
+    }).then((data) => {
+      if (data === "board created successfully") {
+        fetchBoards();
+      } else {
+        alert(data?.errors ? data.errors : "no data found");
+      }
+    });
+  };
+  const handleAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+    requestHandler({
+      type: "post",
+      route: "task/create",
+      body: {
+        name: todo,
+        list_id: currentListId.id,
+        assigned_users: JSON.stringify([user.name]),
+        updateList: !currentListId.has_tasks ? true : false,
+      },
+    }).then((res) => {
+      if (res === "task created successfully") {
+        setCurrentResId({ id: currentListId.id, rerender: Date.now() });
+      } else {
+        alert(res?.errors ? res.errors : "something went wrong");
+      }
+    });
+    // if (todo) {
+    //   todos[lists[0].id].push({ id: Date.now(), todo: todo, isDone: false });
+    // }
+    setTodo("");
+  };
   const onShowCtxMenu = () => {
     setPosition({ x, y });
     setCtxShowMenu(true);
   };
 
   return (
-    <div
+    <Box
       className="background"
       onDoubleClick={onShowCtxMenu}
       onClick={() => (showCtxMenu ? setCtxShowMenu(false) : () => {})}
-      style={{
-        backgroundImage:
-          "url(" +
-          "https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      sx={{
+        backgroundImage: currentBoard?.image ? "url(" + currentBoard.image + ")" : "url(" + background + ")",
       }}
     >
+      <Box component="form" onSubmit={handleAdd} sx={{ flexDirection: "row", display: "flex" }}>
+        <BoardMenu
+          boards={boards}
+          setCurrentBoard={setCurrentBoard}
+          fetchBoards={fetchBoards}
+          setCreateType={setCreateType}
+          orgName={orgName}
+          currentBoard={currentBoard.data}
+          user={user}
+        />
+      </Box>
       <List
-        taskId={taskId}
-        boards={boards}
         fetchBoards={fetchBoards}
         createBoard={createBoard}
         todo={todo}
         position={position}
+        currentResId={currentResId}
+        //@ts-ignore: typescipt thinks rerender = boolean ? but it's actually a int
+        setCurrentResId={setCurrentResId}
+        user={user}
+        rerender={rerender}
+        handleAdd={handleAdd}
         showCtxMenu={showCtxMenu}
         setTodo={setTodo}
         stickyMenu={stickyMenu}
         createValue={createValue}
         setCreateValue={setCreateValue}
+        createType={{ data: createType, set: setCreateType }}
+        current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentListId, setList: setCurrentListId }}
       />
-      <Card
-        onClick={() => setStickyMenu(!stickyMenu)}
-        className={stickyMenu ? "sideBar1" : "sideBar"}
-        onMouseOver={() => setShowDetail(true)}
-        onMouseOut={() => setShowDetail(false)}
-      >
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <CorporateFareIcon />
-          <span style={showDetail || stickyMenu ? { display: "flex", marginLeft: "10px" } : { display: "none" }}>
-            Detail message
-          </span>
-        </div>
-
-        <CorporateFareIcon />
-        <CorporateFareIcon />
-      </Card>
-    </div>
+      <Sidebar
+        setStickyMenu={setStickyMenu}
+        stickyMenu={stickyMenu}
+        setShowDetail={setShowDetail}
+        showDetail={showDetail}
+        navigate={navigate}
+      />
+    </Box>
   );
 };
 

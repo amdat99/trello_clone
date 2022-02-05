@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { requestHandler } from "../helpers/requestHandler";
 import { useRequestStore } from "../store";
+// import UserContext from '../App';
 type Options = {
   url?: string;
   route: string;
@@ -32,10 +33,12 @@ const useFetchData = (
   const [isFetching, setIsFetching] = useState(false);
   const [queriedCacheData, setQueriedCacheData] = useState<CacheData[]>([]);
   const [currentCacheData, setCurrentCacheData] = useRequestStore((state) => [state[id], state.setCurrentCacheData]);
+  //For reference
+  // const { currentCacheData, setCurrentCacheData } = React.useContext(UserContext);
 
   const getItem = async () => {
     let item = await localStorage.getItem(id);
-    if (item && item !== undefined && item !== currentCacheData) {
+    if (item && item !== currentCacheData) {
       let parsed = await JSON.parse(item);
       setCurrentData(parsed);
       setCurrentCacheData(item, id);
@@ -45,17 +48,24 @@ const useFetchData = (
   useEffect(() => {
     if (shouldPersist) {
       getItem();
+    } else if (currentCacheData) {
+      setCurrentData(JSON.parse(currentCacheData));
     }
   }, [id]);
 
-  const updateStorage = (refreshCurrentCache = false) => {
+  // if storage = true func runs on local storage, else runs on in memory cache
+  const updateStorage = (storage = true, refreshCurrentCache = false) => {
     try {
       cacheUpdateOptions.length &&
         cacheUpdateOptions.forEach((cache) => {
-          localStorage.setItem(cache.id, JSON.stringify(cache.data));
+          storage
+            ? localStorage.setItem(cache.id, JSON.stringify(cache.data))
+            : setCurrentCacheData(cache.data, cache.id);
         });
       // cache check is reset on bulk cache update
-      if (refreshCurrentCache) getItem();
+      if (refreshCurrentCache) {
+        storage ? getItem() : setCurrentData(JSON.parse(currentCacheData));
+      }
       setCurrentCacheData("", id);
     } catch (err) {
       setError({ type: "updateCache", errors: err });
@@ -63,11 +73,11 @@ const useFetchData = (
     }
   };
 
-  const removeItems = () => {
+  const removeItems = (storage = true) => {
     try {
       cacheUpdateOptions.length &&
         cacheUpdateOptions.forEach((cache) => {
-          localStorage.removeItem(cache.id);
+          storage ? localStorage.removeItem(cache.id) : setCurrentCacheData(null, cache.id);
         });
     } catch (err) {
       setError({ type: "removeItems", errors: err });
@@ -75,11 +85,11 @@ const useFetchData = (
     }
   };
 
-  const getStoredValues = () => {
+  const getStoredValues = (storage = true) => {
     try {
       cacheUpdateOptions.length && setQueriedCacheData([]);
       cacheUpdateOptions.forEach(async (cache) => {
-        const req: any = localStorage.getItem(cache.id);
+        const req: any = storage ? localStorage.getItem(cache.id) : setCurrentCacheData(cache.data, cache.id);
         const data = await JSON.parse(req);
         if (data && data !== undefined) {
           setQueriedCacheData((prev) => [...prev, { id: cache.id, data: data }]);
@@ -99,25 +109,26 @@ const useFetchData = (
         requestHandler(options).then((data) => {
           if (shouldCache) dataString = JSON.stringify(data);
           if (!data || data?.errors || data === undefined) {
+            setIsFetching(false);
             return setError(data?.errors ? data : { errors: "No data found" });
           } else {
+            //equality check between in memory cache and data from server
             if (dataString !== currentCacheData && shouldCache) {
               // only re-render and cache if data has changed
               setCurrentData(data);
               setCurrentCacheData(dataString, id);
-
-              if (shouldPersist) localStorage.setItem(id, dataString);
+              shouldPersist && localStorage.setItem(id, dataString);
             } else if (!currentData?.length || !shouldCache) {
               setCurrentData(data);
             }
             setError(null);
           }
+          setIsFetching(false);
         });
       } catch (error) {
         setError(error);
       }
     }
-    setIsFetching(false);
   };
 
   return {

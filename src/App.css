@@ -12,16 +12,19 @@ a:visited {
   color: white;
 }
 
-::-webkit-scrollbar {
+.hide-scroll::-webkit-scrollbar {
   display: none;
 }
+
 .container {
   overflow-x: scroll;
-  overflow-y: scroll;
-  max-height: 80vh;
   display: flex;
+  overflow-y: scroll;
   justify-content: flex-start;
   max-width: 98vw;
+  position: relative;
+  bottom: 13px;
+  min-height: 92vh;
 }
 
 .background {
@@ -38,9 +41,11 @@ a:visited {
   margin: 5px 5px 5px 5px;
   flex-direction: column;
   padding: 8px;
-  background-color: rgb(169, 189, 190);
+  background-color: rgb(191, 204, 204);
   overflow: scroll;
   width: 45%;
+  max-height: 86vh;
+  overflow-y: scroll;
   min-width: 210px;
 }
 
@@ -48,11 +53,12 @@ a:visited {
   .todos {
     width: 95%;
     margin-bottom: 10px;
-    max-height: 32vh;
+    max-height: 47vh;
   }
 
   .container {
     flex-wrap: wrap;
+    overflow-y: scroll;
   }
 }
 

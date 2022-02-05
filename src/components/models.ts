@@ -17,6 +17,7 @@ export type User = {
   organisations?: string[];
   image?: string;
   admin_id?: string;
+  color?: string;
 };
 
 export type Board = {
@@ -38,6 +39,7 @@ export type List = {
   board_id: string;
   created_at: string | Date;
   updated_at: string | Date;
+  has_tasks: boolean;
   name: string;
   org_name?: string;
   deleted_at?: string | Date;
@@ -74,4 +76,30 @@ export type OrgUser = {
   updated_at: string | Date;
   name: string;
   deleted_at?: string | Date;
+};
+
+export type Task = {
+  id?: string;
+  org_id: string;
+  public_id: string;
+  status: string;
+  list_id: string;
+  created_at: string | Date;
+  updated_at: string | Date;
+  name: string;
+  description: string;
+  labels: string;
+  list_name?: string;
+  created_by: string;
+  assigned_users: string;
+  task_activity: string;
+  deleted_at?: string | Date;
+  image?: string;
+  updateList?: boolean;
+};
+
+export type CreateVal = {
+  name: string;
+  description?: string;
+  image?: string;
 };

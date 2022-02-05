@@ -1,8 +1,9 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useState, useMemo } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useUserStore } from "./store";
 import shallow from "zustand/shallow";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+// export const UserContext = React.createContext({});
 
 import getTheme from "./theme";
 import "./App.css";
@@ -16,9 +17,14 @@ const App = () => {
   const [user, colorMode] = useUserStore((state) => [state.user, state.colorMode], shallow);
   const theme = createTheme(getTheme(colorMode));
 
+  //For reference:
+  // const [currentCacheData, setCurrentCacheData] = useState({});
+  // const value = useMemo(() => ({ currentCacheData, setCurrentCacheData }), [currentCacheData]);
+
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
+        {/* <UserContext.Provider value={value}> */}
         <Suspense fallback={<div>Loading...</div>}>
           {user ? (
             <Routes>
@@ -32,6 +38,7 @@ const App = () => {
             <AuthenticationMain />
           )}
         </Suspense>
+        {/* </UserContext.Provider> */}
       </ThemeProvider>
     </BrowserRouter>
   );
