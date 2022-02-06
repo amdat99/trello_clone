@@ -7,7 +7,15 @@ import Box from "@mui/material/Box";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Inputs from "../inputs/Inputs";
 
-function CreateModal({ createType, createBoard, createValue, setCreateValue, setCurrentListId, currentListId }) {
+function CreateModal({
+  createType,
+  createBoard,
+  createValue,
+  setCreateValue,
+  setCurrentListId,
+  currentListId,
+  position,
+}) {
   const min1200 = useMediaQuery("(min-width:1200px)");
   const max800 = useMediaQuery("(max-width:800px)");
 
@@ -21,21 +29,31 @@ function CreateModal({ createType, createBoard, createValue, setCreateValue, set
 
   const onCreate = (e) => {
     e.preventDefault();
-    createType.data === "board"
+    createType.data.val === "board"
       ? createBoard()
       : setCurrentListId({ ...currentListId, rerender: !currentListId.rerender });
   };
-  console.log("g", createType);
+
+  const ctxStyles = {
+    position: "fixed",
+    zIndex: "999",
+    left: position.x ? position.x.toString() - (max800 ? 370 : 720) + "px" : "",
+    top: position.x ? position.y.toString() + "px" : "",
+  };
   return (
     <Popover
-      open={createType.data}
-      anchorEl={createType.data}
-      onClose={() => createType.set("")}
+      open={createType.data.val}
+      anchorEl={createType.data.val}
+      onClose={() => createType.set({ val: "", onCtxMenu: false })}
       anchorOrigin={{
         vertical: "bottom",
         horizontal: "center",
       }}
-      sx={{ marginTop: "40px", left: min1200 ? "10rem" : max800 ? "-3rem" : "1rem" }}
+      sx={
+        createType.data.onCtxMenu
+          ? ctxStyles
+          : { marginTop: "40px", left: min1200 ? "10rem" : max800 ? "-3rem" : "1rem" }
+      }
     >
       {/* <Modal open={createType.data} onClose={() => createType.set("")}> */}
       <Box sx={{ p: 2 }} component="form" onSubmit={onCreate}>
@@ -54,7 +72,7 @@ function CreateModal({ createType, createBoard, createValue, setCreateValue, set
           ))}
         </Card>
         <Button type={"submit"} sx={{ mt: 1 }} variant="contained" size="small">
-          Create {createType.data}
+          Create {createType.data.val}
         </Button>
       </Box>
       {/* </Modal> */}

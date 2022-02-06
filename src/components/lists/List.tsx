@@ -24,33 +24,16 @@ type Props = {
   setTodo: React.Dispatch<React.SetStateAction<string>>;
   currentResId: { id: string; rerender: number };
   stickyMenu: boolean;
-  showCtxMenu: boolean;
-  position: { x: number; y: number };
   createValue: CreateVal;
   handleAdd: (e: React.FormEvent) => void;
-  user: User;
   current: {
     board: Board;
     setBoard: (board: Board) => void;
     list: CurrentListId;
     setList: (list: CurrentListId) => void;
   };
-  createType: { data: string; set: (type: string) => void };
 };
-const List = ({
-  todo,
-  setTodo,
-  stickyMenu,
-  position,
-  showCtxMenu,
-  createValue,
-  handleAdd,
-  currentResId,
-  setCurrentResId,
-  current,
-  user,
-  createType,
-}: Props) => {
+const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId, setCurrentResId, current }: Props) => {
   const [todos, setTodos] = useState({});
   const [listData, setListData] = useState([]);
 
@@ -194,34 +177,8 @@ const List = ({
     }
   };
 
-  const menuFunctions = [
-    {
-      name: "create list",
-      func: () => {
-        createType.set("list");
-      },
-    },
-    {
-      name: "create board",
-      func: () => {
-        createType.set("board");
-      },
-    },
-  ];
-
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <ContextMenu x={position.x} y={position.y} showCtxMenu={showCtxMenu}>
-        {menuFunctions.map((func) => (
-          <div key={func.name}>
-            <Button size="small" onClick={func.func} sx={{ textTransform: "none" }}>
-              {func.name}
-            </Button>
-            <Divider />
-          </div>
-        ))}
-      </ContextMenu>
-
       <Box m={2} ml={stickyMenu && min700 ? 27 : 4} width={min1000 ? (stickyMenu ? "95%" : "105%") : "95%"}>
         <Typography variant="h4" color={"white"} sx={{ ml: 0.8 }}>
           {current.board ? current.board?.name : "Board"}

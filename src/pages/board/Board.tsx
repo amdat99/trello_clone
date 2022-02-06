@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 import { requestHandler } from "../../helpers/requestHandler";
 import useFetchData from "../../hooks/useFetchData";
 import useMousePosition from "../../hooks/useMousePosition";
@@ -9,13 +11,18 @@ import shallow from "zustand/shallow";
 import List from "../../components/lists/List";
 import BoardMenu from "../../components/boardMenu/BoardMenu";
 import Sidebar from "../../components/sidebar/Sidebar";
-import CreateModal from "../../components/createModal/CreateModal";
+import ContextMenu from "components/contextMenu/ContextMenu";
 import { Board as BoardType } from "../../components/models";
 
 export type CurrentListId = {
   id: string;
   rerender?: boolean;
   has_tasks: boolean;
+};
+
+export type CreateType = {
+  val: string;
+  onCtxMenu?: boolean;
 };
 
 const Board: React.FC = () => {
@@ -25,11 +32,11 @@ const Board: React.FC = () => {
   let params = useParams();
   const [todo, setTodo] = useState("");
   const [createValue, setCreateValue] = useState({ name: "", image: "" });
+  const [createType, setCreateType] = useState({ val: "", onCtxMenu: false });
   const [currentResId, setCurrentResId] = useState({ id: "", rerender: 0 });
   const [showDetail, setShowDetail] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [createType, setCreateType] = useState("");
   const [showCtxMenu, setCtxShowMenu] = useState(false);
   const [currentListId, setCurrentListId] = useState<CurrentListId>({ id: "", has_tasks: false, rerender: false });
   const [currentBoard, setCurrentBoard, user] = useUserStore(
@@ -116,6 +123,17 @@ const Board: React.FC = () => {
     setCtxShowMenu(true);
   };
 
+  const menuFunctions = [
+    {
+      name: "create list",
+      type: "list",
+    },
+    {
+      name: "create board",
+      type: "board",
+    },
+  ];
+
   return (
     <Box
       className="background"
@@ -125,10 +143,25 @@ const Board: React.FC = () => {
         backgroundImage: currentBoard?.image ? "url(" + currentBoard.image + ")" : "url(" + background + ")",
       }}
     >
+      <ContextMenu x={position.x} y={position.y} showCtxMenu={showCtxMenu}>
+        {menuFunctions.map((func) => (
+          <div key={func.name}>
+            <Button
+              size="small"
+              onClick={() => setCreateType({ val: func.type, onCtxMenu: true })}
+              sx={{ textTransform: "none" }}
+            >
+              {func.name}
+            </Button>
+            <Divider />
+          </div>
+        ))}
+      </ContextMenu>
       <Box sx={{ flexDirection: "row", display: "flex" }}>
         <BoardMenu
           boards={boards}
           setCurrentBoard={setCurrentBoard}
+          position={position}
           // fetchBoards={fetchBoards}
           orgName={orgName}
           currentBoard={currentBoard.data}
@@ -143,16 +176,12 @@ const Board: React.FC = () => {
       </Box>
       <List
         todo={todo}
-        position={position}
         currentResId={currentResId}
         setCurrentResId={setCurrentResId}
-        user={user}
         handleAdd={handleAdd}
-        showCtxMenu={showCtxMenu}
         setTodo={setTodo}
         stickyMenu={stickyMenu}
         createValue={createValue}
-        createType={{ data: createType, set: setCreateType }}
         current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentListId, setList: setCurrentListId }}
       />
       <Sidebar

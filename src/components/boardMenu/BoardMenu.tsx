@@ -12,7 +12,7 @@ import Inputs from "../inputs/Inputs";
 import CreateModal from "../createModal/CreateModal";
 import "../../App.css";
 import { Board, User, CreateVal } from "../models";
-import { CurrentListId } from "../../pages/board/Board";
+import { CurrentListId, CreateType } from "../../pages/board/Board";
 
 type Props = {
   boards: Array<Board>;
@@ -21,12 +21,13 @@ type Props = {
   setCurrentBoard: (board: any) => void;
   orgName: string;
   user: User;
-  createType: { data: string; set: React.Dispatch<React.SetStateAction<string>> };
+  createType: { data: CreateType; set: React.Dispatch<React.SetStateAction<CreateType>> };
   createValue: CreateVal;
   setCreateValue: React.Dispatch<React.SetStateAction<CreateVal>>;
   createBoard: Function;
   setCurrentListId: React.Dispatch<React.SetStateAction<CurrentListId>>;
   currentListId: CurrentListId;
+  position: { x: number; y: number };
 };
 
 function BoardMenu({
@@ -34,6 +35,7 @@ function BoardMenu({
   currentBoard,
   // fetchBoards,
   setCurrentBoard,
+  position,
   orgName,
   user,
   createType,
@@ -93,12 +95,20 @@ function BoardMenu({
           size="small"
         />
         <Tooltip title="Create board" placement="bottom">
-          <IconButton aria-label="add-board" type="button" onClick={() => createType.set("board")}>
+          <IconButton
+            aria-label="add-board"
+            type="button"
+            onClick={() => createType.set({ val: "board", onCtxMenu: false })}
+          >
             <DashboardCustomizeIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title="Create List" placement="bottom">
-          <IconButton aria-label="add-list" onClick={() => createType.set("list")} type="button">
+          <IconButton
+            aria-label="add-list"
+            onClick={() => createType.set({ val: "list", onCtxMenu: false })}
+            type="button"
+          >
             <PlaylistAddIcon />
           </IconButton>
         </Tooltip>
@@ -113,6 +123,7 @@ function BoardMenu({
           </Avatar>
         </Tooltip>
         <CreateModal
+          position={position}
           createType={createType}
           createValue={createValue}
           setCreateValue={setCreateValue}
