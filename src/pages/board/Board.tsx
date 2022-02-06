@@ -119,10 +119,12 @@ const Board: React.FC = () => {
     setTodo("");
   };
   const onShowCtxMenu = () => {
-    setPosition({ x, y });
+    const yPosition = y > window.innerHeight - 135 ? y - 135 : y;
+    const xPosition = x > window.innerWidth - 100 ? x - 100 : x;
+    setPosition({ x: xPosition, y: yPosition });
     setCtxShowMenu(true);
   };
-
+  console.log(window.innerHeight);
   const menuFunctions = [
     {
       name: "create list",
