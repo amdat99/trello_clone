@@ -99,7 +99,7 @@ const Board: React.FC = () => {
         name: todo,
         list_id: currentListId.id,
         board_name: currentBoard.name,
-        assigned_users: JSON.stringify([user.name]),
+        assigned_users: JSON.stringify([{ name: user.name, color: user.color }]),
         updateList: !currentListId.has_tasks ? true : false,
       },
     }).then((res) => {
@@ -125,24 +125,20 @@ const Board: React.FC = () => {
         backgroundImage: currentBoard?.image ? "url(" + currentBoard.image + ")" : "url(" + background + ")",
       }}
     >
-      <CreateModal
-        createType={{ data: createType, set: setCreateType }}
-        createValue={createValue}
-        setCreateValue={setCreateValue}
-        createBoard={createBoard}
-        setCurrentListId={setCurrentListId}
-        currentListId={currentListId}
-      />
-
-      <Box component="form" onSubmit={handleAdd} sx={{ flexDirection: "row", display: "flex" }}>
+      <Box sx={{ flexDirection: "row", display: "flex" }}>
         <BoardMenu
           boards={boards}
           setCurrentBoard={setCurrentBoard}
-          fetchBoards={fetchBoards}
-          setCreateType={setCreateType}
+          // fetchBoards={fetchBoards}
           orgName={orgName}
           currentBoard={currentBoard.data}
           user={user}
+          createType={{ data: createType, set: setCreateType }}
+          createValue={createValue}
+          setCreateValue={setCreateValue}
+          createBoard={createBoard}
+          setCurrentListId={setCurrentListId}
+          currentListId={currentListId}
         />
       </Box>
       <List

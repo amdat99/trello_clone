@@ -12,7 +12,7 @@ function Sidebar({ stickyMenu, setStickyMenu, setShowDetail, showDetail, navigat
       onMouseOut={() => setShowDetail(false)}
       onClick={() => setStickyMenu(!stickyMenu)}
     >
-      <Card className={stickyMenu ? "sideBar1" : "sideBar"}>
+      <Card sx={{ bgColor: "rgb(234, 238, 238)" }} className={stickyMenu ? "sideBar1" : "sideBar"}>
         <div style={{ position: "relative", right: "5px", marginTop: "5px" }}>
           {/* {showDetail && <Typography sx={{ mb: 1, ml: 0.5 }}>Menu</Typography>} */}
           <div onClick={() => navigate("/")} style={{ display: "flex", flexDirection: "row" }}>

@@ -1,13 +1,16 @@
 import React from "react";
 import Card from "@mui/material/Card";
-import Modal from "@mui/material/Modal";
+// import Modal from "@mui/material/Modal";
+import Popover from "@mui/material/Popover";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Inputs from "../inputs/Inputs";
 
 function CreateModal({ createType, createBoard, createValue, setCreateValue, setCurrentListId, currentListId }) {
-  const min1000 = useMediaQuery("(min-width:1000px)");
+  const min1200 = useMediaQuery("(min-width:1200px)");
+  const max800 = useMediaQuery("(max-width:800px)");
+
   const createInputs = [
     { name: "name", type: "text", required: true },
     { name: "image", type: "url" },
@@ -22,9 +25,20 @@ function CreateModal({ createType, createBoard, createValue, setCreateValue, set
       ? createBoard()
       : setCurrentListId({ ...currentListId, rerender: !currentListId.rerender });
   };
+  console.log("g", createType);
   return (
-    <Modal open={createType.data !== ""} onClose={() => createType.set("")} onSubmit={onCreate}>
-      <Box sx={{ position: "absolute", top: "40%", marginLeft: min1000 ? "40%" : "20%" }} component="form">
+    <Popover
+      open={createType.data}
+      anchorEl={createType.data}
+      onClose={() => createType.set("")}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "center",
+      }}
+      sx={{ marginTop: "40px", left: min1200 ? "10rem" : max800 ? "-3rem" : "1rem" }}
+    >
+      {/* <Modal open={createType.data} onClose={() => createType.set("")}> */}
+      <Box sx={{ p: 2 }} component="form" onSubmit={onCreate}>
         <Card sx={{ p: 1, width: "300px" }}>
           {createInputs.map((input) => (
             <Inputs
@@ -32,7 +46,7 @@ function CreateModal({ createType, createBoard, createValue, setCreateValue, set
               value={createValue[input.name]}
               type={input.type}
               handleChange={onHandleChange}
-              label={"create " + input.name}
+              label={input.name}
               name={input.name}
               required={input.required ? true : false}
               sx={{ mt: 1 }}
@@ -40,10 +54,11 @@ function CreateModal({ createType, createBoard, createValue, setCreateValue, set
           ))}
         </Card>
         <Button type={"submit"} sx={{ mt: 1 }} variant="contained" size="small">
-          Create
+          Create {createType.data}
         </Button>
       </Box>
-    </Modal>
+      {/* </Modal> */}
+    </Popover>
   );
 }
 

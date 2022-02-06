@@ -14,7 +14,7 @@ import { requestHandler } from "../../helpers/requestHandler";
 import Inputs from "../inputs/Inputs";
 import ListContent from "./ListContent";
 import ContextMenu from "../contextMenu/ContextMenu";
-import { CreateVal, Board, User, List as ListType } from "../models";
+import { CreateVal, Board, User, List as ListType, Task } from "../models";
 import { CurrentListId } from "../../pages/board/Board";
 import "../../App.css";
 
@@ -112,32 +112,37 @@ const List = ({
     createList();
   }, [current.list.rerender]);
 
+  // handles all drag and drop of tasks and lists and db updates
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
-    console.log(result);
     if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) return; // if not dragged to destination then return
+    //@ts-ignore
+    Array.prototype.insert = function (index: number, item: Task) {
+      this.splice(index, 0, item);
+    };
     if (source.droppableId === "board") {
-      const sourceData = listData[source.index];
-      const destinationData = listData[destination.index];
-      // replace index of souce and destination with opposite data
-      listData[source.index] = destinationData;
-      listData[destination.index] = sourceData;
+      // for list drag and drop
+      const sourceData: ListType = listData[source.index];
+      const destinationData: ListType = listData[destination.index];
+      let currentLists: any = listData;
+      // splice current todo to new index and remove duplqicate
+      currentLists.insert(destination.index - 1, destinationData);
+      setListData([...new Set(currentLists)]);
 
-      // update list index of both lists on database
+      // update list index of both lists on database (index starts from 1 on database)
       requestHandler({
         type: "put",
         route: "list/dragupdate",
         body: {
           id: draggableId,
-          index: source.index + 1,
           destinationId: destinationData.id,
           destinationIndex: destination.index + 1,
         },
       }).then((response) => {
         if (response !== "lists updated successfully") {
           //rollack local index changes if request fails
-          listData[source.index] = sourceData;
-          listData[destination.index] = destinationData;
+          currentLists.insert(destination.index - 1, sourceData);
+          setListData([...new Set(currentLists)]);
           alert(response?.errors ? response.errors : "no data found");
         } else {
           fetchLists();
@@ -146,29 +151,49 @@ const List = ({
     } else {
       const prevId: string = source.droppableId;
       const nextId: string = destination.droppableId;
+      const sameList = nextId === prevId;
       // currentTodo is data of task being moved
       const currentTodo: ListType = todos[prevId].slice(source.index, source.index + 1)[0];
-      // push currentTodo to destination list and remove from source list
-      todos[nextId].push(currentTodo);
-      todos[prevId].splice(source.index, 1);
-
-      //update list_id of task in database
-      requestHandler({ type: "put", route: "task/update", body: { id: currentTodo.id, list_id: nextId } }).then(
-        (response) => {
-          if (response !== "task updated successfully") {
-            //rollack local changes if request fails
-            todos[prevId].push(currentTodo);
-            todos[nextId].splice(source.index, 1);
-            alert(response?.errors ? response.errors : "no data found");
-          } else {
-            // triggers requessts only for tasks where changes made
-            setCurrentResId({ id: nextId, rerender: 1 });
-            setCurrentResId({ id: prevId, rerender: 2 });
-          }
+      const nextTodoId: string = todos[nextId].slice(destination.index, destination.index + 1)[0]?.id;
+      // splice currentTodo to destination list
+      const onInsert = (id: string) => {
+        todos[id].insert(destination.index, currentTodo);
+      };
+      onInsert(nextId);
+      // remove currentTodo from source list (if in the same list new element will be added after source index,which is then removed)
+      const onSlice = (id: string) => {
+        if (!sameList) {
+          todos[id].splice(source.index, 1);
+        } else {
+          todos[id].splice(source.index + 1, 1);
         }
-      );
+      };
+      onSlice(prevId);
+      //update list_id of task in database and update the index of tasks
+      requestHandler({
+        type: "put",
+        route: "task/update",
+        body: {
+          id: currentTodo.id,
+          list_id: nextId,
+          destinationId: nextTodoId,
+          destinationIndex: destination.index + 1,
+        },
+      }).then((response) => {
+        if (response !== "task updated successfully") {
+          //rollack local changes if request fails
+          onInsert(prevId);
+          onSlice(nextId);
+          console.log(response?.errors ? response.errors : "no re2 found");
+        } else {
+          //triggers requessts only for the lists where where changes made
+          setCurrentResId({ id: nextId, rerender: 1 });
+          setCurrentResId({ id: prevId, rerender: 2 });
+        }
+      });
     }
   };
+
   const menuFunctions = [
     {
       name: "create list",
@@ -230,6 +255,8 @@ const List = ({
                                 <Typography sx={{ opacity: 0.95 }}>{list.name}</Typography>
                                 <ListContent
                                   list={list}
+                                  lists={lists}
+                                  index={i}
                                   todos={todos}
                                   setTodos={setTodos}
                                   currentResId={currentResId}

@@ -65,8 +65,8 @@
 .todos__single--text {
   flex: 1;
   padding: 5px;
-  border: none;
-  font-size: 20px;
+  opacity: 0.97;
+  font-size: 15px;
 }
 
 .todos__single--text:focus {
@@ -88,6 +88,7 @@
   opacity: 0.5;
   flex-direction: column;
   top: 50px;
+  background: rgb(234, 238, 238);
   margin: 10px 10px 10px;
   margin-left: 0px;
   padding: 10px;
@@ -97,6 +98,7 @@
 .sideBar1 {
   position: absolute;
   height: 85.5vh;
+  background: rgb(234, 238, 238);
   display: flex;
   width: 10px;
   flex-direction: column;

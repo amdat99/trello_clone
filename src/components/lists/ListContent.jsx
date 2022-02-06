@@ -3,12 +3,13 @@ import Task from "../Task/Task";
 import LinearProgress from "@mui/material/LinearProgress";
 import useFetchData from "../../hooks/useFetchData";
 
-function ListContent({ todos, list, setTodos, currentResId }) {
+function ListContent({ todos, list, setTodos, currentResId, lists, index }) {
   const {
     data: tasks,
     fetchData: fetchTasks,
+    error,
     isFetching,
-  } = useFetchData({ type: "post", route: "task/all", body: { list_id: list.id } }, list.id);
+  } = useFetchData({ type: "post", route: "task/all", body: { list_id: list.id } }, "task/all" + list.created_at);
 
   useEffect(() => {
     if (currentResId.id === list.id) {
@@ -27,7 +28,7 @@ function ListContent({ todos, list, setTodos, currentResId }) {
       todos[list.id] = tasks;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tasks, list.id]);
+  }, [tasks, list]);
 
   return (
     <>

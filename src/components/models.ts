@@ -91,7 +91,7 @@ export type Task = {
   labels: string;
   list_name?: string;
   created_by: string;
-  assigned_users: string;
+  assigned_users?: Array<AssignedUsers>;
   task_activity: string;
   deleted_at?: string | Date;
   image?: string;
@@ -102,4 +102,9 @@ export type CreateVal = {
   name: string;
   description?: string;
   image?: string;
+};
+
+type AssignedUsers = {
+  name: string;
+  color: string;
 };

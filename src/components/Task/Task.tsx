@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import Card from "@mui/material/Card";
+import Avatar from "@mui/material/Avatar";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { MdDone } from "react-icons/md";
 import { Task as TaskProps } from "../models";
@@ -68,6 +70,14 @@ function Task({ todo, setTodos, todos, i, id }: Props) {
                   <Typography className="todos__single--text">{todo.name}</Typography>
                 )}
                 <div>
+                  {todo?.assigned_users &&
+                    todo.assigned_users.map((user) => (
+                      <Tooltip title={user.name} placement="bottom">
+                        <Avatar sx={{ width: 20, height: 20, ml: 0.7, bgcolor: user.color, fontSize: 15, mb: 0.5 }}>
+                          {user?.name[0].toUpperCase()}
+                        </Avatar>
+                      </Tooltip>
+                    ))}
                   {/* <span className="icon" onClick={() => handleDone(parseInt(todo.id))}>
                     <MdDone className={todo.status !== "" ? "done" : ""} />
                   </span> */}
@@ -76,7 +86,7 @@ function Task({ todo, setTodos, todos, i, id }: Props) {
                     <AiOutlinePullRequest />
                   </span>
                 )} */}
-                  <span
+                  {/* <span
                     className="icon"
                     onClick={() => {
                       setOnEdit(!onEdit);
@@ -84,7 +94,7 @@ function Task({ todo, setTodos, todos, i, id }: Props) {
                     }}
                   >
                     <AiFillEdit />
-                  </span>
+                  </span> */}
                   {/* <span className="icon" onClick={() => handleDelete(parseInt(todo.id))}>
                     <AiFillDelete />
                   </span> */}

@@ -4,7 +4,7 @@ import "./styles.css";
 
 type InputProps = {
   value: any;
-  handleChange: (value: string, name: string) => void;
+  handleChange: (value: string | object, name: string) => void;
   type?: string;
   select?: boolean;
   [x: string]: any;
