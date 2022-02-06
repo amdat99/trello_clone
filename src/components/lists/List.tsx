@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 // import Slide from "@mui/material/Slide";
 import CloseIcon from "@mui/icons-material/Close";
-import Modal from "@mui/material/Modal";
-import AddTaskIcon from "@mui/icons-material/AddTask";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import Divider from "@mui/material/Divider";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { DragDropContext, Droppable, DropResult, Draggable } from "react-beautiful-dnd";
@@ -16,46 +14,39 @@ import { requestHandler } from "../../helpers/requestHandler";
 import Inputs from "../inputs/Inputs";
 import ListContent from "./ListContent";
 import ContextMenu from "../contextMenu/ContextMenu";
-import { CreateVal, Board, User } from "../models";
+import { CreateVal, Board, User, List as ListType } from "../models";
+import { CurrentListId } from "../../pages/board/Board";
 import "../../App.css";
 
 type Props = {
-  fetchBoards: Function;
-  createBoard: () => void;
-  setCurrentResId: (id: string, rerender: number) => void;
+  setCurrentResId: ({ id: string, rerender: number }) => void;
   todo: string;
   setTodo: React.Dispatch<React.SetStateAction<string>>;
   currentResId: { id: string; rerender: number };
   stickyMenu: boolean;
   showCtxMenu: boolean;
-  rerender: number;
   position: { x: number; y: number };
   createValue: CreateVal;
-  setCreateValue: (val: CreateVal) => void;
   handleAdd: (e: React.FormEvent) => void;
   user: User;
   current: {
     board: Board;
     setBoard: (board: Board) => void;
-    list: { id: string; has_tasks: boolean };
-    setList: (list: { id: string; has_tasks: boolean }) => void;
+    list: CurrentListId;
+    setList: (list: CurrentListId) => void;
   };
   createType: { data: string; set: (type: string) => void };
 };
 const List = ({
-  createBoard,
   todo,
   setTodo,
   stickyMenu,
   position,
   showCtxMenu,
   createValue,
-  setCreateValue,
   handleAdd,
   currentResId,
   setCurrentResId,
-  rerender,
-  fetchBoards,
   current,
   user,
   createType,
@@ -74,23 +65,22 @@ const List = ({
 
   const min1000 = useMediaQuery("(min-width:1000px)");
   const min700 = useMediaQuery("(min-width:700px)");
-  const createRef = useRef<HTMLInputElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const getLists = () => {
       let currentLists = [];
       if (lists && lists?.length) {
-        lists.forEach((list) => {
+        lists.forEach((list: { id: any }) => {
+          //push list data to todos (todos is used as a map to render lists aand tasks)
           setTodos((prevTodos) => ({ ...prevTodos, [list.id]: [] }));
           currentLists.push(list);
         });
         setListData(currentLists);
       }
-      // if (error?.errors === "no lists found") {
-      //   setTodos({});
-      //   setListData([]);
-      // }
+      if (error?.errors === "no lists found") {
+        setTodos({});
+        setListData([]);
+      }
     };
     getLists();
   }, [lists, error, current.board]);
@@ -99,67 +89,85 @@ const List = ({
     if (current.board) {
       fetchLists();
     }
-  }, [current.board]);
+    //es-lint-disable-next-line
+  }, [current.board, current.list.rerender]);
 
-  const createList = () => {
-    requestHandler({
-      type: "post",
-      route: "list/create",
-      body: { board_id: current.board.id, name: createValue.name },
-    }).then((response) => {
-      if (response === "list created successfully") {
-        console.log(response);
-        fetchLists();
-      } else {
-        alert(response?.errors ? response.errors : "no data found");
+  useEffect(() => {
+    const createList = () => {
+      if (createValue?.name) {
+        requestHandler({
+          type: "post",
+          route: "list/create",
+          body: { board_id: current.board.id, name: createValue.name },
+        }).then((response) => {
+          if (response === "list created successfully") {
+            console.log(response);
+            fetchLists();
+          } else {
+            alert(response?.errors ? response.errors : "no data found");
+          }
+        });
       }
-    });
-  };
+    };
+    createList();
+  }, [current.list.rerender]);
 
   const onDragEnd = (result: DropResult) => {
-    let currentTodo;
-    let prevId;
-    let nextId;
     const { destination, source, draggableId } = result;
-    if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) return;
+    console.log(result);
+    if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) return; // if not dragged to destination then return
     if (source.droppableId === "board") {
-      const sortObject = (o: { [x: string]: any }) =>
-        Object.keys(o)
-          .sort()
-          .reduce((r, k) => ((r[k] = o[k]), r), {});
-      return;
-    } else {
-      prevId = source.droppableId;
-      nextId = destination.droppableId;
-      currentTodo = todos[prevId].slice(source.index, source.index + 1)[0];
-      todos[nextId].push(currentTodo);
-      todos[prevId].splice(source.index, 1);
-      console.log(prevId, nextId, currentTodo);
-    }
-    requestHandler({ type: "put", route: "task/update", body: { id: currentTodo.id, list_id: nextId } }).then(
-      (response) => {
-        if (response !== "task updated successfully") {
-          todos[prevId].push(currentTodo);
-          todos[nextId].splice(source.index, 1);
+      const sourceData = listData[source.index];
+      const destinationData = listData[destination.index];
+      // replace index of souce and destination with opposite data
+      listData[source.index] = destinationData;
+      listData[destination.index] = sourceData;
+
+      // update list index of both lists on database
+      requestHandler({
+        type: "put",
+        route: "list/dragupdate",
+        body: {
+          id: draggableId,
+          index: source.index + 1,
+          destinationId: destinationData.id,
+          destinationIndex: destination.index + 1,
+        },
+      }).then((response) => {
+        if (response !== "lists updated successfully") {
+          //rollack local index changes if request fails
+          listData[source.index] = sourceData;
+          listData[destination.index] = destinationData;
           alert(response?.errors ? response.errors : "no data found");
         } else {
-          //@ts-ignore
-          setCurrentResId({ id: nextId, rerender: rerender + 1 });
-          //@ts-ignore
-          setCurrentResId({ id: prevId, rerender: 0 });
+          fetchLists();
         }
-      }
-    );
-  };
+      });
+    } else {
+      const prevId: string = source.droppableId;
+      const nextId: string = destination.droppableId;
+      // currentTodo is data of task being moved
+      const currentTodo: ListType = todos[prevId].slice(source.index, source.index + 1)[0];
+      // push currentTodo to destination list and remove from source list
+      todos[nextId].push(currentTodo);
+      todos[prevId].splice(source.index, 1);
 
-  const onCreate = (e) => {
-    e.preventDefault();
-    createRef.current?.focus();
-    createType.data == "list" ? createList() : createBoard();
-  };
-
-  const onHandleChange = (value, name) => {
-    setCreateValue({ ...createValue, [name]: value });
+      //update list_id of task in database
+      requestHandler({ type: "put", route: "task/update", body: { id: currentTodo.id, list_id: nextId } }).then(
+        (response) => {
+          if (response !== "task updated successfully") {
+            //rollack local changes if request fails
+            todos[prevId].push(currentTodo);
+            todos[nextId].splice(source.index, 1);
+            alert(response?.errors ? response.errors : "no data found");
+          } else {
+            // triggers requessts only for tasks where changes made
+            setCurrentResId({ id: nextId, rerender: 1 });
+            setCurrentResId({ id: prevId, rerender: 2 });
+          }
+        }
+      );
+    }
   };
   const menuFunctions = [
     {
@@ -176,13 +184,6 @@ const List = ({
     },
   ];
 
-  console.log(listData);
-
-  const createInputs = [
-    { name: "name", type: "text", required: true },
-    { name: "image", type: "url" },
-  ];
-
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <ContextMenu x={position.x} y={position.y} showCtxMenu={showCtxMenu}>
@@ -195,28 +196,6 @@ const List = ({
           </div>
         ))}
       </ContextMenu>
-
-      <Modal open={createType.data !== ""} onClose={() => createType.set("")} onSubmit={onCreate}>
-        <Box sx={{ position: "absolute", top: "40%", marginLeft: min1000 ? "40%" : "20%" }} component="form">
-          <Card sx={{ p: 1, width: "300px" }}>
-            {createInputs.map((input) => (
-              <Inputs
-                value={createValue[input.name]}
-                type={input.type}
-                handleChange={onHandleChange}
-                label={"create " + input.name}
-                name={input.name}
-                required={input.required ? true : false}
-                ref={createRef}
-                sx={{ mt: 1 }}
-              />
-            ))}
-          </Card>
-          <Button type={"submit"} sx={{ mt: 1 }} variant="contained" size="small">
-            Create
-          </Button>
-        </Box>
-      </Modal>
 
       <Box m={2} ml={stickyMenu && min700 ? 27 : 4} width={min1000 ? (stickyMenu ? "95%" : "105%") : "95%"}>
         <Typography variant="h4" color={"white"} sx={{ ml: 0.8 }}>
@@ -242,7 +221,7 @@ const List = ({
                           className={`todos hide-scroll`}
                         >
                           <Droppable key={list.id} droppableId={list.id} type="COLUMN" direction="vertical">
-                            {(provided, snapshot) => (
+                            {(provided, _snapshot) => (
                               <div
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
@@ -253,19 +232,28 @@ const List = ({
                                   list={list}
                                   todos={todos}
                                   setTodos={setTodos}
-                                  rerender={rerender}
                                   currentResId={currentResId}
                                 />
                                 {provided.placeholder}
                                 {current.list.id !== list.id && (
-                                  <div style={{ opacity: "0.9" }}>
+                                  <div
+                                    style={{
+                                      opacity: "0.9",
+                                      position: "relative",
+                                      right: "5px",
+                                    }}
+                                  >
                                     <Button
                                       sx={{ textTransform: "none", fontSize: "12px" }}
                                       size={"small"}
                                       variant="text"
-                                      startIcon={<AddTaskIcon />}
+                                      startIcon={<AddRoundedIcon />}
                                       onClick={() => {
-                                        current.setList({ id: list.id, has_tasks: list.has_tasks });
+                                        current.setList({
+                                          id: list.id,
+                                          has_tasks: list.has_tasks,
+                                          rerender: current.list.rerender,
+                                        });
                                       }}
                                     >
                                       Add Todo
@@ -280,7 +268,11 @@ const List = ({
                                       <Button type="submit" variant="contained" size="small">
                                         Add
                                       </Button>
-                                      <IconButton onClick={() => current.setList({ id: "", has_tasks: false })}>
+                                      <IconButton
+                                        onClick={() =>
+                                          current.setList({ id: "", has_tasks: false, rerender: current.list.rerender })
+                                        }
+                                      >
                                         <CloseIcon />
                                       </IconButton>
                                     </Box>

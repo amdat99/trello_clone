@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 // import { requestHandler } from "../../helpers/requestHandler";
 
-function Reset({}) {
+function Reset() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 

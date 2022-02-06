@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { requestHandler } from "../helpers/requestHandler";
 import { useRequestStore } from "../store";
 // import UserContext from '../App';
@@ -36,22 +36,27 @@ const useFetchData = (
   //For reference
   // const { currentCacheData, setCurrentCacheData } = React.useContext(UserContext);
 
-  const getItem = async () => {
-    let item = await localStorage.getItem(id);
-    if (item && item !== currentCacheData) {
-      let parsed = await JSON.parse(item);
-      setCurrentData(parsed);
-      setCurrentCacheData(item, id);
-    }
-  };
-
-  useEffect(() => {
+  const getItem = useCallback(async () => {
     if (shouldPersist) {
-      getItem();
-    } else if (currentCacheData) {
+      let item = await localStorage.getItem(id);
+      if (item && item !== currentCacheData) {
+        let parsed = await JSON.parse(item);
+        setCurrentData(parsed);
+        setCurrentCacheData(item, id);
+      }
+    }
+  }, [currentCacheData, id, setCurrentCacheData, shouldPersist]);
+
+  const setCacheData = useCallback(() => {
+    if (currentCacheData && shouldCache) {
       setCurrentData(JSON.parse(currentCacheData));
     }
-  }, [id]);
+  }, [currentCacheData, shouldCache]);
+
+  useEffect(() => {
+    getItem();
+    setCacheData();
+  }, [id, getItem, setCacheData]);
 
   // if storage = true func runs on local storage, else runs on in memory cache
   const updateStorage = (storage = true, refreshCurrentCache = false) => {
@@ -102,9 +107,9 @@ const useFetchData = (
   };
 
   const fetchData = () => {
-    let dataString: string;
     setIsFetching(true);
     for (let i = 0; i < timesToFetch; i++) {
+      let dataString: string;
       try {
         requestHandler(options).then((data) => {
           if (shouldCache) dataString = JSON.stringify(data);
@@ -116,7 +121,6 @@ const useFetchData = (
             if (dataString !== currentCacheData && shouldCache) {
               // only re-render and cache if data has changed
               setCurrentData(data);
-              setCurrentCacheData(dataString, id);
               shouldPersist && localStorage.setItem(id, dataString);
             } else if (!currentData?.length || !shouldCache) {
               setCurrentData(data);

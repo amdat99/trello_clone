@@ -26,7 +26,7 @@ export const requestHandler = async ({
       method: type,
       credentials: credentials,
       headers: { "Content-Type": contentType },
-      body: body && contentType == "application/json" ? JSON.stringify(body) : body,
+      body: body && contentType === "application/json" ? JSON.stringify(body) : body,
     });
     if (response.status === 404) {
       return onUnAuthorised();

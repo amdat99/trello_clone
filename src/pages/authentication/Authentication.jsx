@@ -63,32 +63,32 @@ function Authentication({ formType, setShowFormType }) {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (formType === "register" && registerData.password !== registerData.confirmPassword) {
+    if (formType === "register" && passwordUnMatch) {
       return setNotify({ type: "error", message: "Password and confirm password does not match" });
     }
     setLoading(true);
     const login = (data) => {
       requestHandler({ route: "auth/login", type: "post", body: data }).then((data) => {
-        setLoading(false);
         if (data?.email) {
           setUserData(data);
         } else {
           setNotify({ type: "error", message: data?.errors ? data.errors : "error logging in" });
         }
+        setLoading(false);
       });
     };
 
     if (formType === "login") {
       login(loginData);
     } else {
-      registerData.color = colours[Math.floor(Math.random() * 6) + 1];
+      registerData.color = colours[Math.floor(Math.random() * 14) + 1];
       requestHandler({ route: "auth/register", type: "post", body: registerData }).then((data) => {
-        setLoading(false);
         if (data && data === "registered successfully") {
           login(registerData);
         } else {
           setNotify({ type: "error", message: data?.errors ? data.errors : "error registering" });
         }
+        setLoading(false);
       });
     }
   };

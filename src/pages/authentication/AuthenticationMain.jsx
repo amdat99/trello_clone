@@ -7,7 +7,7 @@ import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import Grow from "@mui/material/Grow";
 
-function AuthenticationMain({}) {
+function AuthenticationMain() {
   let show = true;
   const [formType, setShowFormType] = React.useState("");
   return (

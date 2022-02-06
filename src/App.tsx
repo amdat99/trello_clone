@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useMemo } from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useUserStore } from "./store";
 import shallow from "zustand/shallow";
@@ -24,7 +24,6 @@ const App = () => {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        {/* <UserContext.Provider value={value}> */}
         <Suspense fallback={<div>Loading...</div>}>
           {user ? (
             <Routes>
@@ -38,7 +37,6 @@ const App = () => {
             <AuthenticationMain />
           )}
         </Suspense>
-        {/* </UserContext.Provider> */}
       </ThemeProvider>
     </BrowserRouter>
   );

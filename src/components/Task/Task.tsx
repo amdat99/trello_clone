@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
-import { AiFillEdit, AiFillDelete, AiOutlinePullRequest } from "react-icons/ai";
+import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { MdDone } from "react-icons/md";
@@ -25,15 +25,6 @@ function Task({ todo, setTodos, todos, i, id }: Props) {
     //     if (todo.id === id) {
     //       todo.isDone = true;
     //     }
-    //     return todo;
-    //   })
-    // );
-  };
-
-  const revertDone = (id: number) => {
-    // setTodos(
-    //   todos.map((todo) => {
-    //     todo.id === id ? (todo.isDone = false) : (todo.isDone = todo.isDone);
     //     return todo;
     //   })
     // );
@@ -77,9 +68,9 @@ function Task({ todo, setTodos, todos, i, id }: Props) {
                   <Typography className="todos__single--text">{todo.name}</Typography>
                 )}
                 <div>
-                  <span className="icon" onClick={() => handleDone(parseInt(todo.id))}>
+                  {/* <span className="icon" onClick={() => handleDone(parseInt(todo.id))}>
                     <MdDone className={todo.status !== "" ? "done" : ""} />
-                  </span>
+                  </span> */}
                   {/* {todo. && (
                   <span className="icon" onClick={() => revertDone(todo.id)}>
                     <AiOutlinePullRequest />
@@ -94,9 +85,9 @@ function Task({ todo, setTodos, todos, i, id }: Props) {
                   >
                     <AiFillEdit />
                   </span>
-                  <span className="icon" onClick={() => handleDelete(parseInt(todo.id))}>
+                  {/* <span className="icon" onClick={() => handleDelete(parseInt(todo.id))}>
                     <AiFillDelete />
-                  </span>
+                  </span> */}
                 </div>
                 {onEdit && <button type="submit">Edit</button>}
               </Card>

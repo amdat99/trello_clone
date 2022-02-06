@@ -2,9 +2,7 @@ import React from "react";
 import Card from "@mui/material/Card";
 import Divider from "@mui/material/Divider";
 import CottageOutlinedIcon from "@mui/icons-material/CottageOutlined";
-import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
 // import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
-import Typography from "@mui/material/Typography";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 
 function Sidebar({ stickyMenu, setStickyMenu, setShowDetail, showDetail, navigate }) {

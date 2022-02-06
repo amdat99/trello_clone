@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { requestHandler } from "../../helpers/requestHandler";
@@ -9,7 +9,14 @@ import shallow from "zustand/shallow";
 import List from "../../components/lists/List";
 import BoardMenu from "../../components/boardMenu/BoardMenu";
 import Sidebar from "../../components/sidebar/Sidebar";
-import { BorderHorizontal } from "@mui/icons-material";
+import CreateModal from "../../components/createModal/CreateModal";
+import { Board as BoardType } from "../../components/models";
+
+export type CurrentListId = {
+  id: string;
+  rerender?: boolean;
+  has_tasks: boolean;
+};
 
 const Board: React.FC = () => {
   const navigate = useNavigate();
@@ -17,7 +24,6 @@ const Board: React.FC = () => {
   const { x, y } = useMousePosition();
   let params = useParams();
   const [todo, setTodo] = useState("");
-  const [rerender, setRerender] = useState(0);
   const [createValue, setCreateValue] = useState({ name: "", image: "" });
   const [currentResId, setCurrentResId] = useState({ id: "", rerender: 0 });
   const [showDetail, setShowDetail] = useState(false);
@@ -25,7 +31,7 @@ const Board: React.FC = () => {
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [createType, setCreateType] = useState("");
   const [showCtxMenu, setCtxShowMenu] = useState(false);
-  const [currentListId, setCurrentListId] = useState({ id: "", has_tasks: false });
+  const [currentListId, setCurrentListId] = useState<CurrentListId>({ id: "", has_tasks: false, rerender: false });
   const [currentBoard, setCurrentBoard, user] = useUserStore(
     (state) => [state.currentBoard, state.setCurrentBoard, state.user],
     shallow
@@ -40,7 +46,7 @@ const Board: React.FC = () => {
   let background =
     "https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940";
   let orgName = params.orgName;
-  const taskId = searchParams.get("task");
+  // const taskId = searchParams.get("task");
   const board = searchParams.get("board");
 
   useEffect(() => {
@@ -60,11 +66,10 @@ const Board: React.FC = () => {
       notMounted = true;
     };
   }, []);
-  console.log(currentBoard);
-  console.log(currentBoard);
+
   useEffect(() => {
     if (board && boards && currentBoard.name !== board) {
-      boards.forEach((b) => {
+      boards.forEach((b: BoardType) => {
         if (b.name === board) {
           setCurrentBoard(b);
         }
@@ -93,6 +98,7 @@ const Board: React.FC = () => {
       body: {
         name: todo,
         list_id: currentListId.id,
+        board_name: currentBoard.name,
         assigned_users: JSON.stringify([user.name]),
         updateList: !currentListId.has_tasks ? true : false,
       },
@@ -103,9 +109,6 @@ const Board: React.FC = () => {
         alert(res?.errors ? res.errors : "something went wrong");
       }
     });
-    // if (todo) {
-    //   todos[lists[0].id].push({ id: Date.now(), todo: todo, isDone: false });
-    // }
     setTodo("");
   };
   const onShowCtxMenu = () => {
@@ -122,6 +125,15 @@ const Board: React.FC = () => {
         backgroundImage: currentBoard?.image ? "url(" + currentBoard.image + ")" : "url(" + background + ")",
       }}
     >
+      <CreateModal
+        createType={{ data: createType, set: setCreateType }}
+        createValue={createValue}
+        setCreateValue={setCreateValue}
+        createBoard={createBoard}
+        setCurrentListId={setCurrentListId}
+        currentListId={currentListId}
+      />
+
       <Box component="form" onSubmit={handleAdd} sx={{ flexDirection: "row", display: "flex" }}>
         <BoardMenu
           boards={boards}
@@ -134,21 +146,16 @@ const Board: React.FC = () => {
         />
       </Box>
       <List
-        fetchBoards={fetchBoards}
-        createBoard={createBoard}
         todo={todo}
         position={position}
         currentResId={currentResId}
-        //@ts-ignore: typescipt thinks rerender = boolean ? but it's actually a int
         setCurrentResId={setCurrentResId}
         user={user}
-        rerender={rerender}
         handleAdd={handleAdd}
         showCtxMenu={showCtxMenu}
         setTodo={setTodo}
         stickyMenu={stickyMenu}
         createValue={createValue}
-        setCreateValue={setCreateValue}
         createType={{ data: createType, set: setCreateType }}
         current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentListId, setList: setCurrentListId }}
       />

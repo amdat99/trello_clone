@@ -55,6 +55,8 @@ function Landing(props) {
       }
     });
   };
+  // for reference:
+  console.log(error, isFetching);
   return (
     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 10 }}>
       <Button
@@ -70,10 +72,8 @@ function Landing(props) {
           <Card sx={{ maxWidth: "60%", p: 2, position: "absolute", left: 10, top: 10 }}>
             {user && <Typography variant="h6"> Organisations for {user.name} </Typography>}
             {data.map((org) => (
-              <Link to={`/board/${org.name}`}>
-                <Button variant="contained" key={org.name}>
-                  {org.name}
-                </Button>
+              <Link to={`/board/${org.name}`} key={org.name}>
+                <Button variant="contained">{org.name}</Button>
               </Link>
             ))}
           </Card>
