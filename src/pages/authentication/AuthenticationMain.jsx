@@ -23,7 +23,7 @@ function AuthenticationMain() {
     requestHandler({ route: "auth/forgot", type: "post", body: {email} }).then((data) => {
       setLoading(false);
       if(data === "email sent success"){
-        alert("Email link has been sent to your address")
+        alert("Email link has been sent to your address");
       }
       else{
         return alert(data?.errors ? data.errors : 'data not found')
