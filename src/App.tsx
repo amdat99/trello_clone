@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useUserStore } from "./store";
 import shallow from "zustand/shallow";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import LoadingSpinny from "./components/loadingSpinny/LoadingSpinny"
 // export const UserContext = React.createContext({});
 
 import getTheme from "./theme";
@@ -24,7 +25,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoadingSpinny />}>
           {user ? (
             <Routes>
               <Route path="/" element={<Landing />} />
