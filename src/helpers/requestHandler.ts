@@ -8,10 +8,10 @@ type Params = {
   contentType?: string;
 };
 
-// const onUnAuthorised = () => {
-//   localStorage.removeItem("user_data");
-//   window.location.reload();
-// };
+const onUnAuthorised = () => {
+  localStorage.removeItem("user_data");
+  window.location.reload();
+};
 export const requestHandler = async ({
   url = serverUrl,
   route,
@@ -28,9 +28,9 @@ export const requestHandler = async ({
       headers: { "Content-Type": contentType },
       body: body && contentType === "application/json" ? JSON.stringify(body) : body,
     });
-    // if (response.status === 404) {
-    //   return onUnAuthorised();
-    // }
+    if (response.status === 404) {
+      return onUnAuthorised();
+    }
     const data = await response.json();
     return data;
   } catch (err) {
