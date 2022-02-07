@@ -19,7 +19,6 @@ a:visited {
 .container {
   overflow-x: scroll;
   display: flex;
-  overflow-y: scroll;
   justify-content: flex-start;
   max-width: 98vw;
   position: relative;
@@ -59,6 +58,7 @@ a:visited {
   .container {
     flex-wrap: wrap;
     overflow-y: scroll;
+    max-height: 92vh;
   }
 }
 

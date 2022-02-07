@@ -37,13 +37,14 @@ function CreateModal({
   const ctxStyles = {
     position: "fixed",
     zIndex: "999",
-    left: position.x ? position.x.toString() - (max800 ? 370 : 720) + "px" : "",
+    left: position.x ? position.x.toString() - (max800 ? 370 : 920) + "px" : "",
     top: position.x ? position.y.toString() + "px" : "",
   };
   return (
     <Popover
       open={createType.data.val}
       anchorEl={createType.data.val}
+      transitionDuration={{ enter: 300, exit: 0 }}
       onClose={() => createType.set({ val: "", onCtxMenu: false })}
       anchorOrigin={{
         vertical: "bottom",
@@ -52,11 +53,15 @@ function CreateModal({
       sx={
         createType.data.onCtxMenu
           ? ctxStyles
-          : { marginTop: "40px", left: min1200 ? "10rem" : max800 ? "-3rem" : "1rem" }
+          : {
+              marginTop: "40px",
+              left: min1200 ? "11rem" : max800 ? "-3rem" : "1rem",
+              ml: createType.data.val === "board" ? -2 : 3,
+            }
       }
     >
       {/* <Modal open={createType.data} onClose={() => createType.set("")}> */}
-      <Box sx={{ p: 2 }} component="form" onSubmit={onCreate}>
+      <Box sx={{ p: 1 }} component="form" onSubmit={onCreate}>
         <Card sx={{ p: 1, width: "300px" }}>
           {createInputs.map((input) => (
             <Inputs

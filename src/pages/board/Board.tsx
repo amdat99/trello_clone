@@ -124,7 +124,7 @@ const Board: React.FC = () => {
     setPosition({ x: xPosition, y: yPosition });
     setCtxShowMenu(true);
   };
-  console.log(window.innerHeight);
+
   const menuFunctions = [
     {
       name: "create list",
@@ -166,7 +166,7 @@ const Board: React.FC = () => {
           position={position}
           // fetchBoards={fetchBoards}
           orgName={orgName}
-          currentBoard={currentBoard.data}
+          currentBoard={currentBoard?.data}
           user={user}
           createType={{ data: createType, set: setCreateType }}
           createValue={createValue}
