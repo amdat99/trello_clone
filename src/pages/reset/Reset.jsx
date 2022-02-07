@@ -66,8 +66,9 @@ function Reset() {
     setLoading(true);
     requestHandler({ route: "auth/reset", type: "put", body: {email, password: registerData.password, verify_id: token} }).then((data) => {
       setLoading(false);
-      if(data === "email sent success"){
-        alert("Email link has been sent to your address");
+      if(data === "password reset successfully"){
+        alert("Password reset success");
+        navigate("/");
       }
       else{
         return alert(data?.errors ? data.errors : 'data not found')
