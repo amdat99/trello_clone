@@ -109,24 +109,24 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
       setListData([...new Set(currentLists)]);
 
       // update list map json
-      // requestHandler({
-      //   type: "put",
-      //   route: "list/dragupdate",
-      //   body: {
-      //     id: draggableId,
-      //     board_id: current.board.id,
-      //     lists: JSON.stringify([...new Set(currentLists)]),
-      //   },
-      // }).then((response) => {
-      //   if (response !== "lists updated successfully") {
-      //     //rollack local index changes if request fails
-      //     currentLists.insert(destination.index, sourceData);
-      //     setListData([...new Set(currentLists)]);
-      //     alert(response?.errors ? response.errors : "no data found");
-      //   } else {
-      //     fetchLists();
-      //   }
-      // });
+      requestHandler({
+        type: "put",
+        route: "list/dragupdate",
+        body: {
+          id: draggableId,
+          board_id: current.board.id,
+          lists: JSON.stringify([...new Set(currentLists)]),
+        },
+      }).then((response) => {
+        if (response !== "lists updated successfully") {
+          //rollack local index changes if request fails
+          currentLists.insert(destination.index, sourceData);
+          setListData([...new Set(currentLists)]);
+          alert(response?.errors ? response.errors : "no data found");
+        } else {
+          fetchLists();
+        }
+      });
     } else {
       const prevId: string = source.droppableId;
       const nextId: string = destination.droppableId;
@@ -135,19 +135,14 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
       const currentTodo: ListType = todos[prevId].slice(source.index, source.index + 1)[0];
       // splice currentTodo to destination list
       const onInsert = (id: string) => {
-        todos[id].insert(destination.index, currentTodo);
+        let index = source.index > destination.index ? destination.index : destination.index + 1;
+        todos[id].insert(index, currentTodo);
       };
       onInsert(nextId);
-      // remove currentTodo from source list (if in the same list new element will be added after source index,which is then removed)
-      const onSlice = (id: string) => {
-        if (!sameList) {
-          todos[id].splice(source.index, 1);
-        } else {
-          todos[id].splice(source.index + 1, 1);
-        }
-      };
-      onSlice(prevId);
-      //update list_id of task in database and update task map json
+
+      const index = source.index > destination.index ? source.index + 1 : source.index;
+      sameList ? todos[prevId].splice(index, 1, 0) : todos[prevId].splice(source.index, 1);
+      // update list_id of task in database and update task map json
       requestHandler({
         type: "put",
         route: "task/update",
@@ -161,8 +156,9 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
       }).then((response) => {
         if (response !== "task updated successfully") {
           //rollack local changes if request fails
+          const index = source.index > destination.index ? destination.index + 1 : destination.index;
           onInsert(prevId);
-          onSlice(nextId);
+          sameList ? todos[nextId].splice(index, 1, 0) : todos[nextId].splice(source.index, 1);
           console.log(response?.errors ? response.errors : "no re2 found");
         } else {
           //triggers requessts only for the lists where where changes made

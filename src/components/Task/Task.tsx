@@ -67,7 +67,9 @@ function Task({ todo, setTodos, todos, i, id }: Props) {
                 {onEdit ? (
                   <input ref={inputRef} type="text" value={editTodo} onChange={(e) => setEditTodo(e.target.value)} />
                 ) : (
-                  <Typography className="todos__single--text">{todo.name}</Typography>
+                  <Typography sx={{ wordWrap: "break-word" }} className="todos__single--text">
+                    {todo.name}
+                  </Typography>
                 )}
                 {/* <div>
                   {todo?.assigned_users &&
