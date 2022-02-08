@@ -17,8 +17,8 @@ function AuthenticationMain() {
   const [email, setEmail] = useState("");
   const [inputNotChanged, setInputNotChanged] = useState(true);
 
-
-  const onSubmit = () => {
+  const onSubmit = (e) => {
+    e.preventDefault();
     setLoading(true);
     requestHandler({ route: "auth/forgot", type: "post", body: { email } }).then((data) => {
       setLoading(false);
@@ -31,9 +31,9 @@ function AuthenticationMain() {
   };
 
   const handleChange = (value) => {
-    setEmail(value)
-    if (inputNotChanged) setInputNotChanged(false)
-  }
+    setEmail(value);
+    if (inputNotChanged) setInputNotChanged(false);
+  };
 
   return (
     <div
@@ -85,11 +85,15 @@ function AuthenticationMain() {
                     sx={{ mb: 1 }}
                   />
                   <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-
                     <Button type={"submit"} variant="contained" disabled={loading}>
                       {!loading ? "Submit" : <LinearProgress sx={{ mt: 1 }} />}
                     </Button>
-                    <Button onClick={() => { setShowFormType("") }} variant={"outlined"} >
+                    <Button
+                      onClick={() => {
+                        setShowFormType("");
+                      }}
+                      variant={"outlined"}
+                    >
                       Go back
                     </Button>
                   </Box>
