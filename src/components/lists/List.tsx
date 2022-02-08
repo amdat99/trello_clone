@@ -36,8 +36,8 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
     fetchData: fetchLists,
     error,
   } = useFetchData(
-    { type: "post", route: "board/all", body: current.board && { id: current.board.id } },
-    current.board.id
+    { type: "post", route: "board/all", body: current?.board && { id: current.board.id } },
+    current.board?.id
   );
 
   const min1000 = useMediaQuery("(min-width:1000px)");

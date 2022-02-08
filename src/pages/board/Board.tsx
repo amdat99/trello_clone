@@ -75,7 +75,7 @@ const Board: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (board && boards && currentBoard.name !== board) {
+    if (board && boards && currentBoard?.name !== board) {
       boards.forEach((b: BoardType) => {
         if (b.name === board) {
           setCurrentBoard(b);
@@ -101,7 +101,7 @@ const Board: React.FC = () => {
     e.preventDefault();
     const id = (Math.random() / Math.random()).toString();
     let currentTasks = currentList.data[0]?.tasks ? currentList.data[0].tasks : [];
-    currentTasks.push({ id, name: todo });
+    currentTasks.push({ id, name: todo, assigned_users: [{ name: user.name, color: user.color }] });
     requestHandler({
       type: "post",
       route: "task/create",
