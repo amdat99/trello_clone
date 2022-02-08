@@ -12,9 +12,11 @@ import Grow from "@mui/material/Grow";
 
 function AuthenticationMain() {
   let show = true;
-  const [formType, setShowFormType] = React.useState("");
+  const [formType, setShowFormType] = useState("");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const [inputNotChanged, setInputNotChanged] = useState(true);
+
 
   const onSubmit = () => {
     setLoading(true);
@@ -27,6 +29,11 @@ function AuthenticationMain() {
       }
     });
   };
+
+  const handleChange = (value) => {
+    setEmail(value)
+    if (inputNotChanged) setInputNotChanged(false)
+  }
 
   return (
     <div
@@ -70,19 +77,22 @@ function AuthenticationMain() {
                     label={"email"}
                     name={"email"}
                     value={email}
-                    handleChange={setEmail}
+                    handleChange={handleChange}
                     placeholder={"jon.doe@example.com"}
                     helperText={"Please enter the email used to create your account"}
                     required
-                    error={!email}
+                    error={inputNotChanged ? false : !/(.+)@(.+){2,}\.(.+){2,}/.test(email)}
                     sx={{ mb: 1 }}
                   />
-                  <Button type={"submit"} variant="contained" disabled={loading}>
-                    {!loading ? "Submit" : <LinearProgress sx={{ mt: 1 }} />}
-                  </Button>
-                  <Typography variant={"body2"} sx={{ textAlign: "center" }}>
-                    Go back
-                  </Typography>
+                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+
+                    <Button type={"submit"} variant="contained" disabled={loading}>
+                      {!loading ? "Submit" : <LinearProgress sx={{ mt: 1 }} />}
+                    </Button>
+                    <Button onClick={() => { setShowFormType("") }} variant={"outlined"} >
+                      Go back
+                    </Button>
+                  </Box>
                 </Box>
               </Grid>
             </Card>
