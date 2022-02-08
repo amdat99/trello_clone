@@ -38,13 +38,10 @@ function Reset() {
   const [registerData, setRegisterData] = useState({ password: "", confirmPassword: "" });
   const [loading, setLoading] = useState(false);
 
-
-
   const email = searchParams.get("email");
   const token = searchParams.get("token");
 
-  const passwordUnMatch =
-  !(registerData.password === registerData.confirmPassword)
+  const passwordUnMatch = !(registerData.password === registerData.confirmPassword);
   const resetInputs = [
     {
       type: "password",
@@ -55,32 +52,31 @@ function Reset() {
       type: "password",
       name: "confirmPassword",
       minLength: 6,
-      helperText: passwordUnMatch
-        ? "Passwords do not match"
-        : "6 characters are required for password",
+      helperText: passwordUnMatch ? "Passwords do not match" : "6 characters are required for password",
       error: passwordUnMatch,
     },
   ];
 
-  const onSubmit = (e)=>{
-    e.preventDefault()
+  const onSubmit = (e) => {
+    e.preventDefault();
     setLoading(true);
-    requestHandler({ route: "auth/reset", type: "put", body: {email, password: registerData.password, verify_id: token} }).then((data) => {
+    requestHandler({
+      route: "auth/reset",
+      type: "put",
+      body: { email, password: registerData.password, verify_id: token },
+    }).then((data) => {
       setLoading(false);
-      if(data === "password reset successfully"){
+      if (data === "password reset successfully") {
         alert("Password reset success");
         navigate("/");
-      }
-      else{
-        return alert(data?.errors ? data.errors : 'data not found')
+      } else {
+        return alert(data?.errors ? data.errors : "data not found");
       }
     });
-  }
+  };
   const onHandleChange = (value, name) => {
     setRegisterData({ ...registerData, [name]: value });
   };
-
-
 
   useEffect(() => {
     if (!email || !token) {
@@ -119,10 +115,11 @@ function Reset() {
                 sx={{ mb: 1 }}
               />
             ))}
-            <Button 
-              type={"submit"} 
-              variant="contained" 
-              disabled={loading || (passwordUnMatch || !(registerData.password.length >= resetInputs[0].minLength))  }>
+            <Button
+              type={"submit"}
+              variant="contained"
+              disabled={loading || passwordUnMatch || !(registerData.password.length >= resetInputs[0].minLength)}
+            >
               Submit
             </Button>
           </Box>

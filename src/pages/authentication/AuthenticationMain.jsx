@@ -9,27 +9,24 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import Grow from "@mui/material/Grow";
-import { AltRouteTwoTone } from "@mui/icons-material";
 
 function AuthenticationMain() {
   let show = true;
   const [formType, setShowFormType] = React.useState("");
   const [loading, setLoading] = useState(false);
-
   const [email, setEmail] = useState("");
 
-  const onSubmit = ()=>{
+  const onSubmit = () => {
     setLoading(true);
-    requestHandler({ route: "auth/forgot", type: "post", body: {email} }).then((data) => {
+    requestHandler({ route: "auth/forgot", type: "post", body: { email } }).then((data) => {
       setLoading(false);
-      if(data === "email sent success"){
+      if (data === "email sent success") {
         alert("Email link has been sent to your address");
-      }
-      else{
-        return alert(data?.errors ? data.errors : 'data not found')
+      } else {
+        return alert(data?.errors ? data.errors : "data not found");
       }
     });
-  }
+  };
 
   return (
     <div
@@ -44,32 +41,17 @@ function AuthenticationMain() {
         <Box sx={boxStyles}>
           {formType === "" && (
             <Card raised sx={cardStyles}>
-              <Typography
-                variant={"h6"}
-                sx={{ textAlign: "center" }}
-                color="primary"
-              >
+              <Typography variant={"h6"} sx={{ textAlign: "center" }} color="primary">
                 Welcome to
               </Typography>
-              <Typography
-                variant={"h2"}
-                sx={{ mb: 2, textAlign: "center" }}
-                color="primary"
-              >
+              <Typography variant={"h2"} sx={{ mb: 2, textAlign: "center" }} color="primary">
                 Tasker
               </Typography>
               <Grid container sx={{ mt: 4, justifyContent: "center" }}>
-                <Button
-                  sx={{ mr: 2 }}
-                  onClick={() => setShowFormType("login")}
-                  variant="contained"
-                >
+                <Button sx={{ mr: 2 }} onClick={() => setShowFormType("login")} variant="contained">
                   Sign in
                 </Button>
-                <Button
-                  onClick={() => setShowFormType("register")}
-                  variant="contained"
-                >
+                <Button onClick={() => setShowFormType("register")} variant="contained">
                   Register
                 </Button>
               </Grid>
@@ -77,11 +59,7 @@ function AuthenticationMain() {
           )}
           {formType === "Forgot Password" ? (
             <Card raised sx={cardStyles}>
-              <Typography
-                variant={"h5"}
-                sx={{ textAlign: "center" }}
-                color="primary"
-              >
+              <Typography variant={"h5"} sx={{ textAlign: "center" }} color="primary">
                 Forgot password
               </Typography>
               <Grid container sx={{ mt: 4, justifyContent: "center" }}>
@@ -94,29 +72,22 @@ function AuthenticationMain() {
                     value={email}
                     handleChange={setEmail}
                     placeholder={"jon.doe@example.com"}
-                    // inputProps={input.minLength && { minLength: input.minLength }}
-                    helperText={
-                      "Please enter the email used to create your account"
-                    }
+                    helperText={"Please enter the email used to create your account"}
                     required
-                    error={"The email entered is not valid"}
+                    error={!email}
                     sx={{ mb: 1 }}
                   />
-                  <Button
-                    type={"submit"}
-                    variant="contained"
-                    disabled={loading}
-                  >
+                  <Button type={"submit"} variant="contained" disabled={loading}>
                     {!loading ? "Submit" : <LinearProgress sx={{ mt: 1 }} />}
                   </Button>
+                  <Typography variant={"body2"} sx={{ textAlign: "center" }}>
+                    Go back
+                  </Typography>
                 </Box>
               </Grid>
             </Card>
           ) : (
-            <Authentication
-              formType={formType}
-              setShowFormType={setShowFormType}
-            />
+            <Authentication formType={formType} setShowFormType={setShowFormType} />
           )}
         </Box>
       </Grow>
