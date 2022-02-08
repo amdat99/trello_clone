@@ -44,7 +44,7 @@ function Reset() {
   const token = searchParams.get("token");
 
   const passwordUnMatch =
-  registerData.password === registerData.confirmPassword
+  !(registerData.password === registerData.confirmPassword)
   const resetInputs = [
     {
       type: "password",
@@ -62,7 +62,8 @@ function Reset() {
     },
   ];
 
-  const onSubmit = ()=>{
+  const onSubmit = (e)=>{
+    e.preventDefault()
     setLoading(true);
     requestHandler({ route: "auth/reset", type: "put", body: {email, password: registerData.password, verify_id: token} }).then((data) => {
       setLoading(false);
@@ -118,7 +119,10 @@ function Reset() {
                 sx={{ mb: 1 }}
               />
             ))}
-            <Button type={"submit"} variant="contained" disabled={loading || !passwordUnMatch  }>
+            <Button 
+              type={"submit"} 
+              variant="contained" 
+              disabled={loading || (passwordUnMatch || !(registerData.password.length >= resetInputs[0].minLength))  }>
               Submit
             </Button>
           </Box>

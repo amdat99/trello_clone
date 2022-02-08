@@ -156,7 +156,7 @@ function Authentication({ formType, setShowFormType }) {
                 {formType === "login" ? "I want to Register" : "I want to login"}
               </Typography>
               {formType === "login" && (
-                <Typography onClick={() => setShowFormType("Forgot Password")} variant={"caption"}>
+                <Typography onClick={() => setShowFormType("Forgot Password")} variant={"caption"} color="red">
                   Forgot password
                 </Typography>
               )}
