@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 // import Slide from "@mui/material/Slide";
-import CloseIcon from "@mui/icons-material/Close";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import Divider from "@mui/material/Divider";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { DragDropContext, Droppable, DropResult, Draggable } from "react-beautiful-dnd";
 import useFetchData from "../../hooks/useFetchData";
 import { requestHandler } from "../../helpers/requestHandler";
-import Inputs from "../inputs/Inputs";
 import ListContent from "./ListContent";
-import ContextMenu from "../contextMenu/ContextMenu";
 import { CreateVal, Board, User, List as ListType, Task } from "../models";
 import { CurrentListId } from "../../pages/board/Board";
 import "../../App.css";
@@ -38,12 +32,12 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
   const [listData, setListData] = useState([]);
 
   const {
-    data: lists,
+    data: board,
     fetchData: fetchLists,
     error,
   } = useFetchData(
-    { type: "post", route: "list/all", body: current.board && { board_id: current.board.id } },
-    "list/all"
+    { type: "post", route: "board/all", body: current?.board && { id: current.board.id } },
+    current.board?.id
   );
 
   const min1000 = useMediaQuery("(min-width:1000px)");
@@ -52,8 +46,8 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
   useEffect(() => {
     const getLists = () => {
       let currentLists = [];
-      if (lists && lists?.length) {
-        lists.forEach((list: { id: any }) => {
+      if (board && board[0]?.lists) {
+        board[0].lists.forEach((list: { id: any }) => {
           //push list data to todos (todos is used as a map to render lists aand tasks)
           setTodos((prevTodos) => ({ ...prevTodos, [list.id]: [] }));
           currentLists.push(list);
@@ -66,7 +60,7 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
       }
     };
     getLists();
-  }, [lists, error, current.board]);
+  }, [board, error, current.board]);
 
   useEffect(() => {
     if (current.board) {
@@ -78,13 +72,15 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
   useEffect(() => {
     const createList = () => {
       if (createValue?.name) {
+        const id = (Math.random() / Math.random()).toString();
+        let currentListsData = listData;
+        currentListsData.push({ id, name: createValue.name });
         requestHandler({
           type: "post",
           route: "list/create",
-          body: { board_id: current.board.id, name: createValue.name },
+          body: { board_id: current.board.id, name: createValue.name, lists: JSON.stringify(currentListsData), id },
         }).then((response) => {
           if (response === "list created successfully") {
-            console.log(response);
             fetchLists();
           } else {
             alert(response?.errors ? response.errors : "no data found");
@@ -109,22 +105,27 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
       const destinationData: ListType = listData[destination.index];
       let currentLists: any = listData;
       // splice current todo to new index and remove duplqicate
-      currentLists.insert(destination.index - 1, destinationData);
-      setListData([...new Set(currentLists)]);
-
-      // update list index of both lists on database (index starts from 1 on database)
+      //below code needs to be refactored
+      if (source.index > destination.index) {
+        currentLists.insert(destination.index, sourceData);
+        setListData([...new Set(currentLists)]);
+      } else {
+        currentLists.insert(destination.index + 1, sourceData);
+        currentLists.splice(source.index, 1);
+      }
+      // update list map json
       requestHandler({
         type: "put",
         route: "list/dragupdate",
         body: {
           id: draggableId,
-          destinationId: destinationData.id,
-          destinationIndex: destination.index + 1,
+          board_id: current.board.id,
+          lists: JSON.stringify([...new Set(currentLists)]),
         },
       }).then((response) => {
         if (response !== "lists updated successfully") {
           //rollack local index changes if request fails
-          currentLists.insert(destination.index - 1, sourceData);
+          currentLists.insert(destination.index, destinationData);
           setListData([...new Set(currentLists)]);
           alert(response?.errors ? response.errors : "no data found");
         } else {
@@ -137,36 +138,31 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
       const sameList = nextId === prevId;
       // currentTodo is data of task being moved
       const currentTodo: ListType = todos[prevId].slice(source.index, source.index + 1)[0];
-      const nextTodoId: string = todos[nextId].slice(destination.index, destination.index + 1)[0]?.id;
       // splice currentTodo to destination list
       const onInsert = (id: string) => {
-        todos[id].insert(destination.index, currentTodo);
+        let index = source.index > destination.index ? destination.index : destination.index + 1;
+        todos[id].insert(sameList ? index : destination.index, currentTodo);
       };
       onInsert(nextId);
-      // remove currentTodo from source list (if in the same list new element will be added after source index,which is then removed)
-      const onSlice = (id: string) => {
-        if (!sameList) {
-          todos[id].splice(source.index, 1);
-        } else {
-          todos[id].splice(source.index + 1, 1);
-        }
-      };
-      onSlice(prevId);
-      //update list_id of task in database and update the index of tasks
+      const index = source.index > destination.index ? source.index + 1 : source.index;
+      sameList ? todos[prevId].splice(index, 1, 0) : todos[prevId].splice(source.index, 1);
+      // update list_id of task in database and update task map json
       requestHandler({
         type: "put",
         route: "task/update",
         body: {
           id: currentTodo.id,
           list_id: nextId,
-          destinationId: nextTodoId,
-          destinationIndex: destination.index + 1,
+          prev_listid: prevId,
+          tasks: JSON.stringify(todos[nextId]),
+          prev_tasks: JSON.stringify(todos[prevId]),
         },
       }).then((response) => {
         if (response !== "task updated successfully") {
           //rollack local changes if request fails
+          const index = source.index > destination.index ? source.index + 1 : source.index;
           onInsert(prevId);
-          onSlice(nextId);
+          sameList ? todos[nextId].splice(index, 1, 0) : todos[prevId].splice(source.index, 1);
           console.log(response?.errors ? response.errors : "no re2 found");
         } else {
           //triggers requessts only for the lists where where changes made
@@ -176,7 +172,6 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
       });
     }
   };
-
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Box m={2} ml={stickyMenu && min700 ? 27 : 4} width={min1000 ? (stickyMenu ? "95%" : "105%") : "95%"}>
@@ -202,7 +197,7 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
                           {...provided.dragHandleProps}
                           className={`todos hide-scroll`}
                         >
-                          <Droppable key={list.id} droppableId={list.id} type="COLUMN" direction="vertical">
+                          <Droppable key={list?.id} droppableId={list?.id} type="COLUMN" direction="vertical">
                             {(provided, _snapshot) => (
                               <div
                                 ref={provided.innerRef}
@@ -212,56 +207,16 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
                                 <Typography sx={{ opacity: 0.95 }}>{list.name}</Typography>
                                 <ListContent
                                   list={list}
-                                  lists={lists}
-                                  index={i}
+                                  current={current}
+                                  lists={listData}
+                                  todo={todo}
+                                  setTodo={setTodo}
+                                  handleAdd={handleAdd}
                                   todos={todos}
                                   setTodos={setTodos}
                                   currentResId={currentResId}
+                                  provided={provided}
                                 />
-                                {provided.placeholder}
-                                {current.list.id !== list.id && (
-                                  <div
-                                    style={{
-                                      opacity: "0.9",
-                                      position: "relative",
-                                      right: "5px",
-                                    }}
-                                  >
-                                    <Button
-                                      sx={{ textTransform: "none", fontSize: "12px" }}
-                                      size={"small"}
-                                      variant="text"
-                                      startIcon={<AddRoundedIcon />}
-                                      onClick={() => {
-                                        current.setList({
-                                          id: list.id,
-                                          has_tasks: list.has_tasks,
-                                          rerender: current.list.rerender,
-                                        });
-                                      }}
-                                    >
-                                      Add Todo
-                                    </Button>
-                                  </div>
-                                )}
-
-                                {current.list.id === list.id && (
-                                  <Box component={"form"} onSubmit={handleAdd}>
-                                    <Inputs type="text" value={todo} handleChange={setTodo} />
-                                    <Box>
-                                      <Button type="submit" variant="contained" size="small">
-                                        Add
-                                      </Button>
-                                      <IconButton
-                                        onClick={() =>
-                                          current.setList({ id: "", has_tasks: false, rerender: current.list.rerender })
-                                        }
-                                      >
-                                        <CloseIcon />
-                                      </IconButton>
-                                    </Box>
-                                  </Box>
-                                )}
                               </div>
                             )}
                           </Droppable>

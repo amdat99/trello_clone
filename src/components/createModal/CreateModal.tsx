@@ -7,15 +7,7 @@ import Box from "@mui/material/Box";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Inputs from "../inputs/Inputs";
 
-function CreateModal({
-  createType,
-  createBoard,
-  createValue,
-  setCreateValue,
-  setCurrentListId,
-  currentListId,
-  position,
-}) {
+function CreateModal({ createType, createBoard, createValue, setCreateValue, setCurrentList, currentList, position }) {
   const min1200 = useMediaQuery("(min-width:1200px)");
   const max800 = useMediaQuery("(max-width:800px)");
 
@@ -31,7 +23,7 @@ function CreateModal({
     e.preventDefault();
     createType.data.val === "board"
       ? createBoard()
-      : setCurrentListId({ ...currentListId, rerender: !currentListId.rerender });
+      : setCurrentList({ ...currentList, rerender: !currentList.rerender });
   };
 
   const ctxStyles = {
