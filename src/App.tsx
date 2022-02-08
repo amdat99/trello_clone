@@ -28,13 +28,15 @@ const App = () => {
           {user ? (
             <Routes>
               <Route path="/" element={<Landing />} />
-              <Route path="/reset" element={<Reset />} />
               <Route path="/board" element={<Board />}>
                 <Route path=":orgName" element={<Board />} />
               </Route>
             </Routes>
           ) : (
-            <AuthenticationMain />
+            <Routes>
+              <Route path="/" element={<AuthenticationMain />} />
+              <Route path="/reset" element={<Reset />} />
+            </Routes>
           )}
         </Suspense>
       </ThemeProvider>

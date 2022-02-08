@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Authentication from "./Authentication";
 import Typography from "@mui/material/Typography";
+import Inputs from "../../components/inputs/Inputs";
 import Button from "@mui/material/Button";
+import { requestHandler } from "../../helpers/requestHandler";
+import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
@@ -9,7 +12,29 @@ import Grow from "@mui/material/Grow";
 
 function AuthenticationMain() {
   let show = true;
-  const [formType, setShowFormType] = React.useState("");
+  const [formType, setShowFormType] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [inputNotChanged, setInputNotChanged] = useState(true);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    requestHandler({ route: "auth/forgot", type: "post", body: { email } }).then((data) => {
+      setLoading(false);
+      if (data === "email sent success") {
+        alert("Email link has been sent to your address");
+      } else {
+        return alert(data?.errors ? data.errors : "data not found");
+      }
+    });
+  };
+
+  const handleChange = (value) => {
+    setEmail(value);
+    if (inputNotChanged) setInputNotChanged(false);
+  };
+
   return (
     <div
       className="background"
@@ -40,7 +65,41 @@ function AuthenticationMain() {
             </Card>
           )}
           {formType === "Forgot Password" ? (
-            <div>forgot password</div>
+            <Card raised sx={cardStyles}>
+              <Typography variant={"h5"} sx={{ textAlign: "center" }} color="primary">
+                Forgot password
+              </Typography>
+              <Grid container sx={{ mt: 4, justifyContent: "center" }}>
+                <Box component="form" onSubmit={onSubmit} autoComplete="off">
+                  <Inputs
+                    key={"email"}
+                    type={"email"}
+                    label={"email"}
+                    name={"email"}
+                    value={email}
+                    handleChange={handleChange}
+                    placeholder={"jon.doe@example.com"}
+                    helperText={"Please enter the email used to create your account"}
+                    required
+                    error={inputNotChanged ? false : !/(.+)@(.+){2,}\.(.+){2,}/.test(email)}
+                    sx={{ mb: 1 }}
+                  />
+                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Button type={"submit"} variant="contained" disabled={loading}>
+                      {!loading ? "Submit" : <LinearProgress sx={{ mt: 1 }} />}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setShowFormType("");
+                      }}
+                      variant={"outlined"}
+                    >
+                      Go back
+                    </Button>
+                  </Box>
+                </Box>
+              </Grid>
+            </Card>
           ) : (
             <Authentication formType={formType} setShowFormType={setShowFormType} />
           )}
