@@ -105,9 +105,14 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
       const destinationData: ListType = listData[destination.index];
       let currentLists: any = listData;
       // splice current todo to new index and remove duplqicate
-      currentLists.insert(destination.index - 1, destinationData);
-      setListData([...new Set(currentLists)]);
-
+      //below code needs to be refactored
+      if (source.index > destination.index) {
+        currentLists.insert(destination.index, sourceData);
+        setListData([...new Set(currentLists)]);
+      } else {
+        currentLists.insert(destination.index + 1, sourceData);
+        currentLists.splice(source.index, 1);
+      }
       // update list map json
       requestHandler({
         type: "put",
@@ -120,7 +125,7 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
       }).then((response) => {
         if (response !== "lists updated successfully") {
           //rollack local index changes if request fails
-          currentLists.insert(destination.index, sourceData);
+          currentLists.insert(destination.index, destinationData);
           setListData([...new Set(currentLists)]);
           alert(response?.errors ? response.errors : "no data found");
         } else {
@@ -136,10 +141,9 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
       // splice currentTodo to destination list
       const onInsert = (id: string) => {
         let index = source.index > destination.index ? destination.index : destination.index + 1;
-        todos[id].insert(index, currentTodo);
+        todos[id].insert(sameList ? index : destination.index, currentTodo);
       };
       onInsert(nextId);
-
       const index = source.index > destination.index ? source.index + 1 : source.index;
       sameList ? todos[prevId].splice(index, 1, 0) : todos[prevId].splice(source.index, 1);
       // update list_id of task in database and update task map json
@@ -156,9 +160,9 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
       }).then((response) => {
         if (response !== "task updated successfully") {
           //rollack local changes if request fails
-          const index = source.index > destination.index ? destination.index + 1 : destination.index;
+          const index = source.index > destination.index ? source.index + 1 : source.index;
           onInsert(prevId);
-          sameList ? todos[nextId].splice(index, 1, 0) : todos[nextId].splice(source.index, 1);
+          sameList ? todos[nextId].splice(index, 1, 0) : todos[prevId].splice(source.index, 1);
           console.log(response?.errors ? response.errors : "no re2 found");
         } else {
           //triggers requessts only for the lists where where changes made
