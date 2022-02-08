@@ -12,10 +12,10 @@ import List from "../../components/lists/List";
 import BoardMenu from "../../components/boardMenu/BoardMenu";
 import Sidebar from "../../components/sidebar/Sidebar";
 import ContextMenu from "components/contextMenu/ContextMenu";
-import { Board as BoardType } from "../../components/models";
+import { Board as BoardType, List as ListType } from "../../components/models";
 
 export type CurrentListId = {
-  id: string;
+  data: any;
   rerender?: boolean;
   has_tasks: boolean;
 };
@@ -38,7 +38,7 @@ const Board: React.FC = () => {
   const [stickyMenu, setStickyMenu] = useState(false);
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [showCtxMenu, setCtxShowMenu] = useState(false);
-  const [currentListId, setCurrentListId] = useState<CurrentListId>({ id: "", has_tasks: false, rerender: false });
+  const [currentList, setCurrentList] = useState<CurrentListId>({ data: null, has_tasks: false, rerender: false });
   const [currentBoard, setCurrentBoard, user] = useUserStore(
     (state) => [state.currentBoard, state.setCurrentBoard, state.user],
     shallow
@@ -99,19 +99,24 @@ const Board: React.FC = () => {
   };
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
+    const id = (Math.random() / Math.random()).toString();
+    let currentTasks = currentList.data[0]?.tasks ? currentList.data[0].tasks : [];
+    currentTasks.push({ id, name: todo });
     requestHandler({
       type: "post",
       route: "task/create",
       body: {
         name: todo,
-        list_id: currentListId.id,
+        list_id: currentList.data[0].id,
+        id: id,
+        tasks: JSON.stringify(currentTasks),
         board_name: currentBoard.name,
         assigned_users: JSON.stringify([{ name: user.name, color: user.color }]),
-        updateList: !currentListId.has_tasks ? true : false,
+        updateList: !currentList.has_tasks ? true : false,
       },
     }).then((res) => {
       if (res === "task created successfully") {
-        setCurrentResId({ id: currentListId.id, rerender: Date.now() });
+        setCurrentResId({ id: currentList.data.id, rerender: Date.now() });
       } else {
         alert(res?.errors ? res.errors : "something went wrong");
       }
@@ -172,8 +177,8 @@ const Board: React.FC = () => {
           createValue={createValue}
           setCreateValue={setCreateValue}
           createBoard={createBoard}
-          setCurrentListId={setCurrentListId}
-          currentListId={currentListId}
+          setCurrentList={setCurrentList}
+          currentList={currentList}
         />
       </Box>
       <List
@@ -184,7 +189,7 @@ const Board: React.FC = () => {
         setTodo={setTodo}
         stickyMenu={stickyMenu}
         createValue={createValue}
-        current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentListId, setList: setCurrentListId }}
+        current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentList, setList: setCurrentList }}
       />
       <Sidebar
         setStickyMenu={setStickyMenu}

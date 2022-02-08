@@ -25,8 +25,8 @@ type Props = {
   createValue: CreateVal;
   setCreateValue: React.Dispatch<React.SetStateAction<CreateVal>>;
   createBoard: Function;
-  setCurrentListId: React.Dispatch<React.SetStateAction<CurrentListId>>;
-  currentListId: CurrentListId;
+  setCurrentList: React.Dispatch<React.SetStateAction<CurrentListId>>;
+  currentList: CurrentListId;
   position: { x: number; y: number };
 };
 
@@ -42,8 +42,8 @@ function BoardMenu({
   createBoard,
   createValue,
   setCreateValue,
-  setCurrentListId,
-  currentListId,
+  setCurrentList,
+  currentList,
 }: Props) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -128,8 +128,8 @@ function BoardMenu({
           createValue={createValue}
           setCreateValue={setCreateValue}
           createBoard={createBoard}
-          setCurrentListId={setCurrentListId}
-          currentListId={currentListId}
+          setCurrentList={setCurrentList}
+          currentList={currentList}
         />
       </div>
     </Card>

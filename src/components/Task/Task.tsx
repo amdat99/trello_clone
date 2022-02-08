@@ -70,14 +70,14 @@ function Task({ todo, setTodos, todos, i, id }: Props) {
                   <Typography className="todos__single--text">{todo.name}</Typography>
                 )}
                 <div>
-                  {todo?.assigned_users &&
+                  {/* {todo?.assigned_users &&
                     todo.assigned_users.map((user) => (
                       <Tooltip title={user.name} placement="bottom">
                         <Avatar sx={{ width: 20, height: 20, ml: 0.7, bgcolor: user.color, fontSize: 15, mb: 0.5 }}>
                           {user?.name[0].toUpperCase()}
                         </Avatar>
                       </Tooltip>
-                    ))}
+                    ))} */}
                   {/* <span className="icon" onClick={() => handleDone(parseInt(todo.id))}>
                     <MdDone className={todo.status !== "" ? "done" : ""} />
                   </span> */}
