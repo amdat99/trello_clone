@@ -58,6 +58,7 @@ function Task({ todo, setTodos, todos, i, id, setUrl }: Props) {
         <Draggable draggableId={todo.id.toString()} index={i} key={i}>
           {(provided) => (
             <form
+              key={i}
               onClick={() => setUrl(todo.id.toString())}
               onSubmit={(e) => handleEdit(e)}
               ref={provided.innerRef}

@@ -58,7 +58,16 @@ function ListContent({
     <>
       {todos[list.id] &&
         todos[list.id].map((todo, i) => (
-          <Task key={todo.id} todo={todo} setTodos={setTodos} todos={todos} i={i} id={list.id} setUrl={setUrl} />
+          <Task
+            key={todo.id}
+            todo={todo}
+            setTodos={setTodos}
+            todos={todos}
+            key={i}
+            i={i}
+            id={list.id}
+            setUrl={setUrl}
+          />
         ))}
       {provided.placeholder}
       {current.list.data?.id !== list.id && (
