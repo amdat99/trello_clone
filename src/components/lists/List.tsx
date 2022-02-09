@@ -7,9 +7,10 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { DragDropContext, Droppable, DropResult, Draggable } from "react-beautiful-dnd";
 import useFetchData from "../../hooks/useFetchData";
 import { requestHandler } from "../../helpers/requestHandler";
+import TaskModal from "../taskModal/TaskModal";
 import ListContent from "./ListContent";
 import { CreateVal, Board, User, List as ListType, Task } from "../models";
-import { CurrentListId } from "../../pages/board/Board";
+import { CurrentListId, Params } from "../../pages/board/Board";
 import "../../App.css";
 
 type Props = {
@@ -26,8 +27,21 @@ type Props = {
     list: CurrentListId;
     setList: (list: CurrentListId) => void;
   };
+  params: Params;
+  user: User;
 };
-const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId, setCurrentResId, current }: Props) => {
+const List = ({
+  todo,
+  setTodo,
+  stickyMenu,
+  createValue,
+  handleAdd,
+  currentResId,
+  setCurrentResId,
+  current,
+  params,
+  user,
+}: Props) => {
   const [todos, setTodos] = useState({});
   const [listData, setListData] = useState([]);
 
@@ -172,65 +186,76 @@ const List = ({ todo, setTodo, stickyMenu, createValue, handleAdd, currentResId,
       });
     }
   };
-  return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Box m={2} ml={stickyMenu && min700 ? 27 : 4} width={min1000 ? (stickyMenu ? "95%" : "105%") : "95%"}>
-        <Typography variant="h4" color={"white"} sx={{ ml: 0.8 }}>
-          {current.board ? current.board?.name : "Board"}
-        </Typography>
 
-        {/* <button onClick={handleAdd} className="input_submit">
+  const setUrl = (taskId) => {
+    const { navigate, orgName, board } = params;
+    navigate(`/board/${orgName}?board=${board}${taskId ? `&task=${taskId}` : ""}`);
+  };
+  return (
+    <>
+      {params.taskId && <TaskModal taskId={params.taskId} setUrl={setUrl} user={user} todos={todos} />}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Box m={2} ml={stickyMenu && min700 ? 27 : 4} width={min1000 ? (stickyMenu ? "95%" : "105%") : "95%"}>
+          <Typography variant="h4" color={"white"} sx={{ ml: 0.8 }}>
+            {current.board ? current.board?.name : "Board"}
+          </Typography>
+
+          {/* <button onClick={handleAdd} className="input_submit">
           Add
         </button> */}
-        <div>
-          {/* <Slide direction="down" in={list} mountOnEnter unmountOnExit> */}
-          <Droppable droppableId="board" type="ROW" direction="horizontal">
-            {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps} className="container ">
-                {listData.length &&
-                  listData.map((list, i) => (
-                    <Draggable key={list.id} draggableId={list.id.toString()} index={i}>
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className={`todos hide-scroll`}
-                        >
-                          <Droppable key={list?.id} droppableId={list?.id} type="COLUMN" direction="vertical">
-                            {(provided, _snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                                style={{ display: "flex", flexDirection: "column" }}
-                              >
-                                <Typography sx={{ opacity: 0.95 }}>{list.name}</Typography>
-                                <ListContent
-                                  list={list}
-                                  current={current}
-                                  lists={listData}
-                                  todo={todo}
-                                  setTodo={setTodo}
-                                  handleAdd={handleAdd}
-                                  todos={todos}
-                                  setTodos={setTodos}
-                                  currentResId={currentResId}
-                                  provided={provided}
-                                />
-                              </div>
-                            )}
-                          </Droppable>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-              </div>
-            )}
-          </Droppable>
-          {/* </Slide> */}
-        </div>
-      </Box>
-    </DragDropContext>
+          <div>
+            {/* <Slide direction="down" in={list} mountOnEnter unmountOnExit> */}
+            <Droppable droppableId="board" type="ROW" direction="horizontal">
+              {(provided) => (
+                <div ref={provided.innerRef} {...provided.droppableProps} className="container ">
+                  {/* <> {provided.placeholder}</> */}
+
+                  {listData.length &&
+                    listData.map((list, i) => (
+                      <Draggable key={list.id} draggableId={list.id.toString()} index={i}>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className={`todos hide-scroll`}
+                          >
+                            <Droppable key={list?.id} droppableId={list?.id} type="COLUMN" direction="vertical">
+                              {(provided, _snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.droppableProps}
+                                  style={{ display: "flex", flexDirection: "column" }}
+                                >
+                                  <Typography sx={{ opacity: 0.95 }}>{list.name}</Typography>
+                                  <ListContent
+                                    list={list}
+                                    current={current}
+                                    lists={listData}
+                                    todo={todo}
+                                    setTodo={setTodo}
+                                    handleAdd={handleAdd}
+                                    todos={todos}
+                                    setTodos={setTodos}
+                                    currentResId={currentResId}
+                                    provided={provided}
+                                    setUrl={setUrl}
+                                  />
+                                </div>
+                              )}
+                            </Droppable>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                </div>
+              )}
+            </Droppable>
+            {/* </Slide> */}
+          </div>
+        </Box>
+      </DragDropContext>
+    </>
   );
 };
 

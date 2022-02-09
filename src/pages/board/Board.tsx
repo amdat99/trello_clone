@@ -25,6 +25,13 @@ export type CreateType = {
   onCtxMenu?: boolean;
 };
 
+export type Params = {
+  board: string;
+  taskId: string;
+  orgName: string;
+  navigate: Function;
+};
+
 const Board: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -53,7 +60,7 @@ const Board: React.FC = () => {
   let background =
     "https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940";
   let orgName = params.orgName;
-  // const taskId = searchParams.get("task");
+  const taskId = searchParams.get("task");
   const board = searchParams.get("board");
 
   useEffect(() => {
@@ -111,8 +118,18 @@ const Board: React.FC = () => {
         id: id,
         tasks: JSON.stringify(currentTasks),
         board_name: currentBoard.name,
+        created_by: user.name,
         assigned_users: JSON.stringify([{ name: user.name, color: user.color }]),
         updateList: !currentList.has_tasks ? true : false,
+        labels: JSON.stringify([{ name: currentList.data[0].name, color: "info", id }]),
+        task_activity: JSON.stringify([
+          {
+            message: `${user.name} created this task on ${currentList.data[0].name}`,
+            name: user.name,
+            color: user.color,
+            date: new Date().toLocaleString(),
+          },
+        ]),
       },
     }).then((res) => {
       if (res === "task created successfully") {
@@ -170,10 +187,10 @@ const Board: React.FC = () => {
           setCurrentBoard={setCurrentBoard}
           position={position}
           // fetchBoards={fetchBoards}
-          orgName={orgName}
           currentBoard={currentBoard?.data}
           user={user}
           createType={{ data: createType, set: setCreateType }}
+          params={{ board, orgName, taskId, navigate }}
           createValue={createValue}
           setCreateValue={setCreateValue}
           createBoard={createBoard}
@@ -186,7 +203,9 @@ const Board: React.FC = () => {
         currentResId={currentResId}
         setCurrentResId={setCurrentResId}
         handleAdd={handleAdd}
+        user={user}
         setTodo={setTodo}
+        params={{ board, orgName, taskId, navigate }}
         stickyMenu={stickyMenu}
         createValue={createValue}
         current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentList, setList: setCurrentList }}

@@ -12,7 +12,19 @@ import Inputs from "../inputs/Inputs";
 
 import "../../App.css";
 
-function ListContent({ todos, list, setTodos, currentResId, provided, current, todo, setTodo, handleAdd, lists }) {
+function ListContent({
+  todos,
+  list,
+  setTodos,
+  currentResId,
+  provided,
+  current,
+  todo,
+  setTodo,
+  handleAdd,
+  lists,
+  setUrl,
+}) {
   const {
     data: listData,
     fetchData: fetchTasks,
@@ -46,7 +58,7 @@ function ListContent({ todos, list, setTodos, currentResId, provided, current, t
     <>
       {todos[list.id] &&
         todos[list.id].map((todo, i) => (
-          <Task key={todo.id} todo={todo} setTodos={setTodos} todos={todos} i={i} id={list.id} />
+          <Task key={todo.id} todo={todo} setTodos={setTodos} todos={todos} i={i} id={list.id} setUrl={setUrl} />
         ))}
       {provided.placeholder}
       {current.list.data?.id !== list.id && (

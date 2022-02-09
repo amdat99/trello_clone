@@ -15,8 +15,9 @@ type Props = {
   todos: object;
   i: number;
   id: string;
+  setUrl: (taskId: string) => void;
 };
-function Task({ todo, setTodos, todos, i, id }: Props) {
+function Task({ todo, setTodos, todos, i, id, setUrl }: Props) {
   const [onEdit, setOnEdit] = useState(false);
   const [editTodo, setEditTodo] = useState(todo.name);
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -54,10 +55,10 @@ function Task({ todo, setTodos, todos, i, id }: Props) {
   return (
     <>
       {todo?.id && todo?.id !== undefined && (
-        <Draggable draggableId={todo.id.toString()} index={i}>
+        <Draggable draggableId={todo.id.toString()} index={i} key={i}>
           {(provided) => (
             <form
-              onClick={() => alert("open task modal")}
+              onClick={() => setUrl(todo.id.toString())}
               onSubmit={(e) => handleEdit(e)}
               ref={provided.innerRef}
               {...provided.draggableProps}
@@ -71,26 +72,24 @@ function Task({ todo, setTodos, todos, i, id }: Props) {
                     {todo.name}
                   </Typography>
                 )}
-                {/* <div>
+                <div>
                   {todo?.assigned_users &&
-                    todo.assigned_users.map((user) => ( */}
-                <>
-                  <Tooltip title={"aamir"} placement="bottom">
-                    <Avatar sx={{ width: 20, height: 20, ml: 0.7, bgcolor: "#4a90e2", fontSize: 15, mb: 0.5 }}>
-                      {"a".toUpperCase()}
-                    </Avatar>
-                  </Tooltip>
-                </>
-                {/* ))} */}
-                {/* <span className="icon" onClick={() => handleDone(parseInt(todo.id))}>
+                    todo.assigned_users.map((user) => (
+                      <Tooltip title={"aamir"} placement="bottom" key={user.name}>
+                        <Avatar sx={{ width: 20, height: 20, ml: 0.7, bgcolor: user.color, fontSize: 15, mb: 0.5 }}>
+                          {user.name[0].toUpperCase()}
+                        </Avatar>
+                      </Tooltip>
+                    ))}
+                  {/* <span className="icon" onClick={() => handleDone(parseInt(todo.id))}>
                     <MdDone className={todo.status !== "" ? "done" : ""} />
                   </span> */}
-                {/* {todo. && (
+                  {/* {todo. && (
                   <span className="icon" onClick={() => revertDone(todo.id)}>
                     <AiOutlinePullRequest />
                   </span>
                 )} */}
-                {/* <span
+                  {/* <span
                     className="icon"
                     onClick={() => {
                       setOnEdit(!onEdit);
@@ -99,10 +98,10 @@ function Task({ todo, setTodos, todos, i, id }: Props) {
                   >
                     <AiFillEdit />
                   </span> */}
-                {/* <span className="icon" onClick={() => handleDelete(parseInt(todo.id))}>
+                  {/* <span className="icon" onClick={() => handleDelete(parseInt(todo.id))}>
                     <AiFillDelete />
                   </span> */}
-
+                </div>
                 {onEdit && <button type="submit">Edit</button>}
               </Card>
             </form>

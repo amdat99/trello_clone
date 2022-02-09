@@ -16,10 +16,18 @@ let requestStore = (set) => ({
   setCurrentCacheData: (data, key) => set({ [key]: data }),
 });
 
+let taskStore = (set) => ({
+  taskModal: false,
+  setTaskModal: (data) => set({ taskModal: data }),
+});
+
 userStore = devtools(userStore);
 userStore = persist(userStore, { name: "user_data" });
 
 requestStore = devtools(requestStore);
 
+taskStore = devtools(taskStore);
+
 export const useUserStore = create(userStore);
 export const useRequestStore = create(requestStore);
+export const useTaskStore = create(taskStore);

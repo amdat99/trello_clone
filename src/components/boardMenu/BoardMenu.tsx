@@ -12,14 +12,13 @@ import Inputs from "../inputs/Inputs";
 import CreateModal from "../createModal/CreateModal";
 import "../../App.css";
 import { Board, User, CreateVal } from "../models";
-import { CurrentListId, CreateType } from "../../pages/board/Board";
+import { CurrentListId, CreateType, Params } from "../../pages/board/Board";
 
 type Props = {
   boards: Array<Board>;
   // fetchBoards: Function;
   currentBoard: Board;
   setCurrentBoard: (board: any) => void;
-  orgName: string;
   user: User;
   createType: { data: CreateType; set: React.Dispatch<React.SetStateAction<CreateType>> };
   createValue: CreateVal;
@@ -28,6 +27,7 @@ type Props = {
   setCurrentList: React.Dispatch<React.SetStateAction<CurrentListId>>;
   currentList: CurrentListId;
   position: { x: number; y: number };
+  params: Params;
 };
 
 function BoardMenu({
@@ -36,7 +36,6 @@ function BoardMenu({
   // fetchBoards,
   setCurrentBoard,
   position,
-  orgName,
   user,
   createType,
   createBoard,
@@ -44,16 +43,14 @@ function BoardMenu({
   setCreateValue,
   setCurrentList,
   currentList,
+  params,
 }: Props) {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [searchValue, setSearchValue] = React.useState("");
-  const boardName = searchParams.get("board");
 
   const onSetBoard = (board: Board) => {
-    if (boardName !== board.name) {
+    if (params.board !== board.name) {
       setCurrentBoard(board);
-      navigate(`/board/${orgName}?board=${board.name}`);
+      params.navigate(`/board/${params.orgName}?board=${board.name}`);
     }
   };
   return (
@@ -71,7 +68,7 @@ function BoardMenu({
         <Inputs
           sx={{ maxWidth: "50%", ml: 1, maxHeight: 1 }}
           value={currentBoard && currentBoard}
-          defaultValue={{}}
+          defaultValue={""}
           handleChange={onSetBoard}
           disabled={!boards}
           size="small"
