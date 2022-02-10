@@ -11,10 +11,11 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import InputAdornment from "@mui/material/InputAdornment";
-import ReactMde from "react-mde";
+import ReactMde, { getDefaultToolbarCommands } from "react-mde";
 import * as Showdown from "showdown";
 import xssFilter from "showdown-xss-filter";
 import "react-mde/lib/styles/css/react-mde-all.css";
+
 import Inputs from "../inputs/Inputs";
 import PopoverWrapper from "../popover/PopoverWrapper";
 import AddAssignedUsers from "components/createModal/AddAssignedUsers";
@@ -33,8 +34,8 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   const [taskData, setTaskData] = useState(null);
   const [showAssignedUsers, setShowAssignedUsers] = useState(false);
   const [comment, setComment] = useState("");
-  const [selectedTab, setSelectedTab] = React.useState<"write" | "preview">("preview");
-
+  const [selectedTab, setSelectedTab] = useState<"write" | "preview">("preview");
+  const reqData = { req: "" };
   const converter = new Showdown.Converter({
     tables: true,
     simplifiedAutoLink: true,
@@ -54,14 +55,15 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
       setTaskData(task[0]);
     }
   }, [task]);
-
   const onHandleChange = (value: string | object, name: string) => {
     !hasEdited && setHasEdited(true);
     setTaskData({ ...taskData, [name]: value });
   };
   const onSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
+    selectedTab === "write" && setSelectedTab("preview");
     if (!hasEdited && !user) return;
+    reqData.req = taskData;
     const tasks = taskData;
     const activity = taskData.task_activity;
     const currentTaskData = [];
@@ -87,7 +89,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
         requestHandler({ type: "put", route: "task/updatedata", body: { tasks } }).then((res) => {
           if (res === "task updated successfully") {
             fetchTask();
-            setCurrentResId({ id: taskData.list_id, rerender: 1 });
+            setCurrentResId({ id: taskData.list_id, rerender: Date.now() });
           }
         });
       }
@@ -105,7 +107,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   };
 
   const getAssignedUsers = (currentTaskData: any, assignedUsers: object) => {
-    todos[taskData.list_id].forEach((task: any) => {
+    todos[taskData.list_id].map((task: any) => {
       if (task.id === taskData.id) {
         currentTaskData.push({ id: taskData.id, name: taskData.name, assigned_users: assignedUsers });
       } else {
@@ -113,7 +115,6 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
       }
     });
   };
-
   const onAssignUser = (user: { user_name: string; color: string; id: string }) => {
     const currentTaskData = [];
     const task_activity = taskData.task_activity;
@@ -155,9 +156,9 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     });
   };
   //for later use
-  // const save = (data: any) => {
-  //   console.log("save");
-  // };
+  const save = (data: any) => {
+    console.log("save");
+  };
   return (
     <>
       <Modal open={taskId !== "" || taskId !== null} onClose={() => setUrl(null)} sx={modalStyles}>
@@ -189,9 +190,8 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                     mb: 1,
                     width: "95%",
                     color: "white",
-                    textArea: { color: "#2C387E", fontSize: 24 },
+                    input: { color: "#2C387E", fontSize: 24 },
                   }}
-                  multiline
                   InputProps={{
                     disableUnderline: true,
                   }}
@@ -222,48 +222,84 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                 </Box>
                 <Box mt={1} sx={{ background: "white", wordWrap: "break-word" }}>
                   <Card sx={{ p: 1 }}>
-                    <ReactMde
-                      value={taskData?.description || ""}
-                      onChange={(val) => setTaskData({ ...taskData, description: val })}
-                      selectedTab={selectedTab}
-                      onTabChange={setSelectedTab}
-                      generateMarkdownPreview={(markdown) => Promise.resolve(converter.makeHtml(markdown))}
-                      childProps={{
-                        writeButton: {
-                          tabIndex: -1,
-                        },
-                      }}
-                      // paste={{
-                      //   saveImage: save,
-                      // }}
-                    />
-                    <Button variant="contained" sx={{ width: "20%", mt: 1 }} size="small" type={"submit"}>
-                      update
-                    </Button>
+                    {/* @ts-ignore */}
+                    <div onClick={selectedTab === "preview" ? () => setSelectedTab("write") : () => {}}>
+                      <ReactMde
+                        value={taskData?.description || ""}
+                        onChange={(val) => setTaskData({ ...taskData, description: val })}
+                        selectedTab={selectedTab}
+                        toolbarCommands={selectedTab === "preview" ? [[]] : getDefaultToolbarCommands()}
+                        onTabChange={setSelectedTab}
+                        generateMarkdownPreview={(markdown) => Promise.resolve(converter.makeHtml(markdown))}
+                        suggestionTriggerCharacters={["@"]}
+                        suggestionsAutoplace={true}
+                        childProps={{
+                          writeButton: {
+                            tabIndex: -1,
+                            color: "blue",
+                          },
+                          textArea: {
+                            background: "blue",
+                          },
+                        }}
+                        paste={{
+                          // @ts-ignore
+                          saveImage: save,
+                        }}
+                      />
+                    </div>
+                    {selectedTab !== "preview" && (
+                      <>
+                        <Button variant="contained" sx={buttonStyles} size="small" type={"submit"}>
+                          update
+                        </Button>
+                        <Button
+                          onClick={() => setSelectedTab("preview")}
+                          variant="contained"
+                          sx={{ width: "20%", mt: 1, ml: 1 }}
+                          size="small"
+                          type={"button"}
+                        >
+                          close
+                        </Button>
+                      </>
+                    )}
                   </Card>
                 </Box>
-                <Divider variant="inset" sx={dividerStyles} />
-
-                <Inputs
-                  value={comment}
-                  placeholder="Add a message here"
-                  type={"text"}
-                  handleChange={setComment}
-                  name={"comment"}
-                  dense
-                  multiline
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Avatar sx={{ width: 20, height: 20, bgcolor: user.color, fontSize: 15, mb: 0.5 }}>
-                          {user.name[0].toUpperCase()}
-                        </Avatar>
-                      </InputAdornment>
-                    ),
+                <Box
+                  sx={{
+                    bgcolor: "white",
+                    position: "relative",
+                    p: 1,
+                    pb: 0,
+                    top: 32,
                   }}
-                  size="small"
-                  sx={{ mt: 1, width: "96%", fontSize: 10, bgcolor: "white" }}
+                >
+                  <Typography variant="body1">Add Comment</Typography>
+                </Box>
+                <ReactMde
+                  value={comment}
+                  maxEditorHeight={50}
+                  onChange={setComment}
+                  selectedTab={"write"}
+                  toolbarCommands={[[]]}
+                  generateMarkdownPreview={(markdown) => Promise.resolve(converter.makeHtml(markdown))}
+                  suggestionTriggerCharacters={["@"]}
+                  suggestionsAutoplace={true}
+                  childProps={{
+                    writeButton: {
+                      tabIndex: -1,
+                    },
+                  }}
+                  // paste={{
+                  //   saveImage: save,
+                  // }}
                 />
+                {comment !== "" && (
+                  <Button size="small" variant="contained" sx={buttonStyles}>
+                    Send
+                  </Button>
+                )}
 
                 <Divider sx={dividerStyles} />
                 <Box mt={1}>
@@ -347,6 +383,11 @@ const modalStyles = {
 
 const dividerStyles = {
   m: 1,
+};
+
+const buttonStyles = {
+  width: "20%",
+  mt: 1,
 };
 
 const colorStyles = {

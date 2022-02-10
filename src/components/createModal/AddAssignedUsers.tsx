@@ -28,7 +28,7 @@ function AddAssignedUsers({ onAssignUser }) {
           <Box key={option.public_id}>
             <MenuItem dense divider value={option} onClick={() => onAssignUser(option)}>
               <Tooltip title={option.user_name} placement="bottom" key={option.user_name}>
-                <Avatar sx={{ width: 20, height: 20, mr: 0.7, bgcolor: "red", fontSize: 15, mb: 0.5 }}>
+                <Avatar sx={{ width: 20, height: 20, mr: 0.7, bgcolor: option.color, fontSize: 15, mb: 0.5 }}>
                   {option.user_name[0].toUpperCase()}
                 </Avatar>
               </Tooltip>
