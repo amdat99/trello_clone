@@ -29,13 +29,17 @@ type Props = {
   };
   params: Params;
   user: User;
+  position: { x: number; y: number };
+  onShowCtxMenu: Function;
 };
 const List = ({
   todo,
   setTodo,
   stickyMenu,
   createValue,
+  onShowCtxMenu,
   handleAdd,
+  position,
   currentResId,
   setCurrentResId,
   current,
@@ -194,7 +198,15 @@ const List = ({
   return (
     <>
       {params.taskId && (
-        <TaskModal taskId={params.taskId} setUrl={setUrl} user={user} todos={todos} setCurrentResId={setCurrentResId} />
+        <TaskModal
+          taskId={params.taskId}
+          setUrl={setUrl}
+          position={position}
+          user={user}
+          todos={todos}
+          setCurrentResId={setCurrentResId}
+          onShowCtxMenu={onShowCtxMenu}
+        />
       )}
       <DragDropContext onDragEnd={onDragEnd}>
         <Box m={2} ml={stickyMenu && min700 ? 27 : 4} width={min1000 ? (stickyMenu ? "95%" : "105%") : "95%"}>

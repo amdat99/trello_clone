@@ -127,6 +127,7 @@ function BoardMenu({
           createBoard={createBoard}
           setCurrentList={setCurrentList}
           currentList={currentList}
+          taskModal={false}
         />
       </div>
     </Card>

@@ -72,7 +72,6 @@ function AuthenticationMain() {
               <Grid container sx={{ mt: 4, justifyContent: "center" }}>
                 <Box component="form" onSubmit={onSubmit} autoComplete="off">
                   <Inputs
-                    key={"email"}
                     type={"email"}
                     label={"email"}
                     name={"email"}

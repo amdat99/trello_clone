@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
-import { AiFillEdit, AiFillDelete } from "react-icons/ai";
+// import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import Card from "@mui/material/Card";
+import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { MdDone } from "react-icons/md";
+// import { MdDone } from "react-icons/md";
 import { Task as TaskProps } from "../models";
 import "./styles.css";
 
@@ -73,11 +74,11 @@ function Task({ todo, setTodos, todos, i, id, setUrl }: Props) {
                     {todo.name}
                   </Typography>
                 )}
-                <div>
+                <Box sx={{ display: "flex", flexDirection: "row" }}>
                   {todo?.assigned_users &&
                     todo.assigned_users.map((user) => (
                       <Tooltip title={"aamir"} placement="bottom" key={user.name}>
-                        <Avatar sx={{ width: 20, height: 20, ml: 0.7, bgcolor: user.color, fontSize: 15, mb: 0.5 }}>
+                        <Avatar sx={{ width: 20, height: 20, ml: 0.2, bgcolor: user.color, fontSize: 15, mb: 0.5 }}>
                           {user.name[0].toUpperCase()}
                         </Avatar>
                       </Tooltip>
@@ -102,7 +103,7 @@ function Task({ todo, setTodos, todos, i, id, setUrl }: Props) {
                   {/* <span className="icon" onClick={() => handleDelete(parseInt(todo.id))}>
                     <AiFillDelete />
                   </span> */}
-                </div>
+                </Box>
                 {onEdit && <button type="submit">Edit</button>}
               </Card>
             </form>

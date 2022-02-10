@@ -9,13 +9,28 @@ import "react-mde/lib/styles/css/react-mde-all.css";
 
 function TaskSideBar({ dividerStyles, taskData }) {
   return (
-    <Card sx={{ p: 1, width: 150, mt: 5, flexWrap: "wrap", opacity: 0.95, position: "relative", left: "7px" }}>
+    <Card
+      raised
+      sx={{
+        p: 1,
+        width: 150,
+        mt: 5,
+        flexWrap: "wrap",
+        opacity: 0.95,
+        position: "relative",
+        bottom: 50,
+        left: "7px",
+        height: "105%",
+      }}
+    >
       <Divider sx={dividerStyles} />
       <Typography variant="subtitle1" gutterBottom>
         Tags:
       </Typography>
       {taskData?.labels &&
-        taskData.labels.map((label) => <Chip sx={chipStyles} label={label.name} color={label.color} size="small" />)}
+        taskData.labels.map((label, i) => (
+          <Chip key={i} sx={chipStyles} label={label.name} color={label.color} size="small" />
+        ))}
       <Divider sx={dividerStyles} />
     </Card>
   );

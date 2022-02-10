@@ -124,7 +124,7 @@ const Board: React.FC = () => {
         labels: JSON.stringify([{ name: currentList.data[0].name, color: "info", id }]),
         task_activity: JSON.stringify([
           {
-            message: `${user.name} created this task on ${currentList.data[0].name}`,
+            message: ` created this task on ${currentList.data[0].name}`,
             name: user.name,
             color: user.color,
             date: new Date().toLocaleString(),
@@ -204,9 +204,11 @@ const Board: React.FC = () => {
         setCurrentResId={setCurrentResId}
         handleAdd={handleAdd}
         user={user}
+        onShowCtxMenu={onShowCtxMenu}
         setTodo={setTodo}
         params={{ board, orgName, taskId, navigate }}
         stickyMenu={stickyMenu}
+        position={position}
         createValue={createValue}
         current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentList, setList: setCurrentList }}
       />
