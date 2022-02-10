@@ -67,7 +67,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     const currentTaskData = [];
     getAssignedUsers(currentTaskData, taskData.assigned_users);
     const date = new Date().toLocaleString();
-    pushNewActivity(activity, date, "updated this task ");
+    pushNewActivity(activity, date, " updated this task ");
     delete tasks.assigned_users;
     delete tasks.labels;
     delete tasks.task_activity;
@@ -94,12 +94,13 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     });
   };
 
-  const pushNewActivity = (activity: any, date: string, message) => {
+  const pushNewActivity = (activity: any, date: string, message, receiver = null) => {
     activity.push({
       message: message,
       name: user.name,
       color: user.color,
       date: date,
+      receiver: receiver,
     });
   };
 
@@ -116,7 +117,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   const onAssignUser = (user: { user_name: string; color: string; id: string }) => {
     const currentTaskData = [];
     const task_activity = taskData.task_activity;
-    pushNewActivity(task_activity, new Date().toLocaleString(), ` added ${user.user_name} to this task `);
+    pushNewActivity(task_activity, new Date().toLocaleString(), ` to this task `, user.user_name);
     let users = taskData.assigned_users;
     users.push({ name: user.user_name, color: user.color });
     getAssignedUsers(currentTaskData, users);
@@ -274,6 +275,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                           name: string;
                           message: string;
                           date: Date;
+                          receiver: string;
                         },
                         i: React.Key
                       ) => (
@@ -284,11 +286,18 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                                 {activity.name[0].toUpperCase()}
                               </Avatar>
                             </Tooltip>
-                            <Card sx={{ p: 0.5, ml: 0.5, mr: 0.5 }}>
-                              <Typography sx={{ fontSize: 11, ml: 1 }} variant="body1">
-                                <b>{activity.name}</b>
-                                {activity.message}
-                              </Typography>
+                            <Card sx={{ p: 0.5, ml: 0.5, pr: 1.1 }}>
+                              {activity.receiver ? (
+                                <Typography sx={{ fontSize: 11, ml: 1 }} variant="body1">
+                                  <b style={colorStyles}>{activity.receiver}</b> was added by
+                                  <b style={colorStyles}>{activity.name}</b>
+                                </Typography>
+                              ) : (
+                                <Typography sx={{ fontSize: 11, ml: 1 }} variant="body1">
+                                  <b style={colorStyles}>{activity.name}</b>
+                                  {activity.message}
+                                </Typography>
+                              )}
                             </Card>
                           </Box>
                           <Typography sx={activityDateStyles} variant="body1">
@@ -338,6 +347,10 @@ const modalStyles = {
 
 const dividerStyles = {
   m: 1,
+};
+
+const colorStyles = {
+  color: "#2c387e",
 };
 
 const activityDateStyles = {
