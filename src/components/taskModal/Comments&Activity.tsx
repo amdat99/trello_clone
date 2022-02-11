@@ -90,6 +90,7 @@ function CommentsActivity({
       <Divider sx={dividerStyles} />
       <Box mt={1}>
         {!isFetching &&
+          activity.length &&
           showActivity &&
           activity.map(
             (
@@ -105,9 +106,11 @@ function CommentsActivity({
               <Box key={i} sx={{ p: 0.5, mb: 1 }}>
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                   <Tooltip title={activity.name} placement="bottom" key={i}>
-                    <Avatar sx={{ width: 25, height: 25, bgcolor: activity.color, fontSize: 15, mb: 0.5 }}>
-                      {activity.name[0].toUpperCase()}
-                    </Avatar>
+                    {
+                      <Avatar sx={{ width: 25, height: 25, bgcolor: activity.color, fontSize: 15, mb: 0.5 }}>
+                        {activity.name[0].toUpperCase()}
+                      </Avatar>
+                    }
                   </Tooltip>
                   <Card sx={{ p: 0.5, ml: 0.5, pr: 1.1 }}>
                     {activity.receiver ? (
@@ -131,6 +134,7 @@ function CommentsActivity({
             )
           )}
         {!isFetching &&
+          comments.length &&
           !showActivity &&
           comments.map((comment, i) => (
             <Box key={i} sx={{ p: 0.5, mb: 1 }}>
