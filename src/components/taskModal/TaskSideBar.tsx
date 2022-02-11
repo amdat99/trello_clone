@@ -13,16 +13,16 @@ function TaskSideBar({ dividerStyles, taskData }) {
       raised
       sx={{
         p: 1,
-        width: 150,
+        width: 130,
         flexWrap: "wrap",
         position: "absolute",
         height: "89.8%",
-        ml: 64,
-        top: "5.6%",
+        ml: 66.3,
+        top: "5%",
       }}
     >
       <Divider sx={dividerStyles} />
-      <Typography variant="subtitle1" gutterBottom>
+      <Typography sx={{ color: "#2C387E" }} variant="subtitle1" gutterBottom>
         Tags:
       </Typography>
       {taskData?.labels &&

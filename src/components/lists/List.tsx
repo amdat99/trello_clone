@@ -47,7 +47,7 @@ const List = ({
   user,
 }: Props) => {
   const [todos, setTodos] = useState({});
-  const [listData, setListData] = useState([]);
+  const [listData, setListData] = useState(null);
 
   const {
     data: board,
@@ -74,7 +74,7 @@ const List = ({
       }
       if (error?.errors === "no lists found") {
         setTodos({});
-        setListData([]);
+        setListData(null);
       }
     };
     getLists();
@@ -112,6 +112,7 @@ const List = ({
   // handles all drag and drop of tasks and lists and db updates
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
+    console.log(result);
     if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) return; // if not dragged to destination then return
     //@ts-ignore
     Array.prototype.insert = function (index: number, item: Task) {
@@ -154,6 +155,16 @@ const List = ({
       const prevId: string = source.droppableId;
       const nextId: string = destination.droppableId;
       const sameList = nextId === prevId;
+      let prevName: string = "";
+      let nextName: string = "";
+
+      listData.forEach((list: ListType) => {
+        if (list.id === nextId) {
+          prevName = list.name;
+        } else if (list.id === prevId) {
+          nextName = list.name;
+        }
+      });
       // currentTodo is data of task being moved
       const currentTodo: ListType = todos[prevId].slice(source.index, source.index + 1)[0];
       // splice currentTodo to destination list
@@ -172,8 +183,8 @@ const List = ({
           id: currentTodo.id,
           list_id: nextId,
           prev_listid: prevId,
-          prev_listname: listData[source.index]?.name ? listData[source.index].name : "the previous list",
-          next_listname: listData[destination.index]?.name ? listData[destination.index].name : "the next list",
+          prev_listname: prevName ? prevName : "",
+          next_listname: nextName ? nextName : "",
           tasks: JSON.stringify(todos[nextId]),
           prev_tasks: JSON.stringify(todos[prevId]),
           name: user.name,
@@ -184,7 +195,7 @@ const List = ({
           const index = source.index > destination.index ? source.index + 1 : source.index;
           onInsert(prevId);
           sameList ? todos[nextId].splice(index, 1, 0) : todos[prevId].splice(source.index, 1);
-          console.log(response?.errors ? response.errors : "no re2 found");
+          console.log(response?.errors ? response.errors : "no data found");
         } else {
           //triggers requessts only for the lists where where changes made
           requestHandler({
@@ -193,7 +204,8 @@ const List = ({
             body: {
               name: user.name,
               color: user.color,
-              prev_listname: listData[source.index].name,
+              next_listname: prevName ? prevName : "",
+              prev_listname: nextName ? nextName : "",
               id: currentTodo.id,
             },
           });
@@ -204,7 +216,7 @@ const List = ({
     }
   };
 
-  const setUrl = (taskId) => {
+  const setUrl = (taskId: string) => {
     const { navigate, orgName, board } = params;
     navigate(`/board/${orgName}?board=${board}${taskId ? `&task=${taskId}` : ""}`);
   };
@@ -226,19 +238,18 @@ const List = ({
           <Typography variant="h4" color={"white"} sx={{ ml: 0.8 }}>
             {current.board ? current.board?.name : "Board"}
           </Typography>
-
+          {/* // for reference */}
           {/* <button onClick={handleAdd} className="input_submit">
           Add
         </button> */}
           <div>
-            {/* <Slide direction="down" in={list} mountOnEnter unmountOnExit> */}
             <Droppable droppableId="board" type="ROW" direction="horizontal">
               {(provided) => (
                 <div ref={provided.innerRef} {...provided.droppableProps} className="container ">
+                  {/* //causes issues with drag drop */}
                   {/* <> {provided.placeholder}</> */}
-
-                  {listData.length &&
-                    listData.map((list, i) => (
+                  {listData &&
+                    listData.map((list: ListType, i: number) => (
                       <Draggable key={list.id} draggableId={list.id.toString()} index={i}>
                         {(provided) => (
                           <div
@@ -278,7 +289,6 @@ const List = ({
                 </div>
               )}
             </Droppable>
-            {/* </Slide> */}
           </div>
         </Box>
       </DragDropContext>

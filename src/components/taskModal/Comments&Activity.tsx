@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import ReactMde from "react-mde";
 import Grow from "@mui/material/Grow";
 import Box from "@mui/material/Box";
-import "react-mde/lib/styles/css/react-mde-all.css";
+import Inputs from "../inputs/Inputs";
 import { requestHandler } from "../../helpers/requestHandler";
 
 function CommentsActivity({
@@ -48,9 +48,9 @@ function CommentsActivity({
 
   return (
     <>
-      <div style={{ opacity: 0.9 }}>
+      {/* <div style={{ opacity: 0.9 }}>
         <Box sx={cmmntHeaderStyles}>
-          <Typography sx={{ fontSize: 13.3 }} variant="body1">
+          <Typography sx={{ fontSize: 13 }} variant="body1">
             Add Comment
           </Typography>
         </Box>
@@ -72,7 +72,20 @@ function CommentsActivity({
           //   saveImage: save,
           // }}
         />
-      </div>
+      </div> */}
+      <Inputs
+        sx={{ mt: 2 }}
+        value={comment}
+        label="comment"
+        handleChange={setComment}
+        multiline
+        row={4}
+        inputProps={{
+          style: {
+            fontSize: 12,
+          },
+        }}
+      />
       {comment !== "" && (
         <Grow in={comment !== ""}>
           <Button onClick={addComment} size="small" variant="contained" sx={buttonStyles}>
@@ -82,7 +95,7 @@ function CommentsActivity({
       )}
       <Typography
         onClick={() => setShowActivity(!showActivity)}
-        sx={{ cursor: "pointer", color: "#2c387e" }}
+        sx={{ cursor: "pointer", color: "#2c387e", fontSize: 11, width: !showActivity ? 70 : 88 }}
         variant="caption"
       >
         {showActivity ? "Show comments" : "Show activity"}
@@ -114,12 +127,12 @@ function CommentsActivity({
                   </Tooltip>
                   <Card sx={{ p: 0.5, ml: 0.5, pr: 1.1 }}>
                     {activity.receiver ? (
-                      <Typography sx={{ fontSize: 11, ml: 1 }} variant="body1">
+                      <Typography sx={{ fontSize: 12, ml: 0.1 }} variant="body1">
                         <b style={colorStyles}>{activity.receiver}</b> was added to the task by
                         <b style={colorStyles}> {activity.name}</b>
                       </Typography>
                     ) : (
-                      <Typography sx={{ fontSize: 11, ml: 1 }} variant="body1">
+                      <Typography sx={{ fontSize: 12, ml: 0.1 }} variant="body1">
                         <b style={colorStyles}>{activity.name}</b>
                         {activity.message}
                       </Typography>
@@ -146,7 +159,7 @@ function CommentsActivity({
                 </Tooltip>
                 <Card sx={{ p: 0.5, ml: 0.5, pr: 1.1 }}>
                   <b style={colorStyles}>{comment.name}</b>
-                  <Typography sx={{ fontSize: 11, ml: 0.1, wordWrap: "break-word" }} variant="body1">
+                  <Typography sx={{ fontSize: 12, ml: 0.1, wordWrap: "break-word" }} variant="body1">
                     {comment.comment}
                   </Typography>
                 </Card>

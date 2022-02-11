@@ -13,7 +13,6 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ReactMde, { getDefaultToolbarCommands } from "react-mde";
 import * as Showdown from "showdown";
 import xssFilter from "showdown-xss-filter";
-import "react-mde/lib/styles/css/react-mde-all.css";
 import Inputs from "../inputs/Inputs";
 import PopoverWrapper from "../popover/PopoverWrapper";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -22,6 +21,7 @@ import TaskSideBar from "./TaskSideBar";
 import CommentsActivity from "./Comments&Activity";
 import useFetchData from "../../hooks/useFetchData";
 import { requestHandler } from "../../helpers/requestHandler";
+import "./styles.css";
 
 function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu, position }) {
   const {
@@ -210,7 +210,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                     mb: 1,
                     width: "95%",
                     color: "white",
-                    input: color,
+                    input: { fontSize: "1rem" },
                   }}
                   InputProps={{
                     disableUnderline: true,
@@ -240,35 +240,38 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                     <AddRoundedIcon />
                   </IconButton>
                 </Box>
-                <Box mt={1} sx={{ background: "white", wordWrap: "break-word" }}>
-                  <Card sx={{ p: 1, opacity: 0.9 }}>
-                    <div onClick={selectedTab === "preview" ? () => setSelectedTab("write") : () => {}}>
-                      <ReactMde
-                        value={taskData?.description || ""}
-                        onChange={(val) => setTaskData({ ...taskData, description: val })}
-                        selectedTab={selectedTab}
-                        toolbarCommands={selectedTab === "preview" ? [[]] : getDefaultToolbarCommands()}
-                        onTabChange={setSelectedTab}
-                        generateMarkdownPreview={(markdown) => Promise.resolve(converter.makeHtml(markdown))}
-                        suggestionTriggerCharacters={["@"]}
-                        suggestionsAutoplace={true}
-                        childProps={{
-                          writeButton: {
-                            tabIndex: -1,
-                            color: "blue",
-                          },
-                          textArea: {
-                            background: "blue",
-                          },
-                        }}
-                        paste={{
-                          // @ts-ignore
-                          saveImage: save,
-                        }}
-                      />
-                    </div>
-                    {selectedTab !== "preview" && (
-                      <>
+                <Box
+                  mt={1}
+                  sx={{
+                    background: selectedTab === "preview" ? "transaprent" : "transaprent",
+                    wordWrap: "break-word",
+                    fontSize: 12,
+                  }}
+                >
+                  <div onClick={selectedTab === "preview" ? () => setSelectedTab("write") : () => {}}>
+                    <ReactMde
+                      value={taskData?.description || ""}
+                      onChange={(val) => setTaskData({ ...taskData, description: val })}
+                      selectedTab={selectedTab}
+                      toolbarCommands={selectedTab === "preview" ? [[]] : getDefaultToolbarCommands()}
+                      onTabChange={setSelectedTab}
+                      generateMarkdownPreview={(markdown) => Promise.resolve(converter.makeHtml(markdown))}
+                      suggestionTriggerCharacters={["@"]}
+                      suggestionsAutoplace={true}
+                      childProps={{
+                        writeButton: {
+                          tabIndex: -1,
+                        },
+                      }}
+                      paste={{
+                        // @ts-ignore
+                        saveImage: save,
+                      }}
+                    />
+                  </div>
+                  {selectedTab !== "preview" && (
+                    <>
+                      <Grow in={true}>
                         <Button
                           variant="contained"
                           sx={buttonStyles}
@@ -278,6 +281,8 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                         >
                           Update
                         </Button>
+                      </Grow>
+                      <Grow in={true}>
                         <Button
                           onClick={() => setSelectedTab("preview")}
                           variant="contained"
@@ -287,9 +292,21 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                         >
                           Close
                         </Button>
-                      </>
-                    )}
-                  </Card>
+                      </Grow>
+                    </>
+                  )}
+                  {/* <Inputs
+                    value={taskData.name}
+                    name="name"
+                    handleChange={onHandleChange}
+                    multiline
+                    row={4}
+                    inputProps={{
+                      style: {
+                        fontSize: 12,
+                      },
+                    }}
+                  /> */}
                 </Box>
                 <CommentsActivity
                   user={user}
@@ -327,7 +344,7 @@ const containerStyles = {
   backgroundPosition: "center",
   backgroundSize: "cover",
   outline: "none",
-  opacity: 0.1,
+
   mt: 5,
   boxShadow: "10px 10px 10px 10px rgba(0, 0, 0, 0.5)",
 };

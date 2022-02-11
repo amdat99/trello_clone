@@ -23,16 +23,6 @@ function Task({ todo, setTodos, todos, i, id, setUrl }: Props) {
   const [editTodo, setEditTodo] = useState(todo.name);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleDone = (id: number) => {
-    // setTodos(
-    //   todos.map((todo) => {
-    //     if (todo.id === id) {
-    //       todo.isDone = true;
-    //     }
-    //     return todo;
-    //   })
-    // );
-  };
   const handleDelete = (taskId: number) => {
     const currentTodo = todos[id].filter((todo) => todo.id !== taskId);
     setTodos({ ...todos, [id]: currentTodo });
@@ -70,7 +60,7 @@ function Task({ todo, setTodos, todos, i, id, setUrl }: Props) {
                 {onEdit ? (
                   <input ref={inputRef} type="text" value={editTodo} onChange={(e) => setEditTodo(e.target.value)} />
                 ) : (
-                  <Typography sx={{ wordWrap: "break-word" }} className="todos__single--text">
+                  <Typography variant="body2" sx={{ wordWrap: "break-word" }} className="todos__single--text">
                     {todo.name}
                   </Typography>
                 )}

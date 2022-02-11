@@ -24,12 +24,10 @@ function ListContent({
   lists,
   setUrl,
 }) {
-  const {
-    data: listData,
-    fetchData: fetchTasks,
-    error,
-    isFetching,
-  } = useFetchData({ type: "post", route: "list/all", body: { id: list.id } }, list.id);
+  const { data: listData, fetchData: fetchTasks } = useFetchData(
+    { type: "post", route: "list/all", body: { id: list.id } },
+    list.id
+  );
 
   useEffect(() => {
     if (currentResId.id === list.id) {
@@ -50,9 +48,6 @@ function ListContent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listData, lists]);
 
-  if (current.list?.data && current.list.data[0]) {
-    console.log(current.list.data[0]);
-  }
   return (
     <>
       {todos[list.id] &&
@@ -64,6 +59,7 @@ function ListContent({
         <div
           style={{
             opacity: "0.9",
+
             position: "relative",
             right: "5px",
           }}
