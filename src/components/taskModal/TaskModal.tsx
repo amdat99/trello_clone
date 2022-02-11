@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
-import Divider from "@mui/material/Divider";
 import Card from "@mui/material/Card";
 import Tooltip from "@mui/material/Tooltip";
 import Avatar from "@mui/material/Avatar";
@@ -10,16 +9,17 @@ import Grow from "@mui/material/Grow";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import InputAdornment from "@mui/material/InputAdornment";
+// import InputAdornment from "@mui/material/InputAdornment";
 import ReactMde, { getDefaultToolbarCommands } from "react-mde";
 import * as Showdown from "showdown";
 import xssFilter from "showdown-xss-filter";
 import "react-mde/lib/styles/css/react-mde-all.css";
-
 import Inputs from "../inputs/Inputs";
 import PopoverWrapper from "../popover/PopoverWrapper";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import AddAssignedUsers from "components/createModal/AddAssignedUsers";
 import TaskSideBar from "./TaskSideBar";
+import CommentsActivity from "./Comments&Activity";
 import useFetchData from "../../hooks/useFetchData";
 import { requestHandler } from "../../helpers/requestHandler";
 
@@ -30,12 +30,13 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     error,
     isFetching,
   } = useFetchData({ type: "post", route: "task/single", body: taskId && { id: taskId } }, taskId && taskId);
+  const min600 = useMediaQuery("(min-width:600px)");
   const [hasEdited, setHasEdited] = useState(false);
   const [taskData, setTaskData] = useState(null);
   const [showAssignedUsers, setShowAssignedUsers] = useState(false);
-  const [comment, setComment] = useState("");
   const [selectedTab, setSelectedTab] = useState<"write" | "preview">("preview");
-  const reqData = { req: "" };
+  const reqData: any = { req: null };
+
   const converter = new Showdown.Converter({
     tables: true,
     simplifiedAutoLink: true,
@@ -59,7 +60,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     !hasEdited && setHasEdited(true);
     setTaskData({ ...taskData, [name]: value });
   };
-  const onSubmit = (e: { preventDefault: () => void }) => {
+  const onSubmit = (e) => {
     e.preventDefault();
     selectedTab === "write" && setSelectedTab("preview");
     if (!hasEdited && !user) return;
@@ -155,6 +156,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
       }
     });
   };
+
   //for later use
   const save = (data: any) => {
     console.log("save");
@@ -164,14 +166,17 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
       <Modal open={taskId !== "" || taskId !== null} onClose={() => setUrl(null)} sx={modalStyles}>
         {taskData ? (
           <Grow in={taskData}>
-            <Card sx={containerStyles}>
+            <Card className="hide-scroll" sx={containerStyles}>
               <PopoverWrapper
                 open={showAssignedUsers}
                 anchor={showAssignedUsers}
                 onClose={() => setShowAssignedUsers(false)}
                 position={position}
-                onContext
-                ml={15}
+                styles={{
+                  top: position.y.toString() + "px",
+                  position: "fixed",
+                  left: min600 ? "-285px" : "-180px",
+                }}
               >
                 <AddAssignedUsers onAssignUser={onAssignUser} />
               </PopoverWrapper>
@@ -190,14 +195,14 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                     mb: 1,
                     width: "95%",
                     color: "white",
-                    input: { color: "#2C387E", fontSize: 24 },
+                    input: color,
                   }}
                   InputProps={{
                     disableUnderline: true,
                   }}
                 />
 
-                <Typography sx={{ fontSize: 11 }} variant="body2" gutterBottom>
+                <Typography sx={{ fontSize: 11, color: "#2C387E" }} variant="body2" gutterBottom>
                   Assigned Users:
                 </Typography>
                 <Box flexDirection={"row"} sx={{ display: "flex" }}>
@@ -221,8 +226,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                   </IconButton>
                 </Box>
                 <Box mt={1} sx={{ background: "white", wordWrap: "break-word" }}>
-                  <Card sx={{ p: 1 }}>
-                    {/* @ts-ignore */}
+                  <Card sx={{ p: 1, opacity: 0.9 }}>
                     <div onClick={selectedTab === "preview" ? () => setSelectedTab("write") : () => {}}>
                       <ReactMde
                         value={taskData?.description || ""}
@@ -251,99 +255,32 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                     {selectedTab !== "preview" && (
                       <>
                         <Button variant="contained" sx={buttonStyles} size="small" type={"submit"}>
-                          update
+                          Update
                         </Button>
                         <Button
                           onClick={() => setSelectedTab("preview")}
                           variant="contained"
-                          sx={{ width: "20%", mt: 1, ml: 1 }}
+                          sx={{ width: "20%", mt: 1, ml: 1, textTransform: "none" }}
                           size="small"
                           type={"button"}
                         >
-                          close
+                          Close
                         </Button>
                       </>
                     )}
                   </Card>
                 </Box>
-                <Box
-                  sx={{
-                    bgcolor: "white",
-                    position: "relative",
-                    p: 1,
-                    pb: 0,
-                    top: 32,
-                  }}
-                >
-                  <Typography variant="body1">Add Comment</Typography>
-                </Box>
-                <ReactMde
-                  value={comment}
-                  maxEditorHeight={50}
-                  onChange={setComment}
-                  selectedTab={"write"}
-                  toolbarCommands={[[]]}
-                  generateMarkdownPreview={(markdown) => Promise.resolve(converter.makeHtml(markdown))}
-                  suggestionTriggerCharacters={["@"]}
-                  suggestionsAutoplace={true}
-                  childProps={{
-                    writeButton: {
-                      tabIndex: -1,
-                    },
-                  }}
-                  // paste={{
-                  //   saveImage: save,
-                  // }}
+                <CommentsActivity
+                  user={user}
+                  reqData={reqData}
+                  buttonStyles={buttonStyles}
+                  converter={converter}
+                  taskData={taskData}
+                  isFetching={isFetching}
+                  dividerStyles={dividerStyles}
+                  fetchTask={fetchTask}
+                  pushNewActivity={pushNewActivity}
                 />
-                {comment !== "" && (
-                  <Button size="small" variant="contained" sx={buttonStyles}>
-                    Send
-                  </Button>
-                )}
-
-                <Divider sx={dividerStyles} />
-                <Box mt={1}>
-                  {taskData?.task_activity &&
-                    !isFetching &&
-                    taskData.task_activity.map(
-                      (
-                        activity: {
-                          name: string;
-                          message: string;
-                          date: Date;
-                          receiver: string;
-                        },
-                        i: React.Key
-                      ) => (
-                        <Box key={i} sx={{ p: 0.5, mb: 1 }}>
-                          <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                            <Tooltip title={activity.name} placement="bottom" key={i}>
-                              <Avatar sx={{ width: 25, height: 25, bgcolor: user.color, fontSize: 15, mb: 0.5 }}>
-                                {activity.name[0].toUpperCase()}
-                              </Avatar>
-                            </Tooltip>
-                            <Card sx={{ p: 0.5, ml: 0.5, pr: 1.1 }}>
-                              {activity.receiver ? (
-                                <Typography sx={{ fontSize: 11, ml: 1 }} variant="body1">
-                                  <b style={colorStyles}>{activity.receiver}</b> was added by
-                                  <b style={colorStyles}>{activity.name}</b>
-                                </Typography>
-                              ) : (
-                                <Typography sx={{ fontSize: 11, ml: 1 }} variant="body1">
-                                  <b style={colorStyles}>{activity.name}</b>
-                                  {activity.message}
-                                </Typography>
-                              )}
-                            </Card>
-                          </Box>
-                          <Typography sx={activityDateStyles} variant="body1">
-                            {activity.date}
-                          </Typography>
-                          <Divider />
-                        </Box>
-                      )
-                    )}
-                </Box>
               </Box>
               <TaskSideBar dividerStyles={dividerStyles} taskData={taskData} />
             </Card>
@@ -359,17 +296,21 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
 const containerStyles = {
   p: 1,
   width: "670px",
+  borderRadius: "10px",
   display: "flex",
+  border: "3px solid #2c387e",
   flexDirection: "row",
   overflow: "scroll",
   background: "#F2F2F2",
   height: "90%",
   backgroundPosition: "center",
   backgroundSize: "cover",
+  outline: "none",
   opacity: 0.1,
   mt: 5,
   boxShadow: "10px 10px 10px 10px rgba(0, 0, 0, 0.5)",
 };
+const color = { color: "#2C387E" };
 
 const modalStyles = {
   position: "absolute",
@@ -387,19 +328,8 @@ const dividerStyles = {
 
 const buttonStyles = {
   width: "20%",
+  textTransform: "none",
   mt: 1,
-};
-
-const colorStyles = {
-  color: "#2c387e",
-};
-
-const activityDateStyles = {
-  fontSize: 10,
-  position: "relative",
-  bottom: "10px",
-  left: "35px",
-  color: "#2c387e",
 };
 
 export default TaskModal;

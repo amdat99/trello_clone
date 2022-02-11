@@ -90,7 +90,7 @@ function ListContent({
         <Box component={"form"} onSubmit={handleAdd}>
           <Inputs type="text" value={todo} handleChange={setTodo} />
           <Box>
-            <Button type="submit" variant="contained" size="small">
+            <Button sx={{ textTransform: "none" }} type="submit" variant="contained" size="small">
               Add
             </Button>
             <IconButton

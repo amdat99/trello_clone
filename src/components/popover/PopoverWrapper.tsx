@@ -2,7 +2,7 @@ import React from "react";
 import Popover from "@mui/material/Popover";
 import { useMediaQuery } from "@mui/material";
 
-function PopoverWrapper({ position, children, open, anchor, onClose, onContext = false, ml }) {
+function PopoverWrapper({ position, children, open, anchor, onClose, onContext = false, ml = 0, styles = null }) {
   const min1200 = useMediaQuery("(min-width:1200px)");
   const max800 = useMediaQuery("(max-width:800px)");
   const ctxStyles = {
@@ -25,6 +25,8 @@ function PopoverWrapper({ position, children, open, anchor, onClose, onContext =
       sx={
         onContext
           ? ctxStyles
+          : styles
+          ? styles
           : {
               marginTop: "40px",
               zIndex: 999,

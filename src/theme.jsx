@@ -22,6 +22,7 @@ const getTheme = (mode) => ({
               textTransform: "none",
             },
           },
+          button: { textTransform: "none" },
         }
       : {
           // palette values for dark mode
@@ -43,6 +44,7 @@ const getTheme = (mode) => ({
               textTransform: "none",
             },
           },
+          button: { textTransform: "none" },
         }),
   },
 });

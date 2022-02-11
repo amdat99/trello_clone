@@ -14,13 +14,11 @@ function TaskSideBar({ dividerStyles, taskData }) {
       sx={{
         p: 1,
         width: 150,
-        mt: 5,
         flexWrap: "wrap",
-        opacity: 0.95,
-        position: "relative",
-        bottom: 50,
-        left: "7px",
-        height: "105%",
+        position: "absolute",
+        height: "89.8%",
+        ml: 64,
+        top: "5.6%",
       }}
     >
       <Divider sx={dividerStyles} />

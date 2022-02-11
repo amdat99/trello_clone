@@ -78,7 +78,7 @@ function CreateModal({
           </ImageListItem>
         </Card>
         {createType.data?.val !== "users" && (
-          <Button type={"submit"} sx={{ mt: 1 }} variant="contained" size="small">
+          <Button type={"submit"} sx={{ mt: 1, textTransform: "none" }} variant="contained" size="small">
             {createValue.image && !imageChecked ? "Check Image" : `Add ${createType.data?.val}`}
           </Button>
         )}

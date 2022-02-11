@@ -172,8 +172,11 @@ const List = ({
           id: currentTodo.id,
           list_id: nextId,
           prev_listid: prevId,
+          prev_listname: listData[source.index].name,
+          next_listname: listData[destination.index].name,
           tasks: JSON.stringify(todos[nextId]),
           prev_tasks: JSON.stringify(todos[prevId]),
+          name: user.name,
         },
       }).then((response) => {
         if (response !== "task updated successfully") {
@@ -184,6 +187,16 @@ const List = ({
           console.log(response?.errors ? response.errors : "no re2 found");
         } else {
           //triggers requessts only for the lists where where changes made
+          requestHandler({
+            type: "post",
+            route: "task/pushactivity",
+            body: {
+              name: user.name,
+              color: user.color,
+              prev_listname: listData[source.index].name,
+              id: currentTodo.id,
+            },
+          });
           setCurrentResId({ id: nextId, rerender: 1 });
           setCurrentResId({ id: prevId, rerender: 2 });
         }
