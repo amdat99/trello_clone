@@ -62,6 +62,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   };
   const onSubmit = (e) => {
     e.preventDefault();
+    if (isFetching) alert("please wait");
     selectedTab === "write" && setSelectedTab("preview");
     if (!hasEdited && !user) return;
     reqData.req = taskData;
@@ -76,6 +77,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     delete tasks.task_activity;
     tasks.updated_at = date;
     tasks.task_activity = JSON.stringify(activity);
+    console.log(currentTaskData);
     requestHandler({
       type: "put",
       route: "task/update",
