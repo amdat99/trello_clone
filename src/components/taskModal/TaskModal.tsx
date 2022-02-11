@@ -32,6 +32,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   } = useFetchData({ type: "post", route: "task/single", body: taskId && { id: taskId } }, taskId && taskId);
   const min600 = useMediaQuery("(min-width:600px)");
   const [hasEdited, setHasEdited] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [taskData, setTaskData] = useState(null);
   const [showAssignedUsers, setShowAssignedUsers] = useState(false);
   const [selectedTab, setSelectedTab] = useState<"write" | "preview">("preview");
@@ -62,22 +63,29 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   };
   const onSubmit = (e) => {
     e.preventDefault();
-    if (isFetching) alert("please wait");
+    if (isFetching || loading) alert("please wait");
     selectedTab === "write" && setSelectedTab("preview");
     if (!hasEdited && !user) return;
+    setLoading(true);
     reqData.req = taskData;
     const tasks = taskData;
     const activity = taskData.task_activity;
     const currentTaskData = [];
     getAssignedUsers(currentTaskData, taskData.assigned_users);
     const date = new Date().toLocaleString();
-    pushNewActivity(activity, date, " updated this task ");
+    try {
+      pushNewActivity(activity, date, " updated this task ");
+    } catch (e) {
+      setLoading(false);
+      return alert(e);
+    }
     delete tasks.assigned_users;
     delete tasks.labels;
     delete tasks.task_activity;
+    delete tasks.comments;
+
     tasks.updated_at = date;
     tasks.task_activity = JSON.stringify(activity);
-    console.log(currentTaskData);
     requestHandler({
       type: "put",
       route: "task/update",
@@ -91,10 +99,15 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
       if (response === "task updated successfully") {
         requestHandler({ type: "put", route: "task/updatedata", body: { tasks } }).then((res) => {
           if (res === "task updated successfully") {
+            setLoading(false);
             fetchTask();
             setCurrentResId({ id: taskData.list_id, rerender: Date.now() });
+          } else {
+            setLoading(false);
           }
         });
+      } else {
+        setLoading(false);
       }
     });
   };
@@ -256,7 +269,13 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                     </div>
                     {selectedTab !== "preview" && (
                       <>
-                        <Button variant="contained" sx={buttonStyles} size="small" type={"submit"}>
+                        <Button
+                          variant="contained"
+                          sx={buttonStyles}
+                          size="small"
+                          type={"submit"}
+                          disabled={loading || isFetching}
+                        >
                           Update
                         </Button>
                         <Button

@@ -43,8 +43,8 @@ function CommentsActivity({
       }
     });
   };
-  const comments = taskData?.comments ? [...taskData.comments].reverse() : [];
-  const activity = taskData?.task_activity ? [...taskData.task_activity].reverse() : [];
+  const comments = taskData?.comments ? [...taskData.comments].reverse() : null;
+  const activity = taskData?.task_activity ? [...taskData.task_activity].reverse() : null;
 
   return (
     <>
@@ -90,7 +90,7 @@ function CommentsActivity({
       <Divider sx={dividerStyles} />
       <Box mt={1}>
         {!isFetching &&
-          activity.length &&
+          activity &&
           showActivity &&
           activity.map(
             (
@@ -108,7 +108,7 @@ function CommentsActivity({
                   <Tooltip title={activity.name} placement="bottom" key={i}>
                     {
                       <Avatar sx={{ width: 25, height: 25, bgcolor: activity.color, fontSize: 15, mb: 0.5 }}>
-                        {activity.name[0].toUpperCase()}
+                        {activity.name ? activity.name[0].toUpperCase() : ""}
                       </Avatar>
                     }
                   </Tooltip>
@@ -134,7 +134,7 @@ function CommentsActivity({
             )
           )}
         {!isFetching &&
-          comments.length &&
+          comments &&
           !showActivity &&
           comments.map((comment, i) => (
             <Box key={i} sx={{ p: 0.5, mb: 1 }}>
