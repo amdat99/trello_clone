@@ -112,7 +112,6 @@ const List = ({
   // handles all drag and drop of tasks and lists and db updates
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
-    console.log(result);
     if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) return; // if not dragged to destination then return
     //@ts-ignore
     Array.prototype.insert = function (index: number, item: Task) {
