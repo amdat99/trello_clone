@@ -84,7 +84,6 @@ const Board: React.FC = () => {
   useEffect(() => {
     if (socketData) {
       socketData.type === "board" && fetchBoards();
-      console.log(socketData);
       if (socketData.type === "task" && socketData.prevId) {
         setCurrentResId({ id: socketData.prevId, rerender: currentResId.rerender + 1 });
         setTimeout(() => {

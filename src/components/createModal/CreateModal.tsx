@@ -33,8 +33,8 @@ function CreateModal({ createType, createBoard, createValue, setCreateValue, set
   };
   return (
     <PopoverWrapper
-      open={createType?.data?.val}
-      anchor={createType?.data?.val}
+      open={createType?.data?.val !== ""}
+      anchor={createType?.data?.val !== ""}
       position={position}
       onContext={createType?.data?.onCtxMenu}
       ml={createType?.data?.val === "board" ? 8 : 12.5}

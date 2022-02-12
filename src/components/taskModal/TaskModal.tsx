@@ -177,7 +177,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     <>
       <Modal open={taskId !== "" || taskId !== null} onClose={() => setUrl(null)} sx={styles.modal}>
         {taskData ? (
-          <Grow in={taskData}>
+          <Grow in={taskData !== null}>
             <Card className="hide-scroll" sx={styles.container}>
               <PopoverWrapper
                 open={showAssignedUsers}

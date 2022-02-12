@@ -20,13 +20,13 @@ function Sidebar({ stickyMenu, setStickyMenu, setShowDetail, showDetail, navigat
               <CottageOutlinedIcon />
               <span style={spanStyle}>Home</span>
             </div>
-            <Divider gutterBottom />
+            <Divider />
 
             <div onClick={() => console.log("test")} style={divStyle}>
               <TableViewIcon />
               <span style={spanStyle}>Table View</span>
             </div>
-            <Divider gutterBottom />
+            <Divider />
 
             <div
               style={{ zIndex: 999, position: "relative" }}
