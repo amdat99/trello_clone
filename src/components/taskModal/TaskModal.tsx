@@ -1,13 +1,5 @@
-import React, { useState } from "react";
-import Modal from "@mui/material/Modal";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import Tooltip from "@mui/material/Tooltip";
-import Avatar from "@mui/material/Avatar";
-import Typography from "@mui/material/Typography";
-import Grow from "@mui/material/Grow";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
+import React, { useState, useEffect } from "react";
+import { Slide, IconButton, Box, Grow, Typography, Avatar, Tooltip, Card, Button, Modal } from "@mui/material/";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 // import InputAdornment from "@mui/material/InputAdornment";
 import ReactMde, { getDefaultToolbarCommands } from "react-mde";
@@ -19,11 +11,14 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import AddAssignedUsers from "components/createModal/AddAssignedUsers";
 import TaskSideBar from "./TaskSideBar";
 import CommentsActivity from "./Comments&Activity";
+import getTheme from "../../theme";
 import useFetchData from "../../hooks/useFetchData";
 import { requestHandler } from "../../helpers/requestHandler";
 import "./styles.css";
 
 function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu, position }) {
+  const theme = getTheme("light").palette;
+  const styles = makeStyles(theme.primary.main);
   const {
     data: task,
     fetchData: fetchTask,
@@ -31,6 +26,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     isFetching,
   } = useFetchData({ type: "post", route: "task/single", body: taskId && { id: taskId } }, taskId && taskId);
   const min600 = useMediaQuery("(min-width:600px)");
+  const [uneditedDesc, setUnEditedDesc] = useState("");
   const [hasEdited, setHasEdited] = useState(false);
   const [loading, setLoading] = useState(false);
   const [taskData, setTaskData] = useState(null);
@@ -46,28 +42,29 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     extensions: [xssFilter],
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (taskId) {
       fetchTask();
     }
   }, [taskId]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (task) {
       setTaskData(task[0]);
+      setUnEditedDesc(task[0]?.description ? task[0].description : "");
     }
   }, [task]);
+
   const onHandleChange = (value: string | object, name: string) => {
     !hasEdited && setHasEdited(true);
     setTaskData({ ...taskData, [name]: value });
   };
-  const onSubmit = (e) => {
+  const onSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (isFetching || loading) alert("please wait");
     selectedTab === "write" && setSelectedTab("preview");
     if (!hasEdited && !user) return;
     setLoading(true);
-    reqData.req = taskData;
     const tasks = taskData;
     const activity = taskData.task_activity;
     const currentTaskData = [];
@@ -112,7 +109,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     });
   };
 
-  const pushNewActivity = (activity: any, date: string, message, receiver = null) => {
+  const pushNewActivity = (activity: any, date: string, message: string, receiver = null) => {
     activity.push({
       message: message,
       name: user.name,
@@ -178,10 +175,10 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   };
   return (
     <>
-      <Modal open={taskId !== "" || taskId !== null} onClose={() => setUrl(null)} sx={modalStyles}>
+      <Modal open={taskId !== "" || taskId !== null} onClose={() => setUrl(null)} sx={styles.modal}>
         {taskData ? (
           <Grow in={taskData}>
-            <Card className="hide-scroll" sx={containerStyles}>
+            <Card className="hide-scroll" sx={styles.container}>
               <PopoverWrapper
                 open={showAssignedUsers}
                 anchor={showAssignedUsers}
@@ -196,7 +193,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                 <AddAssignedUsers onAssignUser={onAssignUser} />
               </PopoverWrapper>
               <Box
-                sx={{ p: 1, flexDirection: "column", display: "flex", width: 500 }}
+                sx={{ p: 1, flexDirection: "column", display: "flex", width: 530 }}
                 onSubmit={onSubmit}
                 component="form"
               >
@@ -217,14 +214,14 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                   }}
                 />
 
-                <Typography sx={{ fontSize: 11, color: "#2C387E" }} variant="body2" gutterBottom>
+                <Typography sx={{ fontSize: 11 }} color="primary" variant="body2" gutterBottom>
                   Assigned Users:
                 </Typography>
                 <Box flexDirection={"row"} sx={{ display: "flex" }}>
                   {taskData?.assigned_users &&
-                    taskData.assigned_users.map((user: { name: {}; color: any }, i) => (
+                    taskData.assigned_users.map((user: { name: {}; color: any }, i: React.Key) => (
                       <Tooltip title={user.name} placement="bottom" key={i}>
-                        <Avatar sx={{ width: 20, height: 20, mr: 0.7, bgcolor: user.color, fontSize: 15, mb: 0.5 }}>
+                        <Avatar sx={{ width: 25, height: 25, mr: 0.7, bgcolor: user.color, fontSize: 15, mb: 0.5 }}>
                           {user.name[0].toUpperCase()}
                         </Avatar>
                       </Tooltip>
@@ -269,12 +266,20 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                       }}
                     />
                   </div>
+                  {selectedTab === "preview" &&
+                    !isFetching &&
+                    taskData?.description &&
+                    uneditedDesc !== taskData?.description && (
+                      <Typography color="secondary" sx={{ fontSize: 11 }} variant="body2" gutterBottom>
+                        You have unsaved changes
+                      </Typography>
+                    )}
                   {selectedTab !== "preview" && (
                     <>
                       <Grow in={true}>
                         <Button
                           variant="contained"
-                          sx={buttonStyles}
+                          sx={styles.button}
                           size="small"
                           type={"submit"}
                           disabled={loading || isFetching}
@@ -295,32 +300,20 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                       </Grow>
                     </>
                   )}
-                  {/* <Inputs
-                    value={taskData.name}
-                    name="name"
-                    handleChange={onHandleChange}
-                    multiline
-                    row={4}
-                    inputProps={{
-                      style: {
-                        fontSize: 12,
-                      },
-                    }}
-                  /> */}
                 </Box>
                 <CommentsActivity
                   user={user}
                   reqData={reqData}
-                  buttonStyles={buttonStyles}
-                  converter={converter}
+                  buttonStyles={styles.button}
                   taskData={taskData}
                   isFetching={isFetching}
-                  dividerStyles={dividerStyles}
+                  dividerStyles={styles.divider}
                   fetchTask={fetchTask}
+                  primaryColor={theme.primary.main}
                   pushNewActivity={pushNewActivity}
                 />
               </Box>
-              <TaskSideBar dividerStyles={dividerStyles} taskData={taskData} />
+              <TaskSideBar dividerStyles={styles.divider} taskData={taskData} />
             </Card>
           </Grow>
         ) : (
@@ -331,43 +324,40 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   );
 }
 
-const containerStyles = {
-  p: 1,
-  width: "670px",
-  borderRadius: "10px",
-  display: "flex",
-  border: "3px solid #2c387e",
-  flexDirection: "row",
-  overflow: "scroll",
-  background: "#F2F2F2",
-  height: "90%",
-  backgroundPosition: "center",
-  backgroundSize: "cover",
-  outline: "none",
-
-  mt: 5,
-  boxShadow: "10px 10px 10px 10px rgba(0, 0, 0, 0.5)",
-};
-const color = { color: "#2C387E" };
-
-const modalStyles = {
-  position: "absolute",
-  height: "100%",
-  width: "100%",
-  opacity: 0.99,
-  display: "flex",
-  zIndex: 1,
-  justifyContent: "center",
-};
-
-const dividerStyles = {
-  m: 1,
-};
-
-const buttonStyles = {
-  width: "20%",
-  textTransform: "none",
-  mt: 1,
-};
+const makeStyles = (color: string) => ({
+  container: {
+    p: 1,
+    width: "700px",
+    borderRadius: "10px",
+    display: "flex",
+    border: `2px solid ${color}`,
+    flexDirection: "row",
+    overflow: "scroll",
+    background: "#F2F2F2",
+    height: "90%",
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+    outline: "none",
+    mt: 5,
+    boxShadow: "10px 10px 10px 10px rgba(0, 0, 0, 0.5)",
+  },
+  modal: {
+    position: "absolute",
+    height: "100%",
+    width: "100%",
+    opacity: 0.99,
+    display: "flex",
+    zIndex: 1,
+    justifyContent: "center",
+  },
+  divider: {
+    m: 1,
+  },
+  button: {
+    width: "20%",
+    textTransform: "none",
+    mt: 1,
+  },
+});
 
 export default TaskModal;

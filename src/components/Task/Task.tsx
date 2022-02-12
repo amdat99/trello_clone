@@ -23,10 +23,10 @@ function Task({ todo, setTodos, todos, i, id, setUrl }: Props) {
   const [editTodo, setEditTodo] = useState(todo.name);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleDelete = (taskId: number) => {
-    const currentTodo = todos[id].filter((todo) => todo.id !== taskId);
-    setTodos({ ...todos, [id]: currentTodo });
-  };
+  // const handleDelete = (taskId: number) => {
+  //   const currentTodo = todos[id].filter((todo) => todo.id !== taskId);
+  //   setTodos({ ...todos, [id]: currentTodo });
+  // };
 
   const handleEdit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,8 +67,18 @@ function Task({ todo, setTodos, todos, i, id, setUrl }: Props) {
                 <Box sx={{ display: "flex", flexDirection: "row" }}>
                   {todo?.assigned_users &&
                     todo.assigned_users.map((user) => (
-                      <Tooltip title={"aamir"} placement="bottom" key={user.name}>
-                        <Avatar sx={{ width: 20, height: 20, ml: 0.2, bgcolor: user.color, fontSize: 15, mb: 0.5 }}>
+                      <Tooltip title={user.name} placement="bottom" key={user.name}>
+                        <Avatar
+                          sx={{
+                            width: 20,
+                            height: 20,
+                            ml: 0.2,
+                            bgcolor: user.color,
+                            fontSize: 15,
+                            mb: 0.5,
+                            opacity: 0.88,
+                          }}
+                        >
                           {user.name[0].toUpperCase()}
                         </Avatar>
                       </Tooltip>

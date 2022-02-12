@@ -5,14 +5,14 @@ import Card from "@mui/material/Card";
 import Tooltip from "@mui/material/Tooltip";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import ReactMde from "react-mde";
+// import ReactMde from "react-mde";
 import Grow from "@mui/material/Grow";
 import Box from "@mui/material/Box";
 import Inputs from "../inputs/Inputs";
 import { requestHandler } from "../../helpers/requestHandler";
 
 function CommentsActivity({
-  converter,
+  primaryColor,
   buttonStyles,
   taskData,
   isFetching,
@@ -24,7 +24,7 @@ function CommentsActivity({
 }) {
   const [showActivity, setShowActivity] = useState(false);
   const [comment, setComment] = useState("");
-
+  const styles = makeStyles(primaryColor);
   const addComment = () => {
     reqData.req = taskData;
     const { req } = reqData;
@@ -95,12 +95,12 @@ function CommentsActivity({
       )}
       <Typography
         onClick={() => setShowActivity(!showActivity)}
-        sx={{ cursor: "pointer", color: "#2c387e", fontSize: 11, width: !showActivity ? 70 : 88 }}
+        sx={{ cursor: "pointer", color: primaryColor, fontSize: 11, width: !showActivity ? 70 : 88 }}
         variant="caption"
       >
         {showActivity ? "Show comments" : "Show activity"}
       </Typography>
-      <Divider sx={dividerStyles} />
+      {/* <Divider style={{ background: "#2c387e", margin: 1 }} /> */}
       <Box mt={1}>
         {!isFetching &&
           activity &&
@@ -120,29 +120,29 @@ function CommentsActivity({
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                   <Tooltip title={activity.name} placement="bottom" key={i}>
                     {
-                      <Avatar sx={{ width: 25, height: 25, bgcolor: activity.color, fontSize: 15, mb: 0.5 }}>
+                      <Avatar sx={avatarStyles(activity.color)}>
                         {activity.name ? activity.name[0].toUpperCase() : ""}
                       </Avatar>
                     }
                   </Tooltip>
                   <Card sx={{ p: 0.5, ml: 0.5, pr: 1.1 }}>
                     {activity.receiver ? (
-                      <Typography sx={{ fontSize: 12, ml: 0.1 }} variant="body1">
-                        <b style={colorStyles}>{activity.receiver}</b> was added to the task by
-                        <b style={colorStyles}> {activity.name}</b>
+                      <Typography sx={styles.text} variant="body1">
+                        <b style={styles.color}>{activity.receiver}</b> was added to the task by
+                        <b style={styles.color}> {activity.name}</b>
                       </Typography>
                     ) : (
-                      <Typography sx={{ fontSize: 12, ml: 0.1 }} variant="body1">
-                        <b style={colorStyles}>{activity.name}</b>
+                      <Typography sx={styles.text} variant="body1">
+                        <b style={styles.color}>{activity.name}</b>
                         {activity.message}
                       </Typography>
                     )}
                   </Card>
                 </Box>
-                <Typography sx={activityDateStyles} variant="body1">
+                <Typography sx={styles.activityDate} variant="body1">
                   {activity.date}
                 </Typography>
-                <Divider />
+                <Divider style={{ background: "#2c387e", borderRadius: "1px" }} />
               </Box>
             )
           )}
@@ -153,21 +153,19 @@ function CommentsActivity({
             <Box key={i} sx={{ p: 0.5, mb: 1 }}>
               <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                 <Tooltip title={comment.name} placement="bottom" key={i}>
-                  <Avatar sx={{ width: 25, height: 25, bgcolor: comment.color, fontSize: 15, mb: 0.5 }}>
-                    {comment.name[0].toUpperCase()}
-                  </Avatar>
+                  <Avatar sx={avatarStyles(comment.color)}>{comment.name[0].toUpperCase()}</Avatar>
                 </Tooltip>
                 <Card sx={{ p: 0.5, ml: 0.5, pr: 1.1 }}>
-                  <b style={colorStyles}>{comment.name}</b>
-                  <Typography sx={{ fontSize: 12, ml: 0.1, wordWrap: "break-word" }} variant="body1">
+                  <b style={styles.color}>{comment.name}</b>
+                  <Typography sx={styles.text} variant="body1">
                     {comment.comment}
                   </Typography>
                 </Card>
               </Box>
-              <Typography sx={activityDateStyles} variant="body1">
+              <Typography sx={styles.activityDate} variant="body1">
                 {comment.date}
               </Typography>
-              <Divider />
+              <Divider style={{ background: "#2c387e", borderRadius: "1px" }} />
             </Box>
           ))}
       </Box>
@@ -177,24 +175,30 @@ function CommentsActivity({
 
 export default CommentsActivity;
 
-const activityDateStyles = {
-  fontSize: 10,
-  position: "relative",
-  bottom: "10px",
-  left: "28.5px",
-  color: "#2c387e",
-};
+const makeStyles = (color: string) => ({
+  activityDate: {
+    fontSize: 10,
+    position: "relative",
+    bottom: "10px",
+    left: "28.5px",
+    color: color,
+  },
 
-const colorStyles = {
-  color: "#2c387e",
-  fontSize: 12,
-};
+  color: {
+    color: color,
+    fontSize: 12,
+  },
 
-const cmmntHeaderStyles = {
-  bgcolor: "white",
-  position: "relative",
-  p: 1,
-  border: "0.5px solid #c8ccd0",
-  pb: 0.3,
-  top: 32,
-};
+  text: {
+    fontSize: 12,
+    ml: 0.1,
+  },
+});
+
+const avatarStyles = (color: string) => ({
+  width: 25,
+  height: 25,
+  bgcolor: color,
+  fontSize: 15,
+  mb: 0.5,
+});

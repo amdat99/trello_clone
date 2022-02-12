@@ -6,32 +6,13 @@ import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
 import { requestHandler } from "../../helpers/requestHandler";
-
-const boxStyles = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-};
-
-const cardStyles = {
-  minWidth: 300,
-  maxWidth: 300,
-  maxHeight: "67vh",
-  p: 4,
-  mt: "20vh",
-  mb: "20vh",
-  zIndex: 999,
-  position: "relative",
-  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)",
-  borderRadius: "10px",
-  backgroundColor: "white",
-  display: "flex",
-  flexDirection: "column",
-};
+import { makeStyles } from "../authentication/AuthenticationMain";
 
 function Reset() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const styles = makeStyles();
+
   const [registerData, setRegisterData] = useState({ password: "", confirmPassword: "" });
   const [loading, setLoading] = useState(false);
 
@@ -91,8 +72,8 @@ function Reset() {
           "https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
       }}
     >
-      <Box sx={boxStyles}>
-        <Card raised sx={cardStyles}>
+      <Box sx={styles.box}>
+        <Card raised sx={styles.card}>
           <Typography variant={"h5"} sx={{ mb: 2 }} color="primary">
             Create New Password
           </Typography>

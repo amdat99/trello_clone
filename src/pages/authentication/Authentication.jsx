@@ -12,6 +12,7 @@ import { requestHandler } from "../../helpers/requestHandler";
 import { colours } from "./utils";
 
 function Authentication({ formType, setShowFormType }) {
+  const styles = makeStyles();
   const setUserData = useUserStore((state) => state.setUserData);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({
@@ -36,9 +37,7 @@ function Authentication({ formType, setShowFormType }) {
     },
   ];
   const passwordUnMatch =
-    registerData.password !== registerData.confirmPassword &&
-    registerData.confirmPassword &&
-    registerData.password;
+    registerData.password !== registerData.confirmPassword && registerData.confirmPassword && registerData.password;
   const registerInputs = [
     {
       type: "text",
@@ -57,9 +56,7 @@ function Authentication({ formType, setShowFormType }) {
       type: "password",
       name: "confirmPassword",
       minLength: 6,
-      helperText: passwordUnMatch
-        ? "Passwords do not match"
-        : "6 characters are required for password",
+      helperText: passwordUnMatch ? "Passwords do not match" : "6 characters are required for password",
       error: passwordUnMatch,
     },
   ];
@@ -80,19 +77,17 @@ function Authentication({ formType, setShowFormType }) {
     }
     setLoading(true);
     const login = (data) => {
-      requestHandler({ route: "auth/login", type: "post", body: data }).then(
-        (data) => {
-          if (data?.email) {
-            setUserData(data);
-          } else {
-            setNotify({
-              type: "error",
-              message: data?.errors ? data.errors : "error logging in",
-            });
-          }
-          setLoading(false);
+      requestHandler({ route: "auth/login", type: "post", body: data }).then((data) => {
+        if (data?.email) {
+          setUserData(data);
+        } else {
+          setNotify({
+            type: "error",
+            message: data?.errors ? data.errors : "error logging in",
+          });
         }
-      );
+        setLoading(false);
+      });
     };
 
     if (formType === "login") {
@@ -118,7 +113,66 @@ function Authentication({ formType, setShowFormType }) {
   };
   const currentInputs = formType === "login" ? loginInputs : registerInputs;
 
-  const cardStyles = {
+  return (
+    <>
+      {formType && (
+        <Box sx={styles.box}>
+          <Notification message={notify.message} type={notify.type} show={notify.type !== ""} setNotify={setNotify} />
+          <Grow in={currentInputs.length !== 0}>
+            <Card raised sx={styles.card}>
+              <Typography variant={"h5"} sx={{ mb: 2 }} color="primary">
+                {formType.charAt(0).toUpperCase() + formType.slice(1)}
+              </Typography>
+              <Box component="form" onSubmit={onSubmit} autoComplete="off">
+                {currentInputs.map((input) => (
+                  <Inputs
+                    key={input.name}
+                    type={input.type}
+                    label={input.name}
+                    name={input.name}
+                    value={formType === "login" ? loginData[input.name] : registerData[input.name]}
+                    handleChange={onHandleChange}
+                    placeholder={input.placeholder && input.placeholder}
+                    inputProps={input.minLength && { minLength: input.minLength }}
+                    helperText={input.helperText && input.helperText}
+                    required
+                    error={input.error && input.error}
+                    sx={{ mb: 1 }}
+                  />
+                ))}
+                <Button type={"submit"} variant="contained" disabled={loading}>
+                  Submit
+                </Button>
+              </Box>
+              <Typography
+                color="primary"
+                onClick={() => setShowFormType(formType === "login" ? "register" : "login")}
+                variant={"caption"}
+                sx={{ mt: 2, cursor: "pointer" }}
+              >
+                {formType === "login" ? "I want to Register" : "I want to login"}
+              </Typography>
+              {formType === "login" && (
+                <Typography
+                  sx={{ cursor: "pointer" }}
+                  onClick={() => setShowFormType("Forgot Password")}
+                  variant={"caption"}
+                  color="secondary"
+                >
+                  Forgot password
+                </Typography>
+              )}
+              {loading && <LinearProgress sx={{ mt: 1 }} />}
+            </Card>
+          </Grow>
+        </Box>
+      )}
+    </>
+  );
+}
+
+const makeStyles = () => ({
+  card: {
     minWidth: 300,
     maxWidth: 300,
     maxHeight: "67vh",
@@ -132,85 +186,12 @@ function Authentication({ formType, setShowFormType }) {
     backgroundColor: "white",
     display: "flex",
     flexDirection: "column",
-  };
-
-  const boxStyles = {
+  },
+  box: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-  };
-
-  return (
-    <>
-      {formType && (
-        <Box sx={boxStyles}>
-          <Notification
-            message={notify.message}
-            type={notify.type}
-            show={notify.type !== ""}
-            setNotify={setNotify}
-          />
-          <Grow in={currentInputs.length !== 0}>
-            <Card raised sx={cardStyles}>
-              <Typography variant={"h5"} sx={{ mb: 2 }} color="primary">
-                {formType.charAt(0).toUpperCase() + formType.slice(1)}
-              </Typography>
-              <Box component="form" onSubmit={onSubmit} autoComplete="off">
-                {currentInputs.map((input) => (
-                  <Inputs
-                    key={input.name}
-                    type={input.type}
-                    label={input.name}
-                    name={input.name}
-                    value={
-                      formType === "login"
-                        ? loginData[input.name]
-                        : registerData[input.name]
-                    }
-                    handleChange={onHandleChange}
-                    placeholder={input.placeholder && input.placeholder}
-                    inputProps={
-                      input.minLength && { minLength: input.minLength }
-                    }
-                    helperText={input.helperText && input.helperText}
-                    required
-                    error={input.error && input.error}
-                    sx={{ mb: 1 }}
-                  />
-                ))}
-                <Button type={"submit"} variant="contained" disabled={loading}>
-                  Submit
-                </Button>
-              </Box>
-              <Typography
-                color="primary"
-                onClick={() =>
-                  setShowFormType(formType === "login" ? "register" : "login")
-                }
-                variant={"caption"}
-                sx={{ mt: 2, cursor: "pointer" }}
-              >
-                {formType === "login"
-                  ? "I want to Register"
-                  : "I want to login"}
-              </Typography>
-              {formType === "login" && (
-                <Typography
-                  sx={{ cursor: "pointer" }}
-                  onClick={() => setShowFormType("Forgot Password")}
-                  variant={"caption"}
-                  color="red"
-                >
-                  Forgot password
-                </Typography>
-              )}
-              {loading && <LinearProgress sx={{ mt: 1 }} />}
-            </Card>
-          </Grow>
-        </Box>
-      )}
-    </>
-  );
-}
+  },
+});
 
 export default Authentication;

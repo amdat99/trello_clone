@@ -6,16 +6,7 @@ import ImageListItem from "@mui/material/ImageListItem";
 import Inputs from "../inputs/Inputs";
 import PopoverWrapper from "../popover/PopoverWrapper";
 
-function CreateModal({
-  createType,
-  createBoard,
-  createValue,
-  setCreateValue,
-  setCurrentList,
-  currentList,
-  position,
-  taskModal,
-}) {
+function CreateModal({ createType, createBoard, createValue, setCreateValue, setCurrentList, currentList, position }) {
   const [currentImage, setCurrentImage] = useState("");
   const [imageChecked, setImageChecked] = useState(false);
   const createInputs = [
@@ -46,10 +37,9 @@ function CreateModal({
       anchor={createType?.data?.val}
       position={position}
       onContext={createType?.data?.onCtxMenu}
-      ml={createType?.data?.val === "board" ? 0 : 5}
+      ml={createType?.data?.val === "board" ? 8 : 12.5}
       onClose={() => createType.set({ val: "", onCtxMenu: false })}
     >
-      {/* <Modal open={createType.data} onClose={() => createType.set("")}> */}
       <Box sx={{ p: 1 }} component="form" onSubmit={onCreate}>
         <Card sx={{ p: 1, width: "300px" }}>
           {createType.data?.val === "list" || createType.data?.val === "board"
@@ -83,7 +73,6 @@ function CreateModal({
           </Button>
         )}
       </Box>
-      {/* </Modal> */}
     </PopoverWrapper>
   );
 }

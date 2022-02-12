@@ -27,6 +27,7 @@
     "react-window": "^1.8.6",
     "showdown": "^2.0.0-alpha",
     "showdown-xss-filter": "^0.2.0",
+    "socket.io-client": "^4.4.1",
     "typescript": "^4.5.5",
     "web-vitals": "^1.1.2",
     "zustand": "^3.6.9"

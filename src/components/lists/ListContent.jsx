@@ -10,6 +10,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import Inputs from "../inputs/Inputs";
 
 import "../../App.css";
+import { ConstructionOutlined } from "@mui/icons-material";
 
 function ListContent({
   todos,
@@ -59,7 +60,6 @@ function ListContent({
         <div
           style={{
             opacity: "0.9",
-
             position: "relative",
             right: "5px",
           }}

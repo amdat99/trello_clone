@@ -7,6 +7,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { DragDropContext, Droppable, DropResult, Draggable } from "react-beautiful-dnd";
 import useFetchData from "../../hooks/useFetchData";
 import { requestHandler } from "../../helpers/requestHandler";
+import { sendBoardrefetchReq } from "../../sockets/orgSockets";
 import TaskModal from "../taskModal/TaskModal";
 import ListContent from "./ListContent";
 import { CreateVal, Board, User, List as ListType, Task } from "../models";
@@ -21,6 +22,7 @@ type Props = {
   stickyMenu: boolean;
   createValue: CreateVal;
   handleAdd: (e: React.FormEvent) => void;
+  socketData: any;
   current: {
     board: Board;
     setBoard: (board: Board) => void;
@@ -37,6 +39,7 @@ const List = ({
   setTodo,
   stickyMenu,
   createValue,
+  socketData,
   onShowCtxMenu,
   handleAdd,
   position,
@@ -60,7 +63,6 @@ const List = ({
 
   const min1000 = useMediaQuery("(min-width:1000px)");
   const min700 = useMediaQuery("(min-width:700px)");
-
   useEffect(() => {
     const getLists = () => {
       let currentLists = [];
@@ -85,7 +87,7 @@ const List = ({
       fetchLists();
     }
     //es-lint-disable-next-line
-  }, [current.board, current.list.rerender]);
+  }, [current.board, current.list]);
 
   useEffect(() => {
     const createList = () => {
@@ -96,9 +98,16 @@ const List = ({
         requestHandler({
           type: "post",
           route: "list/create",
-          body: { board_id: current.board.id, name: createValue.name, lists: JSON.stringify(currentListsData), id },
+          body: {
+            board_id: current.board.id,
+            name: createValue.name,
+            lists: JSON.stringify(currentListsData),
+            id,
+            board_name: current.board.name,
+          },
         }).then((response) => {
           if (response === "list created successfully") {
+            sendBoardrefetchReq({ type: "list", id: current.board.id });
             fetchLists();
           } else {
             alert(response?.errors ? response.errors : "no data found");
@@ -108,6 +117,13 @@ const List = ({
     };
     createList();
   }, [current.list.rerender]);
+
+  useEffect(() => {
+    if (socketData) {
+      socketData.type === "list" && fetchLists();
+    }
+    //es-lint-disable-next-line
+  }, [socketData]);
 
   // handles all drag and drop of tasks and lists and db updates
   const onDragEnd = (result: DropResult) => {
@@ -208,6 +224,7 @@ const List = ({
               id: currentTodo.id,
             },
           });
+          sendBoardrefetchReq({ type: "task", id: nextId, prevId });
           setCurrentResId({ id: nextId, rerender: 1 });
           setCurrentResId({ id: prevId, rerender: 2 });
         }

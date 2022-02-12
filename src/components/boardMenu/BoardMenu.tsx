@@ -46,7 +46,7 @@ function BoardMenu({
   params,
 }: Props) {
   const [searchValue, setSearchValue] = React.useState("");
-
+  const styles = makeStyles();
   const onSetBoard = (board: Board) => {
     if (params.board !== board.name) {
       setCurrentBoard(board);
@@ -54,7 +54,7 @@ function BoardMenu({
     }
   };
   return (
-    <Card sx={cardStyles}>
+    <Card sx={styles.card}>
       <div style={{ flexDirection: "row", display: "flex" }}>
         {/* <Inputs
           select={false}
@@ -127,26 +127,26 @@ function BoardMenu({
           createBoard={createBoard}
           setCurrentList={setCurrentList}
           currentList={currentList}
-          taskModal={false}
         />
       </div>
     </Card>
   );
 }
-
-const cardStyles = {
-  width: "35%",
-  height: 30,
-  opacity: 0.8,
-  minWidth: "300px",
-  position: "absolute",
-  top: 0,
-  right: "10%",
-  p: 1,
-  ":hover": {
-    boxShadow: 6,
-    opacity: 0.9,
+const makeStyles = () => ({
+  card: {
+    width: "35%",
+    height: 30,
+    opacity: 0.8,
+    minWidth: "300px",
+    position: "absolute",
+    top: 0,
+    right: "10%",
+    p: 1,
+    ":hover": {
+      boxShadow: 6,
+      opacity: 0.9,
+    },
   },
-};
+});
 
 export default BoardMenu;
