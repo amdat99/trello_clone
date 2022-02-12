@@ -59,7 +59,12 @@ a:visited {
     flex-wrap: wrap;
     overflow-y: scroll;
     max-height: 92vh;
+    min-width: 98%;
   }
+}
+
+img[alt="drawing"] {
+  width: 200px;
 }
 
 .done {

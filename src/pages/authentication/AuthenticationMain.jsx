@@ -11,7 +11,7 @@ import Grid from "@mui/material/Grid";
 import Grow from "@mui/material/Grow";
 
 function AuthenticationMain() {
-  let show = true;
+  const styles = makeStyles();
   const [formType, setShowFormType] = useState("");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -41,13 +41,13 @@ function AuthenticationMain() {
       style={{
         backgroundImage:
           "url(" +
-          "https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "https://images.pexels.com/photos/956999/milky-way-starry-sky-night-sky-star-956999.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
       }}
     >
-      <Grow in={show}>
-        <Box sx={boxStyles}>
+      <Grow in={true}>
+        <Box sx={styles.box}>
           {formType === "" && (
-            <Card raised sx={cardStyles}>
+            <Card raised sx={styles.card}>
               <Typography variant={"h6"} sx={{ textAlign: "center" }} color="primary">
                 Welcome to
               </Typography>
@@ -65,14 +65,13 @@ function AuthenticationMain() {
             </Card>
           )}
           {formType === "Forgot Password" ? (
-            <Card raised sx={cardStyles}>
+            <Card raised sx={styles.card}>
               <Typography variant={"h5"} sx={{ textAlign: "center" }} color="primary">
                 Forgot password
               </Typography>
               <Grid container sx={{ mt: 4, justifyContent: "center" }}>
                 <Box component="form" onSubmit={onSubmit} autoComplete="off">
                   <Inputs
-                    key={"email"}
                     type={"email"}
                     label={"email"}
                     name={"email"}
@@ -101,7 +100,7 @@ function AuthenticationMain() {
               </Grid>
             </Card>
           ) : (
-            <Authentication formType={formType} setShowFormType={setShowFormType} />
+            <Authentication formType={formType} setShowFormType={setShowFormType} styles={styles} />
           )}
         </Box>
       </Grow>
@@ -109,26 +108,27 @@ function AuthenticationMain() {
   );
 }
 
-const cardStyles = {
-  minWidth: 300,
-  maxWidth: 300,
-  maxHeight: "67vh",
-  p: 4,
-  mt: "20vh",
-  mb: "20vh",
-  zIndex: 999,
-  position: "relative",
-  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)",
-  borderRadius: "10px",
-  backgroundColor: "white",
-  display: "flex",
-  flexDirection: "column",
-};
-
-const boxStyles = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-};
+export const makeStyles = () => ({
+  card: {
+    minWidth: 300,
+    maxWidth: 300,
+    maxHeight: "67vh",
+    p: 4,
+    mt: "20vh",
+    mb: "20vh",
+    zIndex: 999,
+    position: "relative",
+    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)",
+    borderRadius: "10px",
+    backgroundColor: "white",
+    display: "flex",
+    flexDirection: "column",
+  },
+  box: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 
 export default AuthenticationMain;

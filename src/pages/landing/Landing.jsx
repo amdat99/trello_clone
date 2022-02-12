@@ -1,22 +1,32 @@
-import React, { useState } from "react";
-import Card from "@mui/material/Card";
-import Box from "@mui/material/Box";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Divider from "@mui/material/Divider";
-import Typography from "@mui/material/Typography";
-import ListItemText from "@mui/material/ListItemText";
+import React, { useState, useEffect } from "react";
+import {
+  Button,
+  Typography,
+  List,
+  ListItemText,
+  ListItemButton,
+  Divider,
+  Box,
+  ImageList,
+  ImageListItem,
+  ImageListItemBar,
+  Card,
+  ListItemIcon,
+} from "@mui/material";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import { requestHandler } from "../../helpers/requestHandler";
 import { useUserStore } from "../../store";
 import shallow from "zustand/shallow";
-import Button from "@mui/material/Button";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useFetchData from "../../hooks/useFetchData";
+import useSocketController from "../../hooks/useSocketController";
 
-function Landing(props) {
-  const [logout, user] = useUserStore((state) => [state.logout, state.user], shallow);
+function Landing() {
+  const navigate = useNavigate();
+  const [logout, user, currentOrg, setCurrentOrg] = useUserStore(
+    (state) => [state.logout, state.user, state.currentOrg, state.setCurrentOrg],
+    shallow
+  );
   const [testOrg, setTestOrg] = useState([]);
   const { data, fetchData, error, isFetching } = useFetchData(
     {
@@ -26,8 +36,15 @@ function Landing(props) {
     "org/user",
     false
   );
+  const { data: boards, fetchData: fetchBoards } = useFetchData(
+    {
+      type: "post",
+      route: "board/all",
+    },
+    "board/all"
+  );
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchData();
     requestHandler({ route: "org/all", type: "post" }).then((res) => {
       if (res && !res.errors && res?.length) {
@@ -35,6 +52,22 @@ function Landing(props) {
       }
     });
   }, []);
+
+  useEffect(() => {
+    const checkOrgAndFetchBoards = () => {
+      requestHandler({ route: "org/enter", type: "post", body: { name: currentOrg } }).then((data) => {
+        if (data !== "entered organisation successfully") {
+          alert("error entering org");
+        } else {
+          fetchBoards();
+        }
+      });
+    };
+
+    if (currentOrg) {
+      checkOrgAndFetchBoards();
+    }
+  }, [currentOrg]);
 
   const onLogout = () => {
     requestHandler({ route: "auth/logout", type: "post" }).then((data) => {
@@ -45,7 +78,6 @@ function Landing(props) {
       }
     });
   };
-
   const addToOrg = (name) => {
     requestHandler({ route: "org/adduser", type: "post", body: { name, profile_id: user.profile_id } }).then((res) => {
       if (res === "user added successfully") {
@@ -56,7 +88,7 @@ function Landing(props) {
     });
   };
   // for reference:
-  console.log(error, isFetching);
+  console.log(data, isFetching);
   return (
     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 10 }}>
       <Button
@@ -66,20 +98,46 @@ function Landing(props) {
       >
         Logout
       </Button>
-
       {data && (
         <>
           <Card sx={{ maxWidth: "60%", p: 2, position: "absolute", left: 10, top: 10 }}>
             {user && <Typography variant="h6"> Organisations for {user.name} </Typography>}
             {data.map((org) => (
-              <Link to={`/board/${org.name}`} key={org.name}>
+              // <Link to={`/board/${org.name}`} key={org.name}>
+              <span onClick={() => setCurrentOrg(org.name)} key={org.name}>
                 <Button variant="contained">{org.name}</Button>
-              </Link>
+              </span>
             ))}
           </Card>
         </>
       )}
+      <Box>
+        {currentOrg && (
+          <Typography sx={{ position: "relative", bottom: 60 }} color="primary" variant="h6">
+            Boards for {currentOrg}
+          </Typography>
+        )}
 
+        <ImageList>
+          {boards &&
+            boards.map((item) => (
+              <ImageListItem
+                sx={{ cursor: "pointer" }}
+                key={item.name}
+                onClick={() => navigate(`/board/${currentOrg}?board=${item.name}`)}
+              >
+                <img
+                  style={{ width: "200px", height: "100px", margin: "4px" }}
+                  src={`${item.image}`}
+                  srcSet={`${item.image}`}
+                  alt={item.name}
+                  loading="lazy"
+                />
+                <ImageListItemBar title={item.name} subtitle={<span>{item.created_at}</span>} position="below" />
+              </ImageListItem>
+            ))}
+        </ImageList>
+      </Box>
       <Card sx={{ maxWidth: "60%", p: 3, ml: 2, position: "absolute", right: 10, top: "15%" }}>
         <List component="nav" aria-label="orgsanisations">
           <Typography variant="caption" gutterBottom>

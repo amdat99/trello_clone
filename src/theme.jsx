@@ -6,6 +6,7 @@ const getTheme = (mode) => ({
           // palette values for light mode
           primary: {
             main: "#3f51b5",
+            secondary: "#2c387e",
           },
           secondary: {
             main: "#f50057",
@@ -22,11 +23,13 @@ const getTheme = (mode) => ({
               textTransform: "none",
             },
           },
+          button: { textTransform: "none" },
         }
       : {
           // palette values for dark mode
           primary: {
             main: "#3f51b5",
+            secondary: "#2c387e",
           },
           secondary: {
             main: "#f50057",
@@ -43,6 +46,7 @@ const getTheme = (mode) => ({
               textTransform: "none",
             },
           },
+          button: { textTransform: "none" },
         }),
   },
 });

@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Divider from "@mui/material/Divider";
+import { Divider, Button, Box } from "@mui/material/";
 import { requestHandler } from "../../helpers/requestHandler";
+import { useUserStore, useRequestStore } from "../../store";
+import shallow from "zustand/shallow";
 import useFetchData from "../../hooks/useFetchData";
 import useMousePosition from "../../hooks/useMousePosition";
-import { useUserStore } from "../../store";
-import shallow from "zustand/shallow";
+import useSocketController from "../../hooks/useSocketController";
 import List from "../../components/lists/List";
 import BoardMenu from "../../components/boardMenu/BoardMenu";
 import Sidebar from "../../components/sidebar/Sidebar";
 import ContextMenu from "components/contextMenu/ContextMenu";
+import { sendRefetchReq, sendBoardrefetchReq } from "../../sockets/orgSockets";
 import { Board as BoardType, List as ListType } from "../../components/models";
 
 export type CurrentListId = {
@@ -23,6 +23,13 @@ export type CurrentListId = {
 export type CreateType = {
   val: string;
   onCtxMenu?: boolean;
+};
+
+export type Params = {
+  board: string;
+  taskId: string;
+  orgName: string;
+  navigate: Function;
 };
 
 const Board: React.FC = () => {
@@ -39,10 +46,9 @@ const Board: React.FC = () => {
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [showCtxMenu, setCtxShowMenu] = useState(false);
   const [currentList, setCurrentList] = useState<CurrentListId>({ data: null, has_tasks: false, rerender: false });
-  const [currentBoard, setCurrentBoard, user] = useUserStore(
-    (state) => [state.currentBoard, state.setCurrentBoard, state.user],
-    shallow
-  );
+  const [currentBoard, setCurrentBoard] = useState(null);
+  const [user] = useUserStore((state) => [state.user], shallow);
+  const socketData = useRequestStore((state) => state.socketData, shallow);
   const { data: boards, fetchData: fetchBoards } = useFetchData(
     {
       type: "post",
@@ -53,8 +59,9 @@ const Board: React.FC = () => {
   let background =
     "https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940";
   let orgName = params.orgName;
-  // const taskId = searchParams.get("task");
+  const taskId = searchParams.get("task");
   const board = searchParams.get("board");
+  const [,] = useSocketController(board);
 
   useEffect(() => {
     let notMounted = false;
@@ -75,7 +82,22 @@ const Board: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (board && boards && currentBoard?.name !== board) {
+    if (socketData) {
+      socketData.type === "board" && fetchBoards();
+      console.log(socketData);
+      if (socketData.type === "task" && socketData.prevId) {
+        setCurrentResId({ id: socketData.prevId, rerender: currentResId.rerender + 1 });
+        setTimeout(() => {
+          setCurrentResId({ id: socketData.id, rerender: 0 });
+        }, 200);
+      } else if (socketData.type === "task") {
+        setCurrentResId({ id: socketData.id, rerender: currentResId.rerender + 1 });
+      }
+    }
+  }, [socketData]);
+
+  useEffect(() => {
+    if (board && boards) {
       boards.forEach((b: BoardType) => {
         if (b.name === board) {
           setCurrentBoard(b);
@@ -92,6 +114,7 @@ const Board: React.FC = () => {
     }).then((data) => {
       if (data === "board created successfully") {
         fetchBoards();
+        sendRefetchReq({ type: "board" });
       } else {
         alert(data?.errors ? data.errors : "no data found");
       }
@@ -111,12 +134,22 @@ const Board: React.FC = () => {
         id: id,
         tasks: JSON.stringify(currentTasks),
         board_name: currentBoard.name,
+        created_by: user.name,
         assigned_users: JSON.stringify([{ name: user.name, color: user.color }]),
         updateList: !currentList.has_tasks ? true : false,
+        labels: JSON.stringify([{ name: currentList.data[0].name, color: "info", id }]),
+        task_activity: JSON.stringify([
+          {
+            message: ` created this task on ${currentList.data[0].name}`,
+            name: user.name,
+            color: user.color,
+            date: new Date().toLocaleString(),
+          },
+        ]),
       },
     }).then((res) => {
       if (res === "task created successfully") {
-        setCurrentResId({ id: currentList.data.id, rerender: Date.now() });
+        sendBoardrefetchReq({ type: "task", id: currentList.data[0].id });
       } else {
         alert(res?.errors ? res.errors : "something went wrong");
       }
@@ -170,10 +203,10 @@ const Board: React.FC = () => {
           setCurrentBoard={setCurrentBoard}
           position={position}
           // fetchBoards={fetchBoards}
-          orgName={orgName}
           currentBoard={currentBoard?.data}
           user={user}
           createType={{ data: createType, set: setCreateType }}
+          params={{ board, orgName, taskId, navigate }}
           createValue={createValue}
           setCreateValue={setCreateValue}
           createBoard={createBoard}
@@ -186,9 +219,14 @@ const Board: React.FC = () => {
         currentResId={currentResId}
         setCurrentResId={setCurrentResId}
         handleAdd={handleAdd}
+        user={user}
+        onShowCtxMenu={onShowCtxMenu}
         setTodo={setTodo}
+        params={{ board, orgName, taskId, navigate }}
         stickyMenu={stickyMenu}
+        position={position}
         createValue={createValue}
+        socketData={socketData}
         current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentList, setList: setCurrentList }}
       />
       <Sidebar

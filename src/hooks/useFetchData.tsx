@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { requestHandler } from "../helpers/requestHandler";
+import shallow from "zustand/shallow";
 import { useRequestStore } from "../store";
 // import UserContext from '../App';
 type Options = {
@@ -32,7 +33,10 @@ const useFetchData = (
   const [error, setError] = useState<Error | null>(null);
   const [isFetching, setIsFetching] = useState(false);
   const [queriedCacheData, setQueriedCacheData] = useState<CacheData[]>([]);
-  const [currentCacheData, setCurrentCacheData] = useRequestStore((state) => [state[id], state.setCurrentCacheData]);
+  const [currentCacheData, setCurrentCacheData] = useRequestStore(
+    (state) => [state[id], state.setCurrentCacheData],
+    shallow
+  );
   //For reference
   // const { currentCacheData, setCurrentCacheData } = React.useContext(UserContext);
 

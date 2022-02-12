@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import Task from "../Task/Task";
-import LinearProgress from "@mui/material/LinearProgress";
 import useFetchData from "../../hooks/useFetchData";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -11,14 +10,25 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import Inputs from "../inputs/Inputs";
 
 import "../../App.css";
+import { ConstructionOutlined } from "@mui/icons-material";
 
-function ListContent({ todos, list, setTodos, currentResId, provided, current, todo, setTodo, handleAdd, lists }) {
-  const {
-    data: listData,
-    fetchData: fetchTasks,
-    error,
-    isFetching,
-  } = useFetchData({ type: "post", route: "list/all", body: { id: list.id } }, list.id);
+function ListContent({
+  todos,
+  list,
+  setTodos,
+  currentResId,
+  provided,
+  current,
+  todo,
+  setTodo,
+  handleAdd,
+  lists,
+  setUrl,
+}) {
+  const { data: listData, fetchData: fetchTasks } = useFetchData(
+    { type: "post", route: "list/all", body: { id: list.id } },
+    list.id
+  );
 
   useEffect(() => {
     if (currentResId.id === list.id) {
@@ -39,14 +49,11 @@ function ListContent({ todos, list, setTodos, currentResId, provided, current, t
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listData, lists]);
 
-  if (current.list?.data && current.list.data[0]) {
-    console.log(current.list.data[0]);
-  }
   return (
     <>
       {todos[list.id] &&
         todos[list.id].map((todo, i) => (
-          <Task key={todo.id} todo={todo} setTodos={setTodos} todos={todos} i={i} id={list.id} />
+          <Task key={todo.id} todo={todo} setTodos={setTodos} todos={todos} i={i} id={list.id} setUrl={setUrl} />
         ))}
       {provided.placeholder}
       {current.list.data?.id !== list.id && (
@@ -79,7 +86,7 @@ function ListContent({ todos, list, setTodos, currentResId, provided, current, t
         <Box component={"form"} onSubmit={handleAdd}>
           <Inputs type="text" value={todo} handleChange={setTodo} />
           <Box>
-            <Button type="submit" variant="contained" size="small">
+            <Button sx={{ textTransform: "none" }} type="submit" variant="contained" size="small">
               Add
             </Button>
             <IconButton

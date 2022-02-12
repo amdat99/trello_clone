@@ -4,7 +4,7 @@ import { useUserStore } from "./store";
 import shallow from "zustand/shallow";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 // export const UserContext = React.createContext({});
-
+import NotFound from "./pages/notFound/NotFound";
 import getTheme from "./theme";
 import "./App.css";
 
@@ -30,12 +30,15 @@ const App = () => {
               <Route path="/" element={<Landing />} />
               <Route path="/board" element={<Board />}>
                 <Route path=":orgName" element={<Board />} />
+                <Route element={<Landing />} />
+                <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
           ) : (
             <Routes>
               <Route path="/" element={<AuthenticationMain />} />
               <Route path="/reset" element={<Reset />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           )}
         </Suspense>
