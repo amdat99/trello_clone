@@ -1,16 +1,35 @@
 import React, { useEffect } from "react";
 import MaterialTable from "@material-table/core";
-import { useNavigate } from "react-router-dom";
-import { Box, Fade, LinearProgress, Card, Button, Avatar, Tooltip } from "@mui/material";
+import { Fade, LinearProgress, Card, Button, Avatar, Tooltip } from "@mui/material";
 import { ExportCsv, ExportPdf } from "@material-table/exporters";
 import useFetchData from "../../hooks/useFetchData";
 
+const options = [
+  "public_id",
+  "description",
+  "assigned_users",
+  "task_activity",
+  "labels",
+  "created_by",
+  "status",
+  "board_name",
+  "updated_at",
+  "public_id",
+  "created_at",
+  "list_id",
+  "name",
+  "deleted_at",
+  "image",
+  "assigned_users",
+  "id",
+  "comments",
+];
 function Table({ orgName }) {
-  const navigate = useNavigate();
   const { data: tasks, fetchData: fetchTasks } = useFetchData(
     {
       type: "post",
       route: "task/orgtasks",
+      body: { options },
     },
     "task/orgtasks"
   );
