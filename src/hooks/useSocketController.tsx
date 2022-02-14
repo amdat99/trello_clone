@@ -10,19 +10,21 @@ function useSocketController(room: string) {
       initiateSocket(room);
     }
 
-    enterRefetchReq((err: null, data: { type: string; id: string }) => {
+    enterRefetchReq((err: null, data: { type: string; resId: string }) => {
       console.log(err);
-      let prevMsg: any = {};
-      if (data && !err && data !== prevMsg) {
+      let prevMsg: string;
+      if (data && !err && data.resId !== prevMsg) {
         setSocketData(data);
+        prevMsg = data.resId;
       }
     });
 
     enterBoardRefetchReq((err: null, data: { type: string; id: string; resId: string; prevId?: string }) => {
       console.log(err);
-      let prevMsg: any = {};
-      if (data && !err && data !== prevMsg) {
+      let prevMsg: string;
+      if (data && !err && data.resId !== prevMsg) {
         setSocketData(data);
+        prevMsg = data.resId;
       }
     });
 

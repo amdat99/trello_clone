@@ -14,7 +14,7 @@ import CommentsActivity from "./Comments&Activity";
 import getTheme from "../../theme";
 import useFetchData from "../../hooks/useFetchData";
 import { requestHandler } from "../../helpers/requestHandler";
-import { youtubeCommand, tableCommand } from "./utlis";
+import { youtubeCommand, tableCommand, options } from "./utlis";
 import "./styles.css";
 import { User, Task } from "../models";
 require("showdown-youtube");
@@ -35,9 +35,8 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   const {
     data: task,
     fetchData: fetchTask,
-    error,
     isFetching,
-  } = useFetchData({ type: "post", route: "task/single", body: taskId && { id: taskId } }, taskId && taskId);
+  } = useFetchData({ type: "post", route: "task/single", body: taskId && { id: taskId, options } }, taskId && taskId);
   const min600 = useMediaQuery("(min-width:600px)");
   const [uneditedDesc, setUnEditedDesc] = useState("");
   const [hasEdited, setHasEdited] = useState(false);

@@ -24,3 +24,23 @@ export const tableCommand = {
     | Plain   | Value|`);
   },
 };
+
+export const options = [
+  "public_id",
+  "description",
+  "assigned_users",
+  "task_activity",
+  "labels",
+  "created_by",
+  "status",
+  "updated_at",
+  "public_id",
+  "created_at",
+  "list_id",
+  "name",
+  "deleted_at",
+  "image",
+  "assigned_users",
+  "id",
+  "comments",
+];

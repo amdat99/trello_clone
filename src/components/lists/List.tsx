@@ -259,7 +259,7 @@ const List = ({
           Add
         </button> */}
             <div>
-              <Droppable droppableId="board" type="ROW" direction="horizontal">
+              <Droppable droppableId="board" type="ROW" direction={min700 ? "horizontal" : "vertical"}>
                 {(provided) => (
                   <div ref={provided.innerRef} {...provided.droppableProps} className="container ">
                     {/* //causes issues with drag drop */}
