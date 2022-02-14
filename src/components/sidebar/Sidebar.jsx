@@ -3,17 +3,18 @@ import { Card, Box, Divider } from "@mui/material/";
 import CottageOutlinedIcon from "@mui/icons-material/CottageOutlined";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import TableViewIcon from "@mui/icons-material/TableView";
+import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
 // import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 
-function Sidebar({ stickyMenu, setStickyMenu, setShowDetail, showDetail, navigate }) {
+function Sidebar({ stickyMenu, setStickyMenu, setShowDetail, showDetail, navigate, setView }) {
   const spanStyle = showDetail || stickyMenu ? { display: "flex", marginLeft: "10px" } : { display: "none" };
   const divStyle = { display: "flex", flexDirection: "row", width: "200px" };
 
   return (
     <>
       <div style={{ width: "180px" }} onMouseOver={() => setShowDetail(true)} onMouseOut={() => setShowDetail(false)}>
-        <Card sx={{ bgColor: "rgb(234, 238, 238)" }} className={stickyMenu ? "sideBar1" : "sideBar"}>
+        <Card raised sx={{ bgColor: "rgb(234, 238, 238)" }} className={stickyMenu ? "sideBar1" : "sideBar"}>
           <div style={{ position: "relative", right: "5px", marginTop: "5px" }}>
             {/* {showDetail && <Typography sx={{ mb: 1, ml: 0.5 }}>Menu</Typography>} */}
             <div onClick={() => navigate("/")} style={divStyle}>
@@ -21,8 +22,12 @@ function Sidebar({ stickyMenu, setStickyMenu, setShowDetail, showDetail, navigat
               <span style={spanStyle}>Home</span>
             </div>
             <Divider />
-
-            <div onClick={() => console.log("test")} style={divStyle}>
+            <div onClick={() => setView("list")} style={divStyle}>
+              <ViewKanbanIcon />
+              <span style={spanStyle}>Board View</span>
+            </div>
+            <Divider />
+            <div onClick={() => setView("table")} style={divStyle}>
               <TableViewIcon />
               <span style={spanStyle}>Table View</span>
             </div>

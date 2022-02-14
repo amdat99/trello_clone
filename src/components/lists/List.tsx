@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { Typography, Box, Fade } from "@mui/material/";
 import IconButton from "@mui/material/IconButton";
 // import Slide from "@mui/material/Slide";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -250,63 +249,65 @@ const List = ({
         />
       )}
       <DragDropContext onDragEnd={onDragEnd}>
-        <Box m={2} ml={stickyMenu && min700 ? 27 : 4} width={min1000 ? (stickyMenu ? "95%" : "105%") : "95%"}>
-          <Typography variant="h4" color={"white"} sx={{ ml: 0.8 }}>
-            {current.board ? current.board?.name : "Board"}
-          </Typography>
-          {/* // for reference */}
-          {/* <button onClick={handleAdd} className="input_submit">
+        <Typography variant="h4" color={"white"} sx={{ ml: 0.8 }}>
+          {current.board ? current.board?.name : "Board"}
+        </Typography>
+        <Fade in={listData !== null} style={{ transitionDelay: "100ms" }}>
+          <Box m={2} ml={stickyMenu && min700 ? 27 : 4} width={min1000 ? (stickyMenu ? "95%" : "105%") : "95%"}>
+            {/* // for reference */}
+            {/* <button onClick={handleAdd} className="input_submit">
           Add
         </button> */}
-          <div>
-            <Droppable droppableId="board" type="ROW" direction="horizontal">
-              {(provided) => (
-                <div ref={provided.innerRef} {...provided.droppableProps} className="container ">
-                  {/* //causes issues with drag drop */}
-                  {/* <> {provided.placeholder}</> */}
-                  {listData &&
-                    listData.map((list: ListType, i: number) => (
-                      <Draggable key={list.id} draggableId={list.id.toString()} index={i}>
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={`todos hide-scroll`}
-                          >
-                            <Droppable key={list?.id} droppableId={list?.id} type="COLUMN" direction="vertical">
-                              {(provided, _snapshot) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.droppableProps}
-                                  style={{ display: "flex", flexDirection: "column" }}
-                                >
-                                  <Typography sx={{ opacity: 0.95 }}>{list.name}</Typography>
-                                  <ListContent
-                                    list={list}
-                                    current={current}
-                                    lists={listData}
-                                    todo={todo}
-                                    setTodo={setTodo}
-                                    handleAdd={handleAdd}
-                                    todos={todos}
-                                    setTodos={setTodos}
-                                    currentResId={currentResId}
-                                    provided={provided}
-                                    setUrl={setUrl}
-                                  />
-                                </div>
-                              )}
-                            </Droppable>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                </div>
-              )}
-            </Droppable>
-          </div>
-        </Box>
+            <div>
+              <Droppable droppableId="board" type="ROW" direction="horizontal">
+                {(provided) => (
+                  <div ref={provided.innerRef} {...provided.droppableProps} className="container ">
+                    {/* //causes issues with drag drop */}
+                    {/* <> {provided.placeholder}</> */}
+                    {listData &&
+                      listData.map((list: ListType, i: number) => (
+                        <Draggable key={list.id} draggableId={list.id.toString()} index={i}>
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className={`todos hide-scroll`}
+                            >
+                              <Droppable key={list?.id} droppableId={list?.id} type="COLUMN" direction="vertical">
+                                {(provided, _snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    style={{ display: "flex", flexDirection: "column" }}
+                                  >
+                                    <Typography sx={{ opacity: 0.95 }}>{list.name}</Typography>
+                                    <ListContent
+                                      list={list}
+                                      current={current}
+                                      lists={listData}
+                                      todo={todo}
+                                      setTodo={setTodo}
+                                      handleAdd={handleAdd}
+                                      todos={todos}
+                                      setTodos={setTodos}
+                                      currentResId={currentResId}
+                                      provided={provided}
+                                      setUrl={setUrl}
+                                    />
+                                  </div>
+                                )}
+                              </Droppable>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </Box>
+        </Fade>
       </DragDropContext>
     </>
   );

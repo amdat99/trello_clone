@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Authentication from "./Authentication";
 import Typography from "@mui/material/Typography";
 import Inputs from "../../components/inputs/Inputs";
@@ -15,7 +15,18 @@ function AuthenticationMain() {
   const [formType, setShowFormType] = useState("");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+  // const [deviceInfo, setDeviceInfo] = useState(null);
   const [inputNotChanged, setInputNotChanged] = useState(true);
+
+  // useEffect(() => {
+  //   if (formType === "Forgot Password") {
+  //     try {
+  //       fetch("https://geolocation-db.com/json/").then((data) => setDeviceInfo(data.json()));
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  // }, [formType]);
 
   const onSubmit = (e) => {
     e.preventDefault();

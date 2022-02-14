@@ -1,13 +1,17 @@
-import React from "react";
-import { Slide, Typography, Card, Chip, Divider } from "@mui/material/";
-import "react-mde/lib/styles/css/react-mde-all.css";
+import React, { useState } from "react";
+import { Slide, Card, Divider } from "@mui/material/";
+import Tags from "../tags/Tags";
+import { Task } from "../models";
 
-function TaskSideBar({ dividerStyles, taskData }) {
+type Props = {
+  taskData: Task;
+  dividerStyles: Object;
+};
+function TaskSideBar({ dividerStyles, taskData }: Props) {
   return (
     <Slide direction="left" in={true} mountOnEnter unmountOnExit style={{ transitionDelay: "100ms" }}>
       <Card
-        className="hide-scroll"
-        raised
+        className="hide-scroll todos__single1"
         sx={{
           p: 1,
           mt: 5,
@@ -17,25 +21,17 @@ function TaskSideBar({ dividerStyles, taskData }) {
           overflowY: "scroll",
           ml: 70.1,
           opacity: 0.9,
+          ":hover": {
+            border: "1px solid black",
+          },
         }}
       >
-        <Divider sx={{ mt: 4 }} />
-        <Typography color="primary" variant="subtitle1" gutterBottom>
-          Tags:
-        </Typography>
-        {taskData?.labels &&
-          taskData.labels.map((label, i: number) => (
-            <Chip key={i} sx={chipStyles} label={label.name} color={label.color} size="small" />
-          ))}
+        <Divider sx={{ mt: 2 }} />
+        <Tags taskData={taskData} />
         <Divider sx={dividerStyles} />
       </Card>
     </Slide>
   );
 }
 
-const chipStyles = {
-  mr: 0.5,
-  mt: 0.5,
-  fontSize: 10,
-};
 export default TaskSideBar;

@@ -47,7 +47,7 @@ function Task({ todo, setTodos, todos, i, id, setUrl }: Props) {
     <>
       {todo?.id && todo?.id !== undefined && (
         <Draggable draggableId={todo.id.toString()} index={i} key={i}>
-          {(provided) => (
+          {(provided, _snapshot) => (
             <form
               key={i}
               onClick={() => setUrl(todo.id.toString())}

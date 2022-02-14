@@ -23,6 +23,11 @@
   box-shadow: 0 0 5px black;
 }
 
+.todos__single1 {
+  background-image: url("https://image.freepik.com/free-vector/white-abstract-background-design_23-2148825582.jpg");
+  margin-bottom: 5px;
+}
+
 .todos__single {
   background-image: url("https://image.freepik.com/free-vector/white-abstract-background-design_23-2148825582.jpg");
   margin-bottom: 5px;
@@ -54,11 +59,11 @@
 }
 
 .drag {
-  box-shadow: 0 0 20px black;
+  box-shadow: 0 0 1px #3f51b5;
 }
 
 .todos__single:hover {
-  box-shadow: 0 0 5px black;
+  box-shadow: 0 0 1px #3f51b5;
   transform: scale(1.02);
 }
 
@@ -75,43 +80,4 @@
   margin-left: 10px;
   font-size: 25px;
   cursor: pointer;
-}
-
-.sideBar {
-  position: absolute;
-  height: 85.5vh;
-  display: flex;
-  width: 10px;
-  cursor: pointer;
-  opacity: 0.5;
-  flex-direction: column;
-  top: 50px;
-  background: rgb(234, 238, 238);
-  margin: 10px 10px 10px;
-  margin-left: 0px;
-  padding: 10px;
-  transition: all 0.4s cubic-bezier(0.25, 0.45, 0.45, 0.95);
-}
-
-.sideBar1 {
-  position: absolute;
-  height: 85.5vh;
-  background: rgb(234, 238, 238);
-  display: flex;
-  width: 10px;
-  flex-direction: column;
-  top: 50px;
-  margin: 10px 10px 10px 10px;
-  cursor: pointer;
-  margin-left: 0px;
-  padding: 10px;
-  padding-right: 180px;
-  opacity: 0.98;
-  transition: all 0.4s cubic-bezier(0.25, 0.45, 0.45, 0.95);
-}
-
-.sideBar:hover {
-  padding-right: 180px;
-  opacity: 0.98;
-  transition: all 0.4s cubic-bezier(0.25, 0.45, 0.45, 0.95);
 }

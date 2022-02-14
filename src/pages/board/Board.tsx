@@ -11,8 +11,9 @@ import List from "../../components/lists/List";
 import BoardMenu from "../../components/boardMenu/BoardMenu";
 import Sidebar from "../../components/sidebar/Sidebar";
 import ContextMenu from "components/contextMenu/ContextMenu";
+import Table from "../../components/table/Table";
 import { sendRefetchReq, sendBoardrefetchReq } from "../../sockets/orgSockets";
-import { Board as BoardType, List as ListType } from "../../components/models";
+import { Board as BoardType } from "../../components/models";
 
 export type CurrentListId = {
   data: any;
@@ -38,6 +39,7 @@ const Board: React.FC = () => {
   const { x, y } = useMousePosition();
   let params = useParams();
   const [todo, setTodo] = useState("");
+  const [view, setView] = useState("list");
   const [createValue, setCreateValue] = useState({ name: "", image: "" });
   const [createType, setCreateType] = useState({ val: "", onCtxMenu: false });
   const [currentResId, setCurrentResId] = useState({ id: "", rerender: 0 });
@@ -213,27 +215,31 @@ const Board: React.FC = () => {
           currentList={currentList}
         />
       </Box>
-      <List
-        todo={todo}
-        currentResId={currentResId}
-        setCurrentResId={setCurrentResId}
-        handleAdd={handleAdd}
-        user={user}
-        onShowCtxMenu={onShowCtxMenu}
-        setTodo={setTodo}
-        params={{ board, orgName, taskId, navigate }}
-        stickyMenu={stickyMenu}
-        position={position}
-        createValue={createValue}
-        socketData={socketData}
-        current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentList, setList: setCurrentList }}
-      />
+      {view === "list" && (
+        <List
+          todo={todo}
+          currentResId={currentResId}
+          setCurrentResId={setCurrentResId}
+          handleAdd={handleAdd}
+          user={user}
+          onShowCtxMenu={onShowCtxMenu}
+          setTodo={setTodo}
+          params={{ board, orgName, taskId, navigate }}
+          stickyMenu={stickyMenu}
+          position={position}
+          createValue={createValue}
+          socketData={socketData}
+          current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentList, setList: setCurrentList }}
+        />
+      )}
+      {view === "table" && <Table orgName={orgName} setView={setView} />}
       <Sidebar
         setStickyMenu={setStickyMenu}
         stickyMenu={stickyMenu}
         setShowDetail={setShowDetail}
         showDetail={showDetail}
         navigate={navigate}
+        setView={setView}
       />
     </Box>
   );

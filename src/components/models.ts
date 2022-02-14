@@ -1,9 +1,3 @@
-export type Todo = {
-  id: number;
-  todo: string;
-  isDone: boolean;
-};
-
 export type User = {
   id?: string;
   profile_id: string;
@@ -38,6 +32,7 @@ export type List = {
   status: string;
   board_id: string;
   created_at: string | Date;
+  labels?: string | Labels[];
   updated_at: string | Date;
   has_tasks: boolean;
   name: string;
@@ -88,7 +83,7 @@ export type Task = {
   updated_at: string | Date;
   name: string;
   description: string;
-  labels: string;
+  labels?: Labels[];
   list_name?: string;
   created_by: string;
   assigned_users?: Array<AssignedUsers>;
@@ -102,6 +97,13 @@ export type CreateVal = {
   name: string;
   description?: string;
   image?: string;
+};
+
+export type Labels = {
+  name: string;
+  color: string;
+  data?: string;
+  id?: string;
 };
 
 type AssignedUsers = {

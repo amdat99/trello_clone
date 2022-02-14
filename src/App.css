@@ -40,7 +40,8 @@ a:visited {
   margin: 5px 5px 5px 5px;
   flex-direction: column;
   padding: 8px;
-  background-color: rgb(234, 238, 238);
+  /* background-color: rgb(234, 238, 238); */
+  background-color: #f2f2f2;
   overflow: scroll;
   width: 45%;
   max-height: 86vh;
@@ -69,4 +70,45 @@ img[alt="drawing"] {
 
 .done {
   color: green;
+}
+
+.sideBar {
+  position: absolute;
+  height: 85.5vh;
+  display: flex;
+  width: 10px;
+  cursor: pointer;
+  opacity: 0.5;
+  flex-direction: column;
+  top: 50px;
+  background: rgb(234, 238, 238);
+  margin: 10px 10px 10px;
+  margin-left: 0px;
+  z-index: 99999;
+  padding: 10px;
+  transition: all 0.4s cubic-bezier(0.25, 0.45, 0.45, 0.95);
+}
+
+.sideBar1 {
+  position: absolute;
+  height: 85.5vh;
+  background: rgb(234, 238, 238);
+  display: flex;
+  width: 10px;
+  flex-direction: column;
+  top: 50px;
+  margin: 10px 10px 10px 10px;
+  cursor: pointer;
+  z-index: 99999;
+  margin-left: 0px;
+  padding: 10px;
+  padding-right: 180px;
+  opacity: 0.98;
+  transition: all 0.4s cubic-bezier(0.25, 0.45, 0.45, 0.95);
+}
+
+.sideBar:hover {
+  padding-right: 180px;
+  opacity: 0.98;
+  transition: all 0.4s cubic-bezier(0.25, 0.45, 0.45, 0.95);
 }

@@ -14,9 +14,22 @@ import CommentsActivity from "./Comments&Activity";
 import getTheme from "../../theme";
 import useFetchData from "../../hooks/useFetchData";
 import { requestHandler } from "../../helpers/requestHandler";
+import { youtubeCommand, tableCommand } from "./utlis";
 import "./styles.css";
+import { User, Task } from "../models";
+require("showdown-youtube");
 
-function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu, position }) {
+type Props = {
+  taskId: string;
+  user: User;
+  setUrl: (url: string) => void;
+  todos: any;
+  position: { x: number; y: number };
+  setCurrentResId: ({ id: string, rerender: number }) => void;
+  onShowCtxMenu: Function;
+};
+
+function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu, position }: Props) {
   const theme = getTheme("light").palette;
   const styles = makeStyles(theme.primary.main);
   const {
@@ -33,13 +46,13 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   const [showAssignedUsers, setShowAssignedUsers] = useState(false);
   const [selectedTab, setSelectedTab] = useState<"write" | "preview">("preview");
   const reqData: any = { req: null };
-
+  const commands = getDefaultToolbarCommands();
   const converter = new Showdown.Converter({
     tables: true,
     simplifiedAutoLink: true,
     strikethrough: true,
     tasklists: true,
-    extensions: [xssFilter],
+    extensions: [xssFilter, "youtube"],
   });
 
   useEffect(() => {
@@ -61,28 +74,32 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   };
   const onSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (isFetching || loading) alert("please wait");
+
     selectedTab === "write" && setSelectedTab("preview");
-    if (!hasEdited && !user) return;
+    if ((!hasEdited && !user) || isFetching || loading) return;
     setLoading(true);
+
     const tasks = taskData;
     const activity = taskData.task_activity;
     const currentTaskData = [];
-    getAssignedUsers(currentTaskData, taskData.assigned_users);
     const date = new Date().toLocaleString();
+
+    getAssignedUsers(currentTaskData, taskData.assigned_users);
+
     try {
       pushNewActivity(activity, date, " updated this task ");
     } catch (e) {
       setLoading(false);
       return alert(e);
     }
+
     delete tasks.assigned_users;
     delete tasks.labels;
     delete tasks.task_activity;
     delete tasks.comments;
-
     tasks.updated_at = date;
     tasks.task_activity = JSON.stringify(activity);
+
     requestHandler({
       type: "put",
       route: "task/update",
@@ -131,10 +148,12 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   const onAssignUser = (user: { user_name: string; color: string; id: string }) => {
     const currentTaskData = [];
     const task_activity = taskData.task_activity;
-    pushNewActivity(task_activity, new Date().toLocaleString(), ` to this task `, user.user_name);
     let users = taskData.assigned_users;
+
+    pushNewActivity(task_activity, new Date().toLocaleString(), ` to this task `, user.user_name);
     users.push({ name: user.user_name, color: user.color });
     getAssignedUsers(currentTaskData, users);
+
     requestHandler({
       type: "put",
       route: "task/updatedata",
@@ -173,6 +192,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   const save = (data: any) => {
     console.log("save");
   };
+
   return (
     <>
       <Modal open={taskId !== "" || taskId !== null} onClose={() => setUrl(null)} sx={styles.modal}>
@@ -248,9 +268,13 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                   <div onClick={selectedTab === "preview" ? () => setSelectedTab("write") : () => {}}>
                     <ReactMde
                       value={taskData?.description || ""}
+                      commands={{
+                        youtube: youtubeCommand,
+                        table: tableCommand,
+                      }}
                       onChange={(val) => setTaskData({ ...taskData, description: val })}
                       selectedTab={selectedTab}
-                      toolbarCommands={selectedTab === "preview" ? [[]] : getDefaultToolbarCommands()}
+                      toolbarCommands={selectedTab === "preview" ? [[]] : [...commands, ["youtube"]]}
                       onTabChange={setSelectedTab}
                       generateMarkdownPreview={(markdown) => Promise.resolve(converter.makeHtml(markdown))}
                       suggestionTriggerCharacters={["@"]}

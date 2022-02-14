@@ -14,12 +14,12 @@ import {
   ListItemIcon,
 } from "@mui/material";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
-import { requestHandler } from "../../helpers/requestHandler";
 import { useUserStore } from "../../store";
 import shallow from "zustand/shallow";
+import Sidebar from "../../components/sidebar/Sidebar";
+import { requestHandler } from "../../helpers/requestHandler";
 import { useNavigate } from "react-router-dom";
 import useFetchData from "../../hooks/useFetchData";
-import useSocketController from "../../hooks/useSocketController";
 
 function Landing() {
   const navigate = useNavigate();
@@ -28,6 +28,8 @@ function Landing() {
     shallow
   );
   const [testOrg, setTestOrg] = useState([]);
+  const [showDetail, setShowDetail] = useState(false);
+  const [stickyMenu, setStickyMenu] = useState(false);
   const { data, fetchData, error, isFetching } = useFetchData(
     {
       type: "post",
@@ -90,76 +92,86 @@ function Landing() {
   // for reference:
   console.log(data, isFetching);
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 10 }}>
-      <Button
-        variant="contained"
-        onClick={onLogout}
-        sx={{ mr: 2, maxWidth: "60%", position: "absolute", right: 10, top: 10 }}
-      >
-        Logout
-      </Button>
-      {data && (
-        <>
-          <Card sx={{ maxWidth: "60%", p: 2, position: "absolute", left: 10, top: 10 }}>
-            {user && <Typography variant="h6"> Organisations for {user.name} </Typography>}
-            {data.map((org) => (
-              // <Link to={`/board/${org.name}`} key={org.name}>
-              <span onClick={() => setCurrentOrg(org.name)} key={org.name}>
-                <Button variant="contained">{org.name}</Button>
-              </span>
-            ))}
-          </Card>
-        </>
-      )}
-      <Box>
-        {currentOrg && (
-          <Typography sx={{ position: "relative", bottom: 60 }} color="primary" variant="h6">
-            Boards for {currentOrg}
-          </Typography>
+    <>
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 10 }}>
+        <Button
+          variant="contained"
+          onClick={onLogout}
+          sx={{ mr: 2, maxWidth: "60%", position: "absolute", right: 10, top: 10 }}
+        >
+          Logout
+        </Button>
+        {data && (
+          <>
+            <Card sx={{ maxWidth: "60%", p: 2, position: "absolute", right: "10%", top: 10 }}>
+              {user && <Typography variant="h6"> Organisations for {user.name} </Typography>}
+              {data.map((org) => (
+                // <Link to={`/board/${org.name}`} key={org.name}>
+                <span onClick={() => setCurrentOrg(org.name)} key={org.name}>
+                  <Button variant="contained">{org.name}</Button>
+                </span>
+              ))}
+            </Card>
+          </>
         )}
+        <Box>
+          {currentOrg && (
+            <Typography sx={{ position: "absolute", top: 20, left: "4%" }} color="primary" variant="h6">
+              Boards for {currentOrg}
+            </Typography>
+          )}
 
-        <ImageList>
-          {boards &&
-            boards.map((item) => (
-              <ImageListItem
-                sx={{ cursor: "pointer" }}
-                key={item.name}
-                onClick={() => navigate(`/board/${currentOrg}?board=${item.name}`)}
-              >
-                <img
-                  style={{ width: "200px", height: "100px", margin: "4px" }}
-                  src={`${item.image}`}
-                  srcSet={`${item.image}`}
-                  alt={item.name}
-                  loading="lazy"
-                />
-                <ImageListItemBar title={item.name} subtitle={<span>{item.created_at}</span>} position="below" />
-              </ImageListItem>
-            ))}
-        </ImageList>
+          <ImageList cols={4} sx={{ position: "absolute", left: "4%", top: 40 }}>
+            {boards &&
+              boards.map((item) => (
+                <ImageListItem
+                  sx={{ cursor: "pointer" }}
+                  key={item.name}
+                  onClick={() => navigate(`/board/${currentOrg}?board=${item.name}`)}
+                >
+                  <img
+                    style={{ width: "200px", height: "100px", margin: "4px" }}
+                    src={`${item.image}`}
+                    srcSet={`${item.image}`}
+                    alt={item.name}
+                    loading="lazy"
+                  />
+                  <ImageListItemBar title={item.name} subtitle={<span>{item.created_at}</span>} position="below" />
+                </ImageListItem>
+              ))}
+          </ImageList>
+        </Box>
+        <Card sx={{ maxWidth: "60%", p: 3, ml: 2, position: "absolute", right: 10, top: "15%" }}>
+          <List component="nav" aria-label="orgsanisations">
+            <Typography variant="caption" gutterBottom>
+              Add user to org- (for testing only admins would be<br></br> able to add a user once in a orgnisation
+              currently all users are admin)
+            </Typography>
+            <Divider />
+            {testOrg.length > 0 &&
+              testOrg.map((org) => (
+                <div key={org.name}>
+                  <ListItemButton onClick={() => addToOrg(org.name)}>
+                    <ListItemIcon>
+                      <CorporateFareIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={org.name} />
+                  </ListItemButton>
+                  <Divider />
+                </div>
+              ))}
+          </List>
+        </Card>
       </Box>
-      <Card sx={{ maxWidth: "60%", p: 3, ml: 2, position: "absolute", right: 10, top: "15%" }}>
-        <List component="nav" aria-label="orgsanisations">
-          <Typography variant="caption" gutterBottom>
-            Add user to org- (for testing only admins would be<br></br> able to add a user once in a orgnisation
-            currently all users are admin)
-          </Typography>
-          <Divider />
-          {testOrg.length > 0 &&
-            testOrg.map((org) => (
-              <div key={org.name}>
-                <ListItemButton onClick={() => addToOrg(org.name)}>
-                  <ListItemIcon>
-                    <CorporateFareIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={org.name} />
-                </ListItemButton>
-                <Divider />
-              </div>
-            ))}
-        </List>
-      </Card>
-    </Box>
+      <Sidebar
+        setStickyMenu={setStickyMenu}
+        stickyMenu={stickyMenu}
+        setShowDetail={setShowDetail}
+        showDetail={showDetail}
+        navigate={navigate}
+        setView={() => {}}
+      />
+    </>
   );
 }
 
