@@ -39,7 +39,6 @@ const Board: React.FC = () => {
   const { x, y } = useMousePosition();
   let params = useParams();
   const [todo, setTodo] = useState("");
-  const [view, setView] = useState("list");
   const [createValue, setCreateValue] = useState({ name: "", image: "" });
   const [createType, setCreateType] = useState({ val: "", onCtxMenu: false });
   const [currentResId, setCurrentResId] = useState({ id: "", rerender: 0 });
@@ -63,6 +62,8 @@ const Board: React.FC = () => {
   let orgName = params.orgName;
   const taskId = searchParams.get("task");
   const board = searchParams.get("board");
+  let view = "l";
+  view = searchParams.get("view");
   const [,] = useSocketController(board);
 
   useEffect(() => {
@@ -215,7 +216,7 @@ const Board: React.FC = () => {
           currentList={currentList}
         />
       </Box>
-      {view === "list" && (
+      {view === "l" && (
         <List
           todo={todo}
           currentResId={currentResId}
@@ -232,14 +233,15 @@ const Board: React.FC = () => {
           current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentList, setList: setCurrentList }}
         />
       )}
-      {view === "table" && <Table orgName={orgName} setView={setView} />}
+      {view === "t" && <Table orgName={orgName} />}
       <Sidebar
         setStickyMenu={setStickyMenu}
         stickyMenu={stickyMenu}
         setShowDetail={setShowDetail}
         showDetail={showDetail}
         navigate={navigate}
-        setView={setView}
+        boradName={currentBoard?.name}
+        orgName={orgName}
       />
     </Box>
   );

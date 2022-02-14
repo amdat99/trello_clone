@@ -5,7 +5,7 @@ import { Box, Fade, LinearProgress, Card, Button, Avatar, Tooltip } from "@mui/m
 import { ExportCsv, ExportPdf } from "@material-table/exporters";
 import useFetchData from "../../hooks/useFetchData";
 
-function Table({ orgName, setView }) {
+function Table({ orgName }) {
   const navigate = useNavigate();
   const { data: tasks, fetchData: fetchTasks } = useFetchData(
     {
@@ -85,7 +85,7 @@ function Table({ orgName, setView }) {
                       <Button
                         onClick={() => {
                           window
-                            .open(`/board/${orgName}?board=${rowData.board_name}&task=${rowData.id}`, "_blank")
+                            .open(`/board/${orgName}?board=${rowData.board_name}&task=${rowData.id}&view=l`, "_blank")
                             .focus();
                         }}
                       >

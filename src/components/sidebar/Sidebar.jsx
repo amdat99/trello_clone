@@ -7,9 +7,13 @@ import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
 // import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 
-function Sidebar({ stickyMenu, setStickyMenu, setShowDetail, showDetail, navigate, setView }) {
+function Sidebar({ stickyMenu, setStickyMenu, setShowDetail, showDetail, navigate, orgName, boradName }) {
   const spanStyle = showDetail || stickyMenu ? { display: "flex", marginLeft: "10px" } : { display: "none" };
   const divStyle = { display: "flex", flexDirection: "row", width: "200px" };
+
+  const setView = (view) => {
+    navigate(`/board/${orgName}?board=${boradName}&view=${view}`);
+  };
 
   return (
     <>
@@ -22,12 +26,12 @@ function Sidebar({ stickyMenu, setStickyMenu, setShowDetail, showDetail, navigat
               <span style={spanStyle}>Home</span>
             </div>
             <Divider />
-            <div onClick={() => setView("list")} style={divStyle}>
+            <div onClick={() => setView("l")} style={divStyle}>
               <ViewKanbanIcon />
               <span style={spanStyle}>Board View</span>
             </div>
             <Divider />
-            <div onClick={() => setView("table")} style={divStyle}>
+            <div onClick={() => setView("t")} style={divStyle}>
               <TableViewIcon />
               <span style={spanStyle}>Table View</span>
             </div>

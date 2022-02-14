@@ -127,7 +127,7 @@ function Landing() {
                 <ImageListItem
                   sx={{ cursor: "pointer" }}
                   key={item.name}
-                  onClick={() => navigate(`/board/${currentOrg}?board=${item.name}`)}
+                  onClick={() => navigate(`/board/${currentOrg}?board=${item.name}&view=l`)}
                 >
                   <img
                     style={{ width: "200px", height: "100px", margin: "4px" }}

@@ -233,7 +233,7 @@ const List = ({
 
   const setUrl = (taskId: string) => {
     const { navigate, orgName, board } = params;
-    navigate(`/board/${orgName}?board=${board}${taskId ? `&task=${taskId}` : ""}`);
+    navigate(`/board/${orgName}?board=${board}&view=l${taskId ? `&task=${taskId}` : ""}`);
   };
   return (
     <>

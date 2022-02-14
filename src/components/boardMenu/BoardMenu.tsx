@@ -50,7 +50,7 @@ function BoardMenu({
   const onSetBoard = (board: Board) => {
     if (params.board !== board.name) {
       setCurrentBoard(board);
-      params.navigate(`/board/${params.orgName}?board=${board.name}`);
+      params.navigate(`/board/${params.orgName}?board=${board.name}&view=l`);
     }
   };
   return (
