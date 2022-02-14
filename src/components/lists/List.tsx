@@ -86,7 +86,7 @@ const List = ({
       fetchLists();
     }
     //es-lint-disable-next-line
-  }, [current.board, current.list]);
+  }, [current.board]);
 
   useEffect(() => {
     const createList = () => {
