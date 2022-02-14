@@ -88,7 +88,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
 
     try {
       //@ts-ignore
-      pushNewActivity(activity, date, " updated this task ");
+      pushNewActivity(activity, new Date().toLocaleString(), " updated this task ");
     } catch (e) {
       setLoading(false);
       return alert(e);
@@ -151,7 +151,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     const task_activity = taskData.task_activity;
     let users = taskData.assigned_users;
 
-    pushNewActivity(task_activity, new Date(), ` to this task `, user.user_name);
+    pushNewActivity(task_activity, new Date().toLocaleString(), ` to this task `, user.user_name);
     users.push({ name: user.user_name, color: user.color });
     getAssignedUsers(currentTaskData, users);
 
