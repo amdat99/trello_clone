@@ -2,13 +2,16 @@ import React, { useState, useEffect } from "react";
 import Authentication from "./Authentication";
 import Typography from "@mui/material/Typography";
 import Inputs from "../../components/inputs/Inputs";
-import Button from "@mui/material/Button";
-import { requestHandler } from "../../helpers/requestHandler";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import Grow from "@mui/material/Grow";
+import Lottie from "react-lottie-player";
+import Button from "@mui/material/Button";
+import { requestHandler } from "../../helpers/requestHandler";
+
+import authBackground from "../../assets/authBackground.json";
 
 function AuthenticationMain() {
   const styles = makeStyles();
@@ -55,6 +58,18 @@ function AuthenticationMain() {
           "https://images.pexels.com/photos/956999/milky-way-starry-sky-night-sky-star-956999.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
       }}
     >
+      <div style={{ display: "flex", justifyContent: "center", zIndex: 1 }}>
+        <Lottie
+          style={{
+            position: "absolute",
+            height: formType === "login" ? "550px" : formType === "register" ? "600px" : "500px",
+            top: "50px",
+          }}
+          loop
+          animationData={authBackground}
+          play
+        />
+      </div>
       <Grow in={true}>
         <Box sx={styles.box}>
           {formType === "" && (

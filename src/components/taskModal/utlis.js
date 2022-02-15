@@ -6,7 +6,7 @@ export const youtubeCommand = {
     </span>
   ),
   execute: (opts) => {
-    opts.textApi.replaceSelection("![youtube video](http://www.youtube.com/watch?v=dQw4w9WgXcQ =200x200)");
+    opts.textApi.replaceSelection("![youtube video](http://www.youtube.com/watch?v=dQw4w9WgXcQ)");
   },
 };
 

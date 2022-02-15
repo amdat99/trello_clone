@@ -9,6 +9,8 @@ export type User = {
   deleted_at?: string | Date;
   password?: string;
   organisations?: string[];
+  public_id?: string;
+  user_name?: string;
   image?: string;
   admin_id?: string;
   color?: string;
@@ -106,6 +108,13 @@ export type Labels = {
   id?: string;
 };
 
+export type Activity = {
+  name: string;
+  message: string;
+  receiver?: string;
+  date?: string | Date;
+  sortDate?: string | Date;
+};
 type AssignedUsers = {
   name: string;
   color: string;

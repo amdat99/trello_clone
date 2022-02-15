@@ -13,6 +13,7 @@ import {
   Card,
   ListItemIcon,
 } from "@mui/material";
+import Lottie from "react-lottie-player";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import { useUserStore } from "../../store";
 import shallow from "zustand/shallow";
@@ -20,6 +21,7 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import { requestHandler } from "../../helpers/requestHandler";
 import { useNavigate } from "react-router-dom";
 import useFetchData from "../../hooks/useFetchData";
+import test from "../../assets/test.json";
 
 function Landing() {
   const navigate = useNavigate();
@@ -93,7 +95,7 @@ function Landing() {
   console.log(data, isFetching);
   return (
     <>
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 10 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 10, zIndex: 999 }}>
         <Button
           variant="contained"
           onClick={onLogout}
@@ -163,6 +165,7 @@ function Landing() {
           </List>
         </Card>
       </Box>
+      <Lottie style={{ zIndex: 1, position: "absolute", marginTop: "150px" }} loop animationData={test} play />
       <Sidebar
         setStickyMenu={setStickyMenu}
         stickyMenu={stickyMenu}

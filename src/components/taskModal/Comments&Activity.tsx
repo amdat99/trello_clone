@@ -10,19 +10,41 @@ import Grow from "@mui/material/Grow";
 import Box from "@mui/material/Box";
 import Inputs from "../inputs/Inputs";
 import { requestHandler } from "../../helpers/requestHandler";
+import { User, Activity } from "../models";
+
+type CommentsActivity = {
+  name: string;
+  message: string;
+  color: string;
+  date: Date;
+  receiver: string;
+  type?: string;
+  comment?: string;
+};
+
+type Props = {
+  buttonStyles: object;
+  taskData: any;
+  isFetching?: boolean;
+  user: User;
+  reqData: any;
+  fetchTask: Function;
+  primaryColor: string;
+  pushNewActivity: (name: string, date: string, message: string, user: string) => void;
+};
 
 function CommentsActivity({
   primaryColor,
   buttonStyles,
   taskData,
   isFetching,
-  dividerStyles,
   user,
   reqData,
   fetchTask,
   pushNewActivity,
-}) {
-  const [showActivity, setShowActivity] = useState(false);
+}: Props) {
+  const [showActivity, setShowActivity] = useState(true);
+  const [showComments, setShowComments] = useState(true);
   const [comment, setComment] = useState("");
   const styles = makeStyles(primaryColor);
 
@@ -31,8 +53,16 @@ function CommentsActivity({
     const { req } = reqData;
     const comments = req?.comments && req?.comments.length ? req?.comments : [];
     const task_activity = req?.task_activity;
-    pushNewActivity(task_activity, new Date().toLocaleString(), ` added a comment`, user.user_name);
-    comments.push({ name: user.name, color: user.color, comment: comment, date: new Date().toLocaleString() });
+    const date = new Date().toLocaleString();
+    pushNewActivity(task_activity, date, ` added a comment`, user.user_name);
+    comments.push({
+      name: user.name,
+      color: user.color,
+      comment: comment,
+      date: date,
+      sortDate: new Date().getTime(),
+      type: "comment",
+    });
     requestHandler({
       type: "post",
       route: "comment/add",
@@ -44,8 +74,15 @@ function CommentsActivity({
       }
     });
   };
-  const comments = taskData?.comments ? [...taskData.comments].reverse() : null;
-  const activity = taskData?.task_activity ? [...taskData.task_activity].reverse() : null;
+
+  const { comments, task_activity } = taskData;
+  const commentsActivity = comments && task_activity ? [...comments, ...task_activity] : task_activity;
+
+  const sortItems = (a, b) => {
+    const dateA = a.sortDate;
+    const dateB = b.sortDate;
+    return dateA < dateB ? 1 : -1;
+  };
 
   return (
     <>
@@ -95,19 +132,30 @@ function CommentsActivity({
           </Button>
         </Grow>
       )}
-      <Typography
-        onClick={() => setShowActivity(!showActivity)}
-        sx={{ cursor: "pointer", color: primaryColor, fontSize: 11, width: !showActivity ? 70 : 88 }}
-        variant="caption"
-      >
-        {showActivity ? "Show comments" : "Show activity"}
-      </Typography>
+      <Box>
+        <Typography
+          onClick={() => setShowActivity(!showActivity)}
+          sx={{ cursor: "pointer", fontSize: 11, width: !showActivity ? 70 : 88, mr: 1 }}
+          variant="caption"
+          color={showActivity ? "primary" : "secondary"}
+        >
+          {showActivity ? "Hide activity" : "Show activity"}
+        </Typography>
+        <Typography
+          onClick={() => setShowComments(!showComments)}
+          sx={{ cursor: "pointer", fontSize: 11, width: !showActivity ? 70 : 88 }}
+          variant="caption"
+          color={showComments ? "primary" : "secondary"}
+        >
+          {showComments ? "Hide Comments" : "Show Comments"}
+        </Typography>
+      </Box>
+
       {/* <Divider style={{ background: "#2c387e", margin: 1 }} /> */}
       <Box mt={1}>
         {!isFetching &&
-          activity &&
-          showActivity &&
-          activity.map(
+          commentsActivity &&
+          commentsActivity.sort(sortItems).map(
             (
               activity: {
                 name: string;
@@ -115,61 +163,65 @@ function CommentsActivity({
                 color: string;
                 date: Date;
                 receiver: string;
+                type?: string;
+                comment?: string;
               },
               i: React.Key
             ) => (
-              <Box key={i} sx={{ p: 0.5, mb: 1 }}>
-                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  <Tooltip title={activity.name} placement="bottom" key={i}>
-                    {
-                      <Avatar sx={avatarStyles(activity.color)}>
-                        {activity.name ? activity.name[0].toUpperCase() : ""}
-                      </Avatar>
-                    }
-                  </Tooltip>
-                  <Card sx={{ p: 0.5, ml: 0.5, pr: 1.1 }}>
-                    {activity.receiver ? (
-                      <Typography sx={styles.text} variant="body1">
-                        <b style={styles.color}>{activity.receiver}</b> was added to the task by
-                        <b style={styles.color}> {activity.name}</b>
-                      </Typography>
-                    ) : (
-                      <Typography sx={styles.text} variant="body1">
-                        <b style={styles.color}>{activity.name}</b>
-                        {activity.message}
-                      </Typography>
+              <Box key={i} sx={{ p: 0.5, mb: showActivity ? 1 : 0 }}>
+                {activity?.hasOwnProperty("type")
+                  ? showComments && (
+                      <Box sx={{ position: "relative", bottom: !showActivity ? 10 : 0 }}>
+                        <Box sx={styles.commentBox}>
+                          <Tooltip title={activity.name} placement="bottom" key={i}>
+                            <Avatar sx={avatarStyles(activity.color)}>{activity.name[0].toUpperCase()}</Avatar>
+                          </Tooltip>
+                          <Card sx={styles.card}>
+                            <b style={styles.color}>{activity.name}</b>
+                            <Typography sx={styles.text} variant="body1">
+                              {activity.comment}
+                            </Typography>
+                          </Card>
+                        </Box>
+                        <Typography sx={styles.activityDate} variant="body1">
+                          {activity.date}
+                        </Typography>
+                        <Divider style={{ background: "#2c387e", borderRadius: "1px" }} />
+                      </Box>
+                    )
+                  : showActivity && (
+                      <>
+                        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                          <Tooltip title={activity.name} placement="bottom" key={i}>
+                            {
+                              <Avatar sx={avatarStyles(activity.color)}>
+                                {activity.name ? activity.name[0].toUpperCase() : ""}
+                              </Avatar>
+                            }
+                          </Tooltip>
+                          <Card sx={styles.card}>
+                            {activity.receiver ? (
+                              <Typography sx={styles.text} variant="body1">
+                                <b style={styles.color}>{activity.receiver}</b> was added to the task by
+                                <b style={styles.color}> {activity.name}</b>
+                              </Typography>
+                            ) : (
+                              <Typography sx={styles.text} variant="body1">
+                                <b style={styles.color}>{activity.name}</b>
+                                {activity.message}
+                              </Typography>
+                            )}
+                          </Card>
+                        </Box>
+                        <Typography sx={styles.activityDate} variant="body1">
+                          {activity.date}
+                        </Typography>
+                        <Divider style={{ background: "#2c387e", borderRadius: "1px" }} />
+                      </>
                     )}
-                  </Card>
-                </Box>
-                <Typography sx={styles.activityDate} variant="body1">
-                  {activity.date}
-                </Typography>
-                <Divider style={{ background: "#2c387e", borderRadius: "1px" }} />
               </Box>
             )
           )}
-        {!isFetching &&
-          comments &&
-          !showActivity &&
-          comments.map((comment, i) => (
-            <Box key={i} sx={{ p: 0.5, mb: 1 }}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                <Tooltip title={comment.name} placement="bottom" key={i}>
-                  <Avatar sx={avatarStyles(comment.color)}>{comment.name[0].toUpperCase()}</Avatar>
-                </Tooltip>
-                <Card sx={{ p: 0.5, ml: 0.5, pr: 1.1 }}>
-                  <b style={styles.color}>{comment.name}</b>
-                  <Typography sx={styles.text} variant="body1">
-                    {comment.comment}
-                  </Typography>
-                </Card>
-              </Box>
-              <Typography sx={styles.activityDate} variant="body1">
-                {comment.date}
-              </Typography>
-              <Divider style={{ background: "#2c387e", borderRadius: "1px" }} />
-            </Box>
-          ))}
       </Box>
     </>
   );
@@ -185,10 +237,19 @@ const makeStyles = (color: string) => ({
     left: "28.5px",
     color: color,
   },
-
+  commentBox: {
+    display: "flex",
+    alignItems: "center",
+    mb: 1,
+  },
   color: {
     color: color,
     fontSize: 12,
+  },
+  card: {
+    p: 0.5,
+    ml: 0.5,
+    pr: 1.1,
   },
 
   text: {

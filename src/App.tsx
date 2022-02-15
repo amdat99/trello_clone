@@ -1,11 +1,13 @@
 import React, { Suspense } from "react";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useUserStore } from "./store";
+import Lottie from "react-lottie-player";
 import shallow from "zustand/shallow";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 // export const UserContext = React.createContext({});
 import NotFound from "./pages/notFound/NotFound";
 import getTheme from "./theme";
+import rocket from "./assets/rocket.json";
 import "./App.css";
 
 const Board = React.lazy(() => import("./pages/board/Board"));
@@ -22,9 +24,15 @@ const App = () => {
   // const value = useMemo(() => ({ currentCacheData, setCurrentCacheData }), [currentCacheData]);
 
   return (
-    <HashRouter>
+    <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense
+          fallback={
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Lottie style={{ width: "125px", height: "124px", marginTop: "20%" }} loop animationData={rocket} play />
+            </div>
+          }
+        >
           {user ? (
             <Routes>
               <Route path="/" element={<Landing />} />
@@ -43,7 +51,7 @@ const App = () => {
           )}
         </Suspense>
       </ThemeProvider>
-    </HashRouter>
+    </BrowserRouter>
   );
 };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Slide, IconButton, Box, Grow, Typography, Avatar, Tooltip, Card, Button, Modal } from "@mui/material/";
+import Lottie from "react-lottie-player";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 // import InputAdornment from "@mui/material/InputAdornment";
 import ReactMde, { getDefaultToolbarCommands } from "react-mde";
@@ -40,6 +41,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   const min600 = useMediaQuery("(min-width:600px)");
   const [uneditedDesc, setUnEditedDesc] = useState("");
   const [hasEdited, setHasEdited] = useState(false);
+  const [showAnim, setShowAnim] = useState(true);
   const [loading, setLoading] = useState(false);
   const [taskData, setTaskData] = useState(null);
   const [showAssignedUsers, setShowAssignedUsers] = useState(false);
@@ -54,6 +56,9 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     extensions: [xssFilter, "youtube"],
   });
 
+  useEffect(() => {
+    setTimeout(() => setShowAnim(false), 100);
+  }, []);
   useEffect(() => {
     if (taskId) {
       fetchTask();
@@ -126,11 +131,12 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     });
   };
 
-  const pushNewActivity = (activity: any, date: any, message: string, receiver = null) => {
+  const pushNewActivity = (activity: any, date: string | Date, message: string, receiver: string | null = null) => {
     activity.push({
       message: message,
       name: user.name,
       color: user.color,
+      sortDate: new Date().getTime(),
       date: date,
       receiver: receiver,
     });
@@ -197,7 +203,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     <>
       <Modal open={taskId !== "" || taskId !== null} onClose={() => setUrl(null)} sx={styles.modal}>
         {taskData ? (
-          <Grow in={taskData !== null}>
+          <Grow in={true}>
             <Card className="hide-scroll" sx={styles.container}>
               <PopoverWrapper
                 open={showAssignedUsers}
@@ -308,7 +314,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                           type={"submit"}
                           disabled={loading || isFetching}
                         >
-                          Update
+                          Save
                         </Button>
                       </Grow>
                       <Grow in={true}>
@@ -319,7 +325,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                           size="small"
                           type={"button"}
                         >
-                          Close
+                          Cancel
                         </Button>
                       </Grow>
                     </>
@@ -331,7 +337,6 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                   buttonStyles={styles.button}
                   taskData={taskData}
                   isFetching={isFetching}
-                  dividerStyles={styles.divider}
                   fetchTask={fetchTask}
                   primaryColor={theme.primary.main}
                   pushNewActivity={pushNewActivity}
@@ -341,7 +346,17 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
             </Card>
           </Grow>
         ) : (
-          <div>Loading</div>
+          <iframe
+            style={{
+              position: "fixed",
+              border: "none",
+              zIndex: 999999999,
+              left: "15%",
+              width: "70%",
+              height: "100%",
+            }}
+            src="https://embed.lottiefiles.com/animation/88282"
+          ></iframe>
         )}
       </Modal>
     </>

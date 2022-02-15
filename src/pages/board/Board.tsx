@@ -58,8 +58,6 @@ const Board: React.FC = () => {
     },
     "board/all"
   );
-  let background =
-    "https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940";
   let orgName = params.orgName;
   const taskId = searchParams.get("task");
   const board = searchParams.get("board");
@@ -147,6 +145,7 @@ const Board: React.FC = () => {
             name: user.name,
             color: user.color,
             date: new Date().toLocaleString(),
+            sortDate: new Date().getTime(),
           },
         ]),
       },
@@ -183,7 +182,7 @@ const Board: React.FC = () => {
       onDoubleClick={onShowCtxMenu}
       onClick={() => (showCtxMenu ? setCtxShowMenu(false) : () => {})}
       sx={{
-        backgroundImage: currentBoard?.image ? "url(" + currentBoard.image + ")" : "url(" + background + ")",
+        backgroundImage: "url(" + currentBoard?.image + ")",
       }}
     >
       <ContextMenu x={position.x} y={position.y} showCtxMenu={showCtxMenu}>
