@@ -28,9 +28,9 @@
     "zustand": "^3.6.9"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
     "style": "prettier --write ./src/**/*.{js,jsx,ts,tsx} ",
-    "build": "react-scripts build",
+    "build": "SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

@@ -25,7 +25,11 @@ const App = () => {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
+<<<<<<< Updated upstream
         <Suspense fallback={<LoadingPage />}>
+=======
+        <Suspense fallback={<div>{<LoadingPage />}</div>}>
+>>>>>>> Stashed changes
           {user ? (
             <Routes>
               <Route path="/" element={<Landing />} />

@@ -1,4 +1,5 @@
 import * as React from 'react';
+<<<<<<< Updated upstream
 import PropTypes from 'prop-types';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
@@ -43,10 +44,38 @@ export default function CircularStatic() {
     const timer = setInterval(() => {
       setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
     }, 800);
+=======
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
+
+export default function LinearDeterminate() {
+  const [progress, setProgress] = React.useState(0);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((oldProgress) => {
+        if (oldProgress === 100) {
+          return 0;
+        }
+        const diff = Math.random() * 10;
+        return Math.min(oldProgress + diff, 100);
+      });
+    }, 500);
+
+>>>>>>> Stashed changes
     return () => {
       clearInterval(timer);
     };
   }, []);
 
+<<<<<<< Updated upstream
   return <CircularProgressWithLabel value={progress} />;
+=======
+  return (
+    <Box sx={{ width: '100%', my: 50, mx: 10}}>
+      <LinearProgress variant="determinate" value={progress} 
+      style={{height: "20px"}} />
+    </Box>
+  );
+>>>>>>> Stashed changes
 }
