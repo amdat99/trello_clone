@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Divider, Button, Box } from "@mui/material/";
 import { requestHandler } from "../../helpers/requestHandler";
@@ -11,9 +11,10 @@ import List from "../../components/lists/List";
 import BoardMenu from "../../components/boardMenu/BoardMenu";
 import Sidebar from "../../components/sidebar/Sidebar";
 import ContextMenu from "components/contextMenu/ContextMenu";
-import Table from "../../components/table/Table";
 import { sendRefetchReq, sendBoardrefetchReq } from "../../sockets/orgSockets";
 import { Board as BoardType } from "../../components/models";
+
+const Table = React.lazy(() => import("../../components/table/Table"));
 
 export type CurrentListId = {
   data: any;
@@ -233,7 +234,7 @@ const Board: React.FC = () => {
           current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentList, setList: setCurrentList }}
         />
       )}
-      {view === "t" && <Table orgName={orgName} />}
+      <Suspense fallback={<div>Loading...</div>}>{view === "t" && <Table orgName={orgName} />}</Suspense>
       <Sidebar
         setStickyMenu={setStickyMenu}
         stickyMenu={stickyMenu}

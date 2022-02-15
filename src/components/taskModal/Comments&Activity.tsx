@@ -25,6 +25,7 @@ function CommentsActivity({
   const [showActivity, setShowActivity] = useState(false);
   const [comment, setComment] = useState("");
   const styles = makeStyles(primaryColor);
+
   const addComment = () => {
     reqData.req = taskData;
     const { req } = reqData;

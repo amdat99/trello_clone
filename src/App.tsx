@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { useUserStore } from "./store";
 import shallow from "zustand/shallow";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -22,7 +22,7 @@ const App = () => {
   // const value = useMemo(() => ({ currentCacheData, setCurrentCacheData }), [currentCacheData]);
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <ThemeProvider theme={theme}>
         <Suspense fallback={<div>Loading...</div>}>
           {user ? (
@@ -43,7 +43,7 @@ const App = () => {
           )}
         </Suspense>
       </ThemeProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
