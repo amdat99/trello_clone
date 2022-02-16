@@ -106,6 +106,7 @@ export type Labels = {
   color: string;
   data?: string;
   id?: string;
+  created?: string;
 };
 
 export type Activity = {

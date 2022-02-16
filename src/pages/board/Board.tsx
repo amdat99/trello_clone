@@ -138,7 +138,6 @@ const Board: React.FC = () => {
         created_by: user.name,
         assigned_users: JSON.stringify([{ name: user.name, color: user.color }]),
         updateList: !currentList.has_tasks ? true : false,
-        labels: JSON.stringify([{ name: currentList.data[0].name, color: "info", id }]),
         task_activity: JSON.stringify([
           {
             message: ` created this task on ${currentList.data[0].name}`,

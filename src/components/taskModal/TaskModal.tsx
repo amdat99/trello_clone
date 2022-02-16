@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Slide, IconButton, Box, Grow, Typography, Avatar, Tooltip, Card, Button, Modal } from "@mui/material/";
-import Lottie from "react-lottie-player";
+import { IconButton, Divider, Box, Grow, Typography, Avatar, Tooltip, Card, Button, Modal } from "@mui/material/";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-// import InputAdornment from "@mui/material/InputAdornment";
+import * as timeago from "timeago.js";
+import UpdateIcon from "@mui/icons-material/Update";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import InputAdornment from "@mui/material/InputAdornment";
 import ReactMde, { getDefaultToolbarCommands } from "react-mde";
 import * as Showdown from "showdown";
 import xssFilter from "showdown-xss-filter";
@@ -41,7 +43,6 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   const min600 = useMediaQuery("(min-width:600px)");
   const [uneditedDesc, setUnEditedDesc] = useState("");
   const [hasEdited, setHasEdited] = useState(false);
-  const [showAnim, setShowAnim] = useState(true);
   const [loading, setLoading] = useState(false);
   const [taskData, setTaskData] = useState(null);
   const [showAssignedUsers, setShowAssignedUsers] = useState(false);
@@ -56,9 +57,6 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     extensions: [xssFilter, "youtube"],
   });
 
-  useEffect(() => {
-    setTimeout(() => setShowAnim(false), 100);
-  }, []);
   useEffect(() => {
     if (taskId) {
       fetchTask();
@@ -130,9 +128,9 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
       }
     });
   };
-
   const pushNewActivity = (activity: any, date: string | Date, message: string, receiver: string | null = null) => {
     activity.push({
+      id: Date.now(),
       message: message,
       name: user.name,
       color: user.color,
@@ -223,6 +221,13 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                 onSubmit={onSubmit}
                 component="form"
               >
+                <Box sx={{ position: "relative", bottom: 15 }}>
+                  <UpdateIcon color="primary" sx={{ height: 15 }} />
+                  <Typography sx={{ fontSize: 11 }} variant="caption">
+                    Updated: {timeago.format(taskData.updated_at)}
+                  </Typography>
+                  <Divider />
+                </Box>
                 <Inputs
                   value={taskData?.name || ""}
                   type={"name"}
@@ -237,6 +242,11 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                   }}
                   InputProps={{
                     disableUnderline: true,
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <ModeEditIcon sx={{ height: 20, mb: 1 }} />
+                      </InputAdornment>
+                    ),
                   }}
                 />
 
@@ -342,7 +352,13 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                   pushNewActivity={pushNewActivity}
                 />
               </Box>
-              <TaskSideBar dividerStyles={styles.divider} taskData={taskData} />
+              <TaskSideBar
+                dividerStyles={styles.divider}
+                taskData={taskData}
+                pushNewActivity={pushNewActivity}
+                user={user}
+                fetchTask={fetchTask}
+              />
             </Card>
           </Grow>
         ) : (

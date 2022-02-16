@@ -4,7 +4,7 @@ import "./styles.css";
 
 type InputProps = {
   value: any;
-  handleChange: (value: string | object, name: string) => void;
+  handleChange: (value: string | object, name: string, anchor: HTMLInputElement | HTMLTextAreaElement) => void;
   type?: string;
   select?: boolean;
   [x: string]: any;
@@ -18,7 +18,7 @@ function Inputs({ select = false, value, handleChange, type = "text", ...props }
       className="input__box"
       select={select}
       value={value}
-      onChange={(e) => handleChange(e.target.value, e.target.name)}
+      onChange={(e) => handleChange(e.target.value, e.target.name, e.currentTarget)}
       ref={inputRef}
       data-testid="input"
     />

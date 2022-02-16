@@ -24,9 +24,7 @@ function AddAssignedUsers({ onAssignUser }) {
 
   return (
     <Card className="hide-scroll" sx={{ p: 1, maxHeight: 300, overflow: "scroll" }}>
-      <Typography sx={{ color: theme.primary.main }} variant="subtitle1">
-        Members
-      </Typography>
+      <Typography>Members</Typography>
       <Divider sx={{ mb: 1 }} />
 
       {users &&

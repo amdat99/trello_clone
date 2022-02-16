@@ -35,6 +35,7 @@
     "showdown-xss-filter": "^0.2.0",
     "showdown-youtube": "^1.2.1",
     "socket.io-client": "^4.4.1",
+    "timeago.js": "^4.0.2",
     "typescript": "^4.5.5",
     "web-vitals": "^1.1.2",
     "zustand": "^3.6.9"
