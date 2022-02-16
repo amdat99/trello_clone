@@ -253,7 +253,12 @@ const List = ({
           {current.board ? current.board?.name : "Board"}
         </Typography>
         <Fade in={listData !== null} style={{ transitionDelay: "100ms" }}>
-          <Box m={2} ml={stickyMenu && min700 ? 27 : 4} width={min1000 ? (stickyMenu ? "95%" : "105%") : "95%"}>
+          <Box
+            m={2}
+            mt={3.2}
+            ml={stickyMenu && min700 ? 27 : 4}
+            width={min1000 ? (stickyMenu ? "90%" : "105%") : "95%"}
+          >
             {/* // for reference */}
             {/* <button onClick={handleAdd} className="input_submit">
           Add
