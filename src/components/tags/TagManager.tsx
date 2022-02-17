@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Card, Typography, Button, Box } from "@mui/material";
+import { Card, Typography, Button, Box, Tooltip } from "@mui/material";
+import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import PopoverWrapper from "../popover/PopoverWrapper";
 import Inputs from "../inputs/Inputs";
@@ -30,6 +31,7 @@ function TagManager({
   setEdit,
 }: Props) {
   const min1000 = useMediaQuery("(min-width:1000px)");
+  const [delCheck, setDelCheck] = useState(false);
 
   const tagInputs = [
     { name: "name", type: "text", required: true },
@@ -55,6 +57,7 @@ function TagManager({
         onClose={() => {
           setShowTagManager(false);
           edit && setEdit(null);
+          delCheck && setDelCheck(false);
         }}
         position={position}
         styles={{
@@ -82,15 +85,25 @@ function TagManager({
               {edit ? "Edit" : "Create"} Tag
             </Button>
             {edit && (
-              <Button
-                onClick={() => onUpdateTag(true)}
-                color="error"
-                sx={{ mt: 1, ml: 1, textTransform: "none" }}
-                variant="contained"
-                size="small"
-              >
-                Delete Tag
-              </Button>
+              <>
+                <Button
+                  onClick={() => (delCheck ? onUpdateTag(true) : setDelCheck(true))}
+                  color="error"
+                  sx={{ mt: 1, ml: 1, textTransform: "none" }}
+                  variant="contained"
+                  size="small"
+                >
+                  {delCheck ? "Are you sure ?" : "Delete Tag"}
+                </Button>
+                {delCheck && (
+                  <Tooltip title="Go back">
+                    <ArrowBackOutlinedIcon
+                      sx={{ height: 15, position: "absolute", mt: 2, cursor: "pointer" }}
+                      onClick={() => setDelCheck(false)}
+                    />
+                  </Tooltip>
+                )}
+              </>
             )}
           </Box>
         </Card>

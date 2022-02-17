@@ -40,8 +40,8 @@ function CreateModal({ createType, createBoard, createValue, setCreateValue, set
       ml={createType?.data?.val === "board" ? 8 : 12.5}
       onClose={() => createType.set({ val: "", onCtxMenu: false })}
     >
-      <Box sx={{ p: 1 }} component="form" onSubmit={onCreate}>
-        <Card sx={{ p: 1, width: "300px" }}>
+      <Card sx={{ p: 1, width: "300px" }}>
+        <Box sx={{ p: 1 }} component="form" onSubmit={onCreate}>
           {createType.data?.val === "list" || createType.data?.val === "board"
             ? createInputs.map((input) => (
                 <Inputs
@@ -66,13 +66,13 @@ function CreateModal({ createType, createBoard, createValue, setCreateValue, set
               />
             )}
           </ImageListItem>
-        </Card>
-        {createType.data?.val !== "users" && (
-          <Button type={"submit"} sx={{ mt: 1, textTransform: "none" }} variant="contained" size="small">
-            {createValue.image && !imageChecked ? "Check Image" : `Add ${createType.data?.val}`}
-          </Button>
-        )}
-      </Box>
+          {createType.data?.val !== "users" && (
+            <Button type={"submit"} sx={{ mt: 1, textTransform: "none" }} variant="contained" size="small">
+              {createValue.image && !imageChecked ? "Check Image" : `Add ${createType.data?.val}`}
+            </Button>
+          )}
+        </Box>
+      </Card>
     </PopoverWrapper>
   );
 }
