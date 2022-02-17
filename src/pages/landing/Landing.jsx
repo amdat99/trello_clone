@@ -9,10 +9,8 @@ import {
   Box,
   ImageList,
   ImageListItem,
-  ImageListItemBar,
   Card,
   ListItemIcon,
-  CardHeader,
 } from "@mui/material";
 import Lottie from "react-lottie-player";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
@@ -24,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import useFetchData from "../../hooks/useFetchData";
 import test from "../../assets/test.json";
 import boardIcon from "../../assets/images/icons/BORADS_icon.png";
+import background from "../../assets/images/background.png"
 
 function Landing() {
   const navigate = useNavigate();
@@ -110,15 +109,15 @@ function Landing() {
   console.log(data, isFetching);
   return (
     <>
-      <Box sx={{ width: "80%", justifyContent: "unset", margin: "0 auto", mt: "5vh" }}
-        // sx={{
-        //   display: "flex",
-        //   justifyContent: "center",
-        //   alignItems: "center",
-        //   mt: 10,
-        //   zIndex: 999,
-        // }}
+      <Box
+        sx={{
+          width: "80%",
+          justifyContent: "unset",
+          margin: "0 auto",
+          mt: "5vh",
+        }}
       >
+        <img src={background} style={{position: "fixed", zIndex:"-1", top: "0", left: "0"}}/>
         <Button
           variant="contained"
           onClick={onLogout}
@@ -146,7 +145,7 @@ function Landing() {
               {user && (
                 <Typography variant="h6">
                   {" "}
-                  Organisations for {user.name}{" "}
+                  Organizations for {user.name}{" "}
                 </Typography>
               )}
               {data.map((org) => (
@@ -161,7 +160,7 @@ function Landing() {
         <Box>
           {currentOrg && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <img style={{ marginRight: "10px" }} src={boardIcon} />{" "}
+              <img style={{ marginRight: "10px" }} src={boardIcon} />
               <Box>
                 <Typography
                   style={{
@@ -173,16 +172,6 @@ function Landing() {
                   WORKSPACE
                 </Typography>
                 <Typography
-                  sx={
-                    {
-                      // position: "absolute",
-                      // top: 20,
-                      // left: "4%",
-                      // alignContent: "center",
-                      // display: "flex",
-                      // alignItems: "center",
-                    }
-                  }
                   color="primary"
                   variant="h2"
                 >
@@ -192,29 +181,112 @@ function Landing() {
             </Box>
           )}
         </Box>
-        <Box>
-          <ImageList cols={4} sx={{ position: "absolute",}}>
+        <Box sx={{mt: "40px"}}>
+          <Typography sx={{fontWeight: "bold"}}>ACTIVE BOARDS</Typography>
+          <hr />
+          <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
             {boards &&
               boards.map((item) => (
                 <ImageListItem
-                  sx={{ cursor: "pointer" }}
+                  sx={{
+                    cursor: "pointer",
+                    width: "361px",
+                    height: "143px!important",
+                    borderRadius: "6px",
+                    overflow: "hidden",
+                    mr: "31px",
+                    boxShadow: "9px 10px 20px 0px #0000006b",
+                    transition: "all .5s",
+                    '&:hover': {
+                      transform: "scale(1.1)"
+                    }
+                  }}
                   key={item.name}
                   onClick={() =>
                     navigate(`/board/${currentOrg}?board=${item.name}&view=l`)
                   }
                 >
                   <img
-                    style={{ width: "200px", height: "100px", margin: "4px" }}
+                    style={{ width: "100%", filter:" brightness(0.8) blur(1px)", height: "143px" }}
                     src={`${item.image}`}
                     srcSet={`${item.image}`}
                     alt={item.name}
                     loading="lazy"
                   />
-                  <ImageListItemBar
-                    title={item.name}
-                    subtitle={<span>{item.created_at}</span>}
-                    position="below"
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      color: "white",
+                      padding: "0 20px",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: " space-around",
+                    }}
+                  >
+                    <Box>
+                      <Typography style={{fontSize: "14px", fontWeight: "lighter"}}>
+                        Members: {3} | Lists: {5} | Attachments: {18}{" "}
+                      </Typography>
+                      <Typography sx={{textTransform: "uppercase", fontWeight: "bold"}} variant="h5">{item.name}</Typography>
+                    </Box>
+                    <Typography style={{fontSize: "14px", fontWeight: "lighter"}}>{item.created_at}</Typography>
+                  </Box>
+                </ImageListItem>
+              ))}
+          </ImageList>
+        </Box>
+        <Box sx={{mt: "40px"}}>
+          <Typography sx={{fontWeight: "bold"}}>All BOARDS</Typography>
+          <hr />
+          <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
+            {boards &&
+              boards.map((item) => (
+                <ImageListItem
+                  sx={{
+                    cursor: "pointer",
+                    width: "361px",
+                    height: "143px!important",
+                    borderRadius: "6px",
+                    overflow: "hidden",
+                    mr: "31px",
+                    boxShadow: "9px 10px 20px 0px #0000006b",
+                    transition: "all .5s",
+                    '&:hover': {
+                      transform: "scale(1.1)"
+                    }
+                  }}
+                  key={item.name}
+                  onClick={() =>
+                    navigate(`/board/${currentOrg}?board=${item.name}&view=l`)
+                  }
+                >
+                  <img
+                    style={{ width: "100%", filter:" brightness(0.8) blur(1px)", height: "143px" }}
+                    src={`${item.image}`}
+                    srcSet={`${item.image}`}
+                    alt={item.name}
+                    loading="lazy"
                   />
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      color: "white",
+                      padding: "0 20px",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: " space-around",
+                    }}
+                  >
+                    <Box>
+                      <Typography style={{fontSize: "14px", fontWeight: "lighter"}}>
+                        Members: {3} | Lists: {5} | Attachments: {18}{" "}
+                      </Typography>
+                      <Typography sx={{textTransform: "uppercase", fontWeight: "bold"}} variant="h5">{item.name}</Typography>
+                    </Box>
+                    <Typography style={{fontSize: "14px", fontWeight: "lighter"}}>{item.created_at}</Typography>
+                  </Box>
                 </ImageListItem>
               ))}
           </ImageList>
@@ -232,7 +304,7 @@ function Landing() {
           <List component="nav" aria-label="orgsanisations">
             <Typography variant="caption" gutterBottom>
               Add user to org- (for testing only admins would be<br></br> able
-              to add a user once in a orgnisation currently all users are admin)
+              to add a user once in a organization currently all users are admin)
             </Typography>
             <Divider />
             {testOrg.length > 0 &&
@@ -250,12 +322,6 @@ function Landing() {
           </List>
         </Card>
       </Box>
-      <Lottie
-        style={{ zIndex: 1, position: "absolute", marginTop: "150px" }}
-        loop
-        animationData={test}
-        play
-      />
       <Sidebar
         setStickyMenu={setStickyMenu}
         stickyMenu={stickyMenu}
@@ -264,8 +330,7 @@ function Landing() {
         navigate={navigate}
         setView={() => {}}
       />
-      </>
-
+    </>
   );
 }
 
