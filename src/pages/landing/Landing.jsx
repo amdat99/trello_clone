@@ -12,6 +12,7 @@ import {
   ImageListItemBar,
   Card,
   ListItemIcon,
+  CardHeader,
 } from "@mui/material";
 import Lottie from "react-lottie-player";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
@@ -22,11 +23,17 @@ import { requestHandler } from "../../helpers/requestHandler";
 import { useNavigate } from "react-router-dom";
 import useFetchData from "../../hooks/useFetchData";
 import test from "../../assets/test.json";
+import boardIcon from "../../assets/images/icons/BORADS_icon.png";
 
 function Landing() {
   const navigate = useNavigate();
   const [logout, user, currentOrg, setCurrentOrg] = useUserStore(
-    (state) => [state.logout, state.user, state.currentOrg, state.setCurrentOrg],
+    (state) => [
+      state.logout,
+      state.user,
+      state.currentOrg,
+      state.setCurrentOrg,
+    ],
     shallow
   );
   const [testOrg, setTestOrg] = useState([]);
@@ -59,7 +66,11 @@ function Landing() {
 
   useEffect(() => {
     const checkOrgAndFetchBoards = () => {
-      requestHandler({ route: "org/enter", type: "post", body: { name: currentOrg } }).then((data) => {
+      requestHandler({
+        route: "org/enter",
+        type: "post",
+        body: { name: currentOrg },
+      }).then((data) => {
         if (data !== "entered organisation successfully") {
           alert("error entering org");
         } else {
@@ -83,7 +94,11 @@ function Landing() {
     });
   };
   const addToOrg = (name) => {
-    requestHandler({ route: "org/adduser", type: "post", body: { name, profile_id: user.profile_id } }).then((res) => {
+    requestHandler({
+      route: "org/adduser",
+      type: "post",
+      body: { name, profile_id: user.profile_id },
+    }).then((res) => {
       if (res === "user added successfully") {
         fetchData();
       } else {
@@ -95,18 +110,45 @@ function Landing() {
   console.log(data, isFetching);
   return (
     <>
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 10, zIndex: 999 }}>
+      <Box sx={{ width: "80%", justifyContent: "unset", margin: "0 auto", mt: "5vh" }}
+        // sx={{
+        //   display: "flex",
+        //   justifyContent: "center",
+        //   alignItems: "center",
+        //   mt: 10,
+        //   zIndex: 999,
+        // }}
+      >
         <Button
           variant="contained"
           onClick={onLogout}
-          sx={{ mr: 2, maxWidth: "60%", position: "absolute", right: 10, top: 10 }}
+          sx={{
+            mr: 2,
+            maxWidth: "60%",
+            position: "absolute",
+            right: 10,
+            top: 10,
+          }}
         >
           Logout
         </Button>
         {data && (
           <>
-            <Card sx={{ maxWidth: "60%", p: 2, position: "absolute", right: "10%", top: 10 }}>
-              {user && <Typography variant="h6"> Organisations for {user.name} </Typography>}
+            <Card
+              sx={{
+                maxWidth: "60%",
+                p: 2,
+                position: "absolute",
+                right: "10%",
+                top: 10,
+              }}
+            >
+              {user && (
+                <Typography variant="h6">
+                  {" "}
+                  Organisations for {user.name}{" "}
+                </Typography>
+              )}
               {data.map((org) => (
                 // <Link to={`/board/${org.name}`} key={org.name}>
                 <span onClick={() => setCurrentOrg(org.name)} key={org.name}>
@@ -118,18 +160,48 @@ function Landing() {
         )}
         <Box>
           {currentOrg && (
-            <Typography sx={{ position: "absolute", top: 20, left: "4%" }} color="primary" variant="h6">
-              Boards for {currentOrg}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <img style={{ marginRight: "10px" }} src={boardIcon} />{" "}
+              <Box>
+                <Typography
+                  style={{
+                    fontSize: "11px",
+                    marginLeft: "4px",
+                    marginBottom: "-10px",
+                  }}
+                >
+                  WORKSPACE
+                </Typography>
+                <Typography
+                  sx={
+                    {
+                      // position: "absolute",
+                      // top: 20,
+                      // left: "4%",
+                      // alignContent: "center",
+                      // display: "flex",
+                      // alignItems: "center",
+                    }
+                  }
+                  color="primary"
+                  variant="h2"
+                >
+                  Boards
+                </Typography>
+              </Box>
+            </Box>
           )}
-
-          <ImageList cols={4} sx={{ position: "absolute", left: "4%", top: 40 }}>
+        </Box>
+        <Box>
+          <ImageList cols={4} sx={{ position: "absolute",}}>
             {boards &&
               boards.map((item) => (
                 <ImageListItem
                   sx={{ cursor: "pointer" }}
                   key={item.name}
-                  onClick={() => navigate(`/board/${currentOrg}?board=${item.name}&view=l`)}
+                  onClick={() =>
+                    navigate(`/board/${currentOrg}?board=${item.name}&view=l`)
+                  }
                 >
                   <img
                     style={{ width: "200px", height: "100px", margin: "4px" }}
@@ -138,16 +210,29 @@ function Landing() {
                     alt={item.name}
                     loading="lazy"
                   />
-                  <ImageListItemBar title={item.name} subtitle={<span>{item.created_at}</span>} position="below" />
+                  <ImageListItemBar
+                    title={item.name}
+                    subtitle={<span>{item.created_at}</span>}
+                    position="below"
+                  />
                 </ImageListItem>
               ))}
           </ImageList>
         </Box>
-        <Card sx={{ maxWidth: "60%", p: 3, ml: 2, position: "absolute", right: 10, top: "15%" }}>
+        <Card
+          sx={{
+            maxWidth: "60%",
+            p: 3,
+            ml: 2,
+            position: "absolute",
+            right: 10,
+            top: "15%",
+          }}
+        >
           <List component="nav" aria-label="orgsanisations">
             <Typography variant="caption" gutterBottom>
-              Add user to org- (for testing only admins would be<br></br> able to add a user once in a orgnisation
-              currently all users are admin)
+              Add user to org- (for testing only admins would be<br></br> able
+              to add a user once in a orgnisation currently all users are admin)
             </Typography>
             <Divider />
             {testOrg.length > 0 &&
@@ -165,7 +250,12 @@ function Landing() {
           </List>
         </Card>
       </Box>
-      <Lottie style={{ zIndex: 1, position: "absolute", marginTop: "150px" }} loop animationData={test} play />
+      <Lottie
+        style={{ zIndex: 1, position: "absolute", marginTop: "150px" }}
+        loop
+        animationData={test}
+        play
+      />
       <Sidebar
         setStickyMenu={setStickyMenu}
         stickyMenu={stickyMenu}
@@ -174,7 +264,8 @@ function Landing() {
         navigate={navigate}
         setView={() => {}}
       />
-    </>
+      </>
+
   );
 }
 
