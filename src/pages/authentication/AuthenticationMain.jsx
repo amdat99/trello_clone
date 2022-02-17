@@ -62,8 +62,8 @@ function AuthenticationMain() {
         <Lottie
           style={{
             position: "absolute",
-            height: formType === "login" ? "550px" : formType === "register" ? "600px" : "500px",
-            top: "50px",
+            height: "100%",
+            width: "100%",
           }}
           loop
           animationData={authBackground}

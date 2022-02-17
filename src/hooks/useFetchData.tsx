@@ -42,7 +42,7 @@ const useFetchData = (
 
   const getItem = useCallback(async () => {
     if (shouldPersist) {
-      let item = await localStorage.getItem(id);
+      let item = localStorage.getItem(id);
       if (item && item !== currentCacheData) {
         let parsed = await JSON.parse(item);
         setCurrentData(parsed);
@@ -69,7 +69,7 @@ const useFetchData = (
         cacheUpdateOptions.forEach((cache) => {
           storage
             ? localStorage.setItem(cache.id, JSON.stringify(cache.data))
-            : setCurrentCacheData(cache.data, cache.id);
+            : setCurrentCacheData(JSON.stringify(cache.data), cache.id);
         });
       // cache check is reset on bulk cache update
       if (refreshCurrentCache) {

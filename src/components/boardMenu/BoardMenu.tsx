@@ -1,13 +1,10 @@
 import React from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import Card from "@mui/material/Card";
-import IconButton from "@mui/material/IconButton";
+// import { useNavigate, useSearchParams } from "react-router-dom";
+import { MenuItem, Avatar, Card, IconButton, Tooltip, useMediaQuery } from "@mui/material/";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import SettingsApplicationsOutlinedIcon from "@mui/icons-material/SettingsApplicationsOutlined";
 import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
-import MenuItem from "@mui/material/MenuItem";
-import Avatar from "@mui/material/Avatar";
-import Tooltip from "@mui/material/Tooltip";
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import Inputs from "../inputs/Inputs";
 import CreateModal from "../createModal/CreateModal";
 import "../../App.css";
@@ -46,7 +43,10 @@ function BoardMenu({
   params,
 }: Props) {
   const [searchValue, setSearchValue] = React.useState("");
-  const styles = makeStyles();
+  const min1000 = useMediaQuery("(min-width:1000px)");
+  const min600 = useMediaQuery("(min-width:600px)");
+  const styles = makeStyles(min1000, min600);
+
   const onSetBoard = (board: Board) => {
     if (params.board !== board.name) {
       setCurrentBoard(board);
@@ -66,13 +66,13 @@ function BoardMenu({
           size="small"
         /> */}
         <Inputs
-          sx={{ maxWidth: "50%", ml: 1, maxHeight: 1 }}
+          sx={{ minWidth: "20%", maxWidth: min600 ? "20%" : "35%", ml: 1, maxHeight: 1 }}
           value={currentBoard && currentBoard}
           defaultValue={""}
           handleChange={onSetBoard}
           disabled={!boards}
           size="small"
-          label="Select board"
+          label=" Boards"
           select={boards ? true : false}
         >
           {boards &&
@@ -83,14 +83,26 @@ function BoardMenu({
               </MenuItem>
             ))}
         </Inputs>
-        <Inputs
-          sx={{ maxWidth: "50%", ml: 1 }}
-          value={searchValue}
-          handleChange={setSearchValue}
-          placeholder="Search"
-          type="search"
-          size="small"
-        />
+        {min600 ? (
+          <Inputs
+            sx={{ minWidth: "40%", maxWidth: "50%", ml: 1 }}
+            value={searchValue}
+            handleChange={setSearchValue}
+            placeholder="Search"
+            type="search"
+            size="small"
+          />
+        ) : (
+          <>
+            <IconButton
+              aria-label="add-list"
+              onClick={() => createType.set({ val: "list", onCtxMenu: false })}
+              type="button"
+            >
+              <ManageSearchIcon />
+            </IconButton>
+          </>
+        )}
         <Tooltip title="Create board" placement="bottom">
           <IconButton
             aria-label="add-board"
@@ -127,20 +139,22 @@ function BoardMenu({
           createBoard={createBoard}
           setCurrentList={setCurrentList}
           currentList={currentList}
+          min600={min600}
         />
       </div>
     </Card>
   );
 }
-const makeStyles = () => ({
+const makeStyles = (min1000: boolean, min600: boolean) => ({
   card: {
-    width: "35%",
+    width: min1000 ? 500 : min600 ? 500 : 355,
     height: 30,
     opacity: 0.8,
     minWidth: "300px",
     position: "absolute",
     top: 0,
-    right: "10%",
+    right: min600 ? "7%" : "1%",
+
     p: 1,
     ":hover": {
       boxShadow: 6,
