@@ -12,7 +12,7 @@ import {
   Card,
   ListItemIcon,
 } from "@mui/material";
-import Lottie from "react-lottie-player";
+import * as timeago from "timeago.js";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import { useUserStore } from "../../store";
 import shallow from "zustand/shallow";
@@ -20,19 +20,13 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import { requestHandler } from "../../helpers/requestHandler";
 import { useNavigate } from "react-router-dom";
 import useFetchData from "../../hooks/useFetchData";
-import test from "../../assets/test.json";
 import boardIcon from "../../assets/images/icons/BORADS_icon.png";
-import background from "../../assets/images/background.png"
+import background from "../../assets/images/background.png";
 
 function Landing() {
   const navigate = useNavigate();
   const [logout, user, currentOrg, setCurrentOrg] = useUserStore(
-    (state) => [
-      state.logout,
-      state.user,
-      state.currentOrg,
-      state.setCurrentOrg,
-    ],
+    (state) => [state.logout, state.user, state.currentOrg, state.setCurrentOrg],
     shallow
   );
   const [testOrg, setTestOrg] = useState([]);
@@ -117,7 +111,7 @@ function Landing() {
           mt: "5vh",
         }}
       >
-        <img src={background} style={{position: "fixed", zIndex:"-1", top: "0", left: "0"}}/>
+        <img src={background} style={{ position: "fixed", zIndex: "-1", top: "0", left: "0" }} />
         <Button
           variant="contained"
           onClick={onLogout}
@@ -142,12 +136,7 @@ function Landing() {
                 top: 10,
               }}
             >
-              {user && (
-                <Typography variant="h6">
-                  {" "}
-                  Organizations for {user.name}{" "}
-                </Typography>
-              )}
+              {user && <Typography variant="h6"> Organizations for {user.name} </Typography>}
               {data.map((org) => (
                 // <Link to={`/board/${org.name}`} key={org.name}>
                 <span onClick={() => setCurrentOrg(org.name)} key={org.name}>
@@ -171,18 +160,15 @@ function Landing() {
                 >
                   WORKSPACE
                 </Typography>
-                <Typography
-                  color="primary"
-                  variant="h2"
-                >
+                <Typography color="primary" variant="h2">
                   Boards
                 </Typography>
               </Box>
             </Box>
           )}
         </Box>
-        <Box sx={{mt: "40px"}}>
-          <Typography sx={{fontWeight: "bold"}}>ACTIVE BOARDS</Typography>
+        <Box sx={{ mt: "40px" }}>
+          <Typography sx={{ fontWeight: "bold" }}>ACTIVE BOARDS</Typography>
           <hr />
           <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
             {boards &&
@@ -197,17 +183,15 @@ function Landing() {
                     mr: "31px",
                     boxShadow: "9px 10px 20px 0px #0000006b",
                     transition: "all .5s",
-                    '&:hover': {
-                      transform: "scale(1.1)"
-                    }
+                    "&:hover": {
+                      transform: "scale(1.1)",
+                    },
                   }}
                   key={item.name}
-                  onClick={() =>
-                    navigate(`/board/${currentOrg}?board=${item.name}&view=l`)
-                  }
+                  onClick={() => navigate(`/board/${currentOrg}?board=${item.name}&view=l`)}
                 >
                   <img
-                    style={{ width: "100%", filter:" brightness(0.8) blur(1px)", height: "143px" }}
+                    style={{ width: "100%", filter: " brightness(0.8) blur(1px)", height: "143px" }}
                     src={`${item.image}`}
                     srcSet={`${item.image}`}
                     alt={item.name}
@@ -225,19 +209,23 @@ function Landing() {
                     }}
                   >
                     <Box>
-                      <Typography style={{fontSize: "14px", fontWeight: "lighter"}}>
+                      <Typography style={{ fontSize: "14px", fontWeight: "lighter" }}>
                         Members: {3} | Lists: {5} | Attachments: {18}{" "}
                       </Typography>
-                      <Typography sx={{textTransform: "uppercase", fontWeight: "bold"}} variant="h5">{item.name}</Typography>
+                      <Typography sx={{ textTransform: "uppercase", fontWeight: "bold" }} variant="h5">
+                        {item.name}
+                      </Typography>
                     </Box>
-                    <Typography style={{fontSize: "14px", fontWeight: "lighter"}}>{item.created_at}</Typography>
+                    <Typography style={{ fontSize: "14px", fontWeight: "lighter" }}>
+                      {timeago.format(item.updated_at)}
+                    </Typography>
                   </Box>
                 </ImageListItem>
               ))}
           </ImageList>
         </Box>
-        <Box sx={{mt: "40px"}}>
-          <Typography sx={{fontWeight: "bold"}}>All BOARDS</Typography>
+        <Box sx={{ mt: "40px" }}>
+          <Typography sx={{ fontWeight: "bold" }}>All BOARDS</Typography>
           <hr />
           <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
             {boards &&
@@ -252,17 +240,15 @@ function Landing() {
                     mr: "31px",
                     boxShadow: "9px 10px 20px 0px #0000006b",
                     transition: "all .5s",
-                    '&:hover': {
-                      transform: "scale(1.1)"
-                    }
+                    "&:hover": {
+                      transform: "scale(1.1)",
+                    },
                   }}
                   key={item.name}
-                  onClick={() =>
-                    navigate(`/board/${currentOrg}?board=${item.name}&view=l`)
-                  }
+                  onClick={() => navigate(`/board/${currentOrg}?board=${item.name}&view=l`)}
                 >
                   <img
-                    style={{ width: "100%", filter:" brightness(0.8) blur(1px)", height: "143px" }}
+                    style={{ width: "100%", filter: " brightness(0.8) blur(1px)", height: "143px" }}
                     src={`${item.image}`}
                     srcSet={`${item.image}`}
                     alt={item.name}
@@ -280,12 +266,16 @@ function Landing() {
                     }}
                   >
                     <Box>
-                      <Typography style={{fontSize: "14px", fontWeight: "lighter"}}>
+                      <Typography style={{ fontSize: "14px", fontWeight: "lighter" }}>
                         Members: {3} | Lists: {5} | Attachments: {18}{" "}
                       </Typography>
-                      <Typography sx={{textTransform: "uppercase", fontWeight: "bold"}} variant="h5">{item.name}</Typography>
+                      <Typography sx={{ textTransform: "uppercase", fontWeight: "bold" }} variant="h5">
+                        {item.name}
+                      </Typography>
                     </Box>
-                    <Typography style={{fontSize: "14px", fontWeight: "lighter"}}>{item.created_at}</Typography>
+                    <Typography style={{ fontSize: "14px", fontWeight: "lighter" }}>
+                      {timeago.format(item.updated_at)}
+                    </Typography>
                   </Box>
                 </ImageListItem>
               ))}
@@ -303,8 +293,8 @@ function Landing() {
         >
           <List component="nav" aria-label="orgsanisations">
             <Typography variant="caption" gutterBottom>
-              Add user to org- (for testing only admins would be<br></br> able
-              to add a user once in a organization currently all users are admin)
+              Add user to org- (for testing only admins would be<br></br> able to add a user once in a organization
+              currently all users are admin)
             </Typography>
             <Divider />
             {testOrg.length > 0 &&
