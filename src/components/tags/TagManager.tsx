@@ -32,6 +32,7 @@ function TagManager({
 }: Props) {
   const min1000 = useMediaQuery("(min-width:1000px)");
   const [delCheck, setDelCheck] = useState(false);
+  const min700 = useMediaQuery("(min-width:700px)");
 
   const tagInputs = [
     { name: "name", type: "text", required: true },
@@ -63,7 +64,7 @@ function TagManager({
         styles={{
           top: position.y.toString() + "px",
           position: "fixed",
-          left: min1000 ? "225px" : "50px",
+          left: min1000 ? "225px" : !min700 ? "0px" : "60px",
         }}
       >
         <Card sx={{ p: 1, width: "200px" }}>

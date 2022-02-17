@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { IconButton, Divider, Box, Grow, Typography, Avatar, Tooltip, Card, Button, Modal } from "@mui/material/";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import ViewSidebarRoundedIcon from "@mui/icons-material/ViewSidebarRounded";
 import * as timeago from "timeago.js";
 import UpdateIcon from "@mui/icons-material/Update";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
@@ -41,7 +42,9 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     isFetching,
   } = useFetchData({ type: "post", route: "task/single", body: taskId && { id: taskId, options } }, taskId && taskId);
   const min600 = useMediaQuery("(min-width:600px)");
+  const min700 = useMediaQuery("(min-width:700px)");
   const [uneditedDesc, setUnEditedDesc] = useState("");
+  const [toggleSideBar, setToggleSideBar] = useState(true);
   const [hasEdited, setHasEdited] = useState(false);
   const [loading, setLoading] = useState(false);
   const [taskData, setTaskData] = useState(null);
@@ -62,6 +65,14 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
       fetchTask();
     }
   }, [taskId]);
+
+  useEffect(() => {
+    if (!min700) {
+      setToggleSideBar(false);
+    } else {
+      setToggleSideBar(true);
+    }
+  }, [min700]);
 
   useEffect(() => {
     if (task) {
@@ -226,6 +237,13 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                   <Typography sx={{ fontSize: 11 }} variant="caption">
                     Updated: {timeago.format(taskData.updated_at)}
                   </Typography>
+                  {!min700 && (
+                    <ViewSidebarRoundedIcon
+                      color="primary"
+                      onClick={() => setToggleSideBar(!toggleSideBar)}
+                      sx={{ ml: "50vw", cursor: "pointer", height: 25 }}
+                    />
+                  )}
                   <Divider />
                 </Box>
                 <Inputs
@@ -352,12 +370,16 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                   pushNewActivity={pushNewActivity}
                 />
               </Box>
+
               <TaskSideBar
                 dividerStyles={styles.divider}
                 taskData={taskData}
                 pushNewActivity={pushNewActivity}
                 user={user}
                 fetchTask={fetchTask}
+                min700={min700}
+                min600={min600}
+                toggleSideBar={toggleSideBar}
               />
             </Card>
           </Grow>
