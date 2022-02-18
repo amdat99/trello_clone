@@ -8,11 +8,12 @@ const BoardCard = ({ item, currentOrg, recentBoards }) => {
   const navigate = useNavigate();
 
   const addRecentBoard = (board) => {
+    const boards = recentBoards.filter((recentBoard) => recentBoard.name !== board.name);
+
     if (recentBoards.length >= 10) {
       recentBoards.pop();
     }
-    recentBoards.filter((recentBoard) => recentBoard.id !== board.id);
-    recentBoards.unshift({
+    boards.unshift({
       image: board.image,
       name: board.name,
       id: board.id,
@@ -23,7 +24,7 @@ const BoardCard = ({ item, currentOrg, recentBoards }) => {
     requestHandler({
       route: "profile/updateboards",
       type: "put",
-      body: { recent_boards: JSON.stringify(recentBoards) },
+      body: { recent_boards: JSON.stringify(boards) },
     }).then((res) => {
       if (res === "board updated successfully") {
         console.log("worked");
