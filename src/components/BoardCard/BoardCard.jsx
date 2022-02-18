@@ -71,7 +71,7 @@ const BoardCard = ({ item, currentOrg, recentBoards }) => {
       >
         <Box>
           <Typography style={{ fontSize: "14px", fontWeight: "lighter" }}>
-            Members: {3} | Lists: {5} | Attachments: {18}{" "}
+            Members: {3} | Lists: {item.lists.length} | Attachments: {18}{" "}
           </Typography>
           <Typography sx={{ textTransform: "uppercase", fontWeight: "bold" }} variant="h5">
             {item.name}
