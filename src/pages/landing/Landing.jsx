@@ -22,6 +22,7 @@ import { requestHandler } from "../../helpers/requestHandler";
 import { useNavigate } from "react-router-dom";
 import useFetchData from "../../hooks/useFetchData";
 import test from "../../assets/test.json";
+import { cpuUsage } from "process";
 
 function Landing() {
   const navigate = useNavigate();
@@ -48,6 +49,14 @@ function Landing() {
     "board/all"
   );
 
+  const { data: recentBoards, fetchData: fetchRecentBoards } = useFetchData(
+    {
+      type: "post",
+      route: "profile/recentboards",
+    },
+    "profile/recentboards"
+  );
+
   useEffect(() => {
     fetchData();
     requestHandler({ route: "org/all", type: "post" }).then((res) => {
@@ -56,6 +65,10 @@ function Landing() {
       }
     });
   }, []);
+
+  useEffect(() => {
+    fetchRecentBoards();
+  }, [currentOrg]);
 
   useEffect(() => {
     const checkOrgAndFetchBoards = () => {
@@ -73,6 +86,7 @@ function Landing() {
     }
   }, [currentOrg]);
 
+  console.log(recentBoards);
   const onLogout = () => {
     requestHandler({ route: "auth/logout", type: "post" }).then((data) => {
       if (data === "logged out successfully") {
@@ -91,8 +105,21 @@ function Landing() {
       }
     });
   };
+
+  const addRecentBoard = (board) => {
+    if (recentBoards.length >= 10) {
+      recentBoards.pop();
+    }
+    recentBoards.unshift({ image: board.image, name: board.name, id: board.id });
+    requestHandler({ route: "profile/updateboards", type: "put", body: { board_id: board.id } }).then((res) => {
+      if (res === "board updated successfully") {
+        cpuUsage.log("worked");
+      } else {
+        alert(res?.errors ? res.errors : "error adding recent board");
+      }
+    });
+  };
   // for reference:
-  console.log(data, isFetching);
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 10, zIndex: 999 }}>
@@ -129,7 +156,10 @@ function Landing() {
                 <ImageListItem
                   sx={{ cursor: "pointer" }}
                   key={item.name}
-                  onClick={() => navigate(`/board/${currentOrg}?board=${item.name}&view=l`)}
+                  onClick={() => {
+                    addRecentBoard(item);
+                    navigate(`/board/${currentOrg}?board=${item.name}&view=l`);
+                  }}
                 >
                   <img
                     style={{ width: "200px", height: "100px", margin: "4px" }}
