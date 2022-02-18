@@ -111,9 +111,13 @@ function Landing() {
       recentBoards.pop();
     }
     recentBoards.unshift({ image: board.image, name: board.name, id: board.id });
-    requestHandler({ route: "profile/updateboards", type: "put", body: { board_id: board.id } }).then((res) => {
+    requestHandler({
+      route: "profile/updateboards",
+      type: "put",
+      body: { recent_boards: JSON.stringify(recentBoards) },
+    }).then((res) => {
       if (res === "board updated successfully") {
-        cpuUsage.log("worked");
+        console.log("worked");
       } else {
         alert(res?.errors ? res.errors : "error adding recent board");
       }
