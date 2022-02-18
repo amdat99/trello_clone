@@ -6,7 +6,16 @@ import ImageListItem from "@mui/material/ImageListItem";
 import Inputs from "../inputs/Inputs";
 import PopoverWrapper from "../popover/PopoverWrapper";
 
-function CreateModal({ createType, createBoard, createValue, setCreateValue, setCurrentList, currentList, position }) {
+function CreateModal({
+  createType,
+  createBoard,
+  createValue,
+  setCreateValue,
+  setCurrentList,
+  currentList,
+  position,
+  min600,
+}) {
   const [currentImage, setCurrentImage] = useState("");
   const [imageChecked, setImageChecked] = useState(false);
   const createInputs = [
@@ -37,11 +46,11 @@ function CreateModal({ createType, createBoard, createValue, setCreateValue, set
       anchor={createType?.data?.val !== ""}
       position={position}
       onContext={createType?.data?.onCtxMenu}
-      ml={createType?.data?.val === "board" ? 8 : 12.5}
+      ml={createType?.data?.val === "board" ? (min600 ? 11 : 0) : min600 ? 15.5 : 5}
       onClose={() => createType.set({ val: "", onCtxMenu: false })}
     >
-      <Box sx={{ p: 1 }} component="form" onSubmit={onCreate}>
-        <Card sx={{ p: 1, width: "300px" }}>
+      <Card sx={{ p: 1, width: "300px" }}>
+        <Box sx={{ p: 1 }} component="form" onSubmit={onCreate}>
           {createType.data?.val === "list" || createType.data?.val === "board"
             ? createInputs.map((input) => (
                 <Inputs
@@ -66,13 +75,13 @@ function CreateModal({ createType, createBoard, createValue, setCreateValue, set
               />
             )}
           </ImageListItem>
-        </Card>
-        {createType.data?.val !== "users" && (
-          <Button type={"submit"} sx={{ mt: 1, textTransform: "none" }} variant="contained" size="small">
-            {createValue.image && !imageChecked ? "Check Image" : `Add ${createType.data?.val}`}
-          </Button>
-        )}
-      </Box>
+          {createType.data?.val !== "users" && (
+            <Button type={"submit"} sx={{ mt: 1, textTransform: "none" }} variant="contained" size="small">
+              {createValue.image && !imageChecked ? "Check Image" : `Add ${createType.data?.val}`}
+            </Button>
+          )}
+        </Box>
+      </Card>
     </PopoverWrapper>
   );
 }

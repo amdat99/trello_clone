@@ -30,12 +30,7 @@ import background from "../../assets/images/background.png";
 function Landing() {
   const navigate = useNavigate();
   const [logout, user, currentOrg, setCurrentOrg] = useUserStore(
-    (state) => [
-      state.logout,
-      state.user,
-      state.currentOrg,
-      state.setCurrentOrg,
-    ],
+    (state) => [state.logout, state.user, state.currentOrg, state.setCurrentOrg],
     shallow
   );
   const [testOrg, setTestOrg] = useState([]);
@@ -57,6 +52,14 @@ function Landing() {
     "board/all"
   );
 
+  const { data: recentBoards, fetchData: fetchRecentBoards } = useFetchData(
+    {
+      type: "post",
+      route: "profile/recentboards",
+    },
+    "profile/recentboards"
+  );
+
   useEffect(() => {
     fetchData();
     requestHandler({ route: "org/all", type: "post" }).then((res) => {
@@ -65,6 +68,10 @@ function Landing() {
       }
     });
   }, []);
+
+  useEffect(() => {
+    fetchRecentBoards();
+  }, [currentOrg]);
 
   useEffect(() => {
     const checkOrgAndFetchBoards = () => {
@@ -86,6 +93,7 @@ function Landing() {
     }
   }, [currentOrg]);
 
+  console.log(recentBoards);
   const onLogout = () => {
     requestHandler({ route: "auth/logout", type: "post" }).then((data) => {
       if (data === "logged out successfully") {
@@ -108,8 +116,25 @@ function Landing() {
       }
     });
   };
+
+  const addRecentBoard = (board) => {
+    if (recentBoards.length >= 10) {
+      recentBoards.pop();
+    }
+    recentBoards.unshift({ image: board.image, name: board.name, id: board.id });
+    requestHandler({
+      route: "profile/updateboards",
+      type: "put",
+      body: { recent_boards: JSON.stringify(recentBoards) },
+    }).then((res) => {
+      if (res === "board updated successfully") {
+        console.log("worked");
+      } else {
+        alert(res?.errors ? res.errors : "error adding recent board");
+      }
+    });
+  };
   // for reference:
-  console.log(data, isFetching);
   return (
     <>
       <Box
@@ -120,10 +145,7 @@ function Landing() {
           mt: "5vh",
         }}
       >
-        <img
-          src={background}
-          style={{ position: "fixed", zIndex: "-1", top: "0", left: "0" }}
-        />
+        <img src={background} style={{ position: "fixed", zIndex: "-1", top: "0", left: "0" }} />
         {/* <Button
           variant="contained"
           onClick={onLogout}
@@ -148,12 +170,7 @@ function Landing() {
                 top: 100,
               }}
             >
-              {user && (
-                <Typography variant="h6">
-                  {" "}
-                  Organizations for {user.name}{" "}
-                </Typography>
-              )}
+              {user && <Typography variant="h6"> Organizations for {user.name} </Typography>}
               {data.map((org) => (
                 // <Link to={`/board/${org.name}`} key={org.name}>
                 <span onClick={() => setCurrentOrg(org.name)} key={org.name}>
@@ -164,7 +181,7 @@ function Landing() {
           </>
         )}
         {currentOrg && (
-          <Box sx={{display: "flex", justifyContent: "space-between"}}>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <img style={{ marginRight: "10px" }} src={boardIcon} />
               <Box>
@@ -182,8 +199,8 @@ function Landing() {
                 </Typography>
               </Box>
             </Box>
-            <Box sx={{display: "flex", alignItems: "center"}}>
-              <FormControl  >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <FormControl>
                 <InputLabel id="select-workspace">Workspace</InputLabel>
                 <Select
                   sx={{ width: "250px", mr: "10px" }}
@@ -223,9 +240,7 @@ function Landing() {
                     },
                   }}
                   key={item.name}
-                  onClick={() =>
-                    navigate(`/board/${currentOrg}?board=${item.name}&view=l`)
-                  }
+                  onClick={() => navigate(`/board/${currentOrg}?board=${item.name}&view=l`)}
                 >
                   <img
                     style={{
@@ -250,21 +265,14 @@ function Landing() {
                     }}
                   >
                     <Box>
-                      <Typography
-                        style={{ fontSize: "14px", fontWeight: "lighter" }}
-                      >
+                      <Typography style={{ fontSize: "14px", fontWeight: "lighter" }}>
                         Members: {3} | Lists: {5} | Attachments: {18}{" "}
                       </Typography>
-                      <Typography
-                        sx={{ textTransform: "uppercase", fontWeight: "bold" }}
-                        variant="h5"
-                      >
+                      <Typography sx={{ textTransform: "uppercase", fontWeight: "bold" }} variant="h5">
                         {item.name}
                       </Typography>
                     </Box>
-                    <Typography
-                      style={{ fontSize: "14px", fontWeight: "lighter" }}
-                    >
+                    <Typography style={{ fontSize: "14px", fontWeight: "lighter" }}>
                       {`Updated ${timeago.format(item.updated_at)}`}
                     </Typography>
                   </Box>
@@ -293,9 +301,10 @@ function Landing() {
                     },
                   }}
                   key={item.name}
-                  onClick={() =>
-                    navigate(`/board/${currentOrg}?board=${item.name}&view=l`)
-                  }
+                  onClick={() => {
+                    addRecentBoard(item);
+                    navigate(`/board/${currentOrg}?board=${item.name}&view=l`);
+                  }}
                 >
                   <img
                     style={{
@@ -320,21 +329,14 @@ function Landing() {
                     }}
                   >
                     <Box>
-                      <Typography
-                        style={{ fontSize: "14px", fontWeight: "lighter" }}
-                      >
+                      <Typography style={{ fontSize: "14px", fontWeight: "lighter" }}>
                         Members: {3} | Lists: {5} | Attachments: {18}{" "}
                       </Typography>
-                      <Typography
-                        sx={{ textTransform: "uppercase", fontWeight: "bold" }}
-                        variant="h5"
-                      >
+                      <Typography sx={{ textTransform: "uppercase", fontWeight: "bold" }} variant="h5">
                         {item.name}
                       </Typography>
                     </Box>
-                    <Typography
-                      style={{ fontSize: "14px", fontWeight: "lighter" }}
-                    >
+                    <Typography style={{ fontSize: "14px", fontWeight: "lighter" }}>
                       {`Updated ${timeago.format(item.updated_at)}`}
                     </Typography>
                   </Box>
@@ -354,9 +356,8 @@ function Landing() {
         >
           <List component="nav" aria-label="orgsanisations">
             <Typography variant="caption" gutterBottom>
-              Add user to org- (for testing only admins would be<br></br> able
-              to add a user once in a organization currently all users are
-              admin)
+              Add user to org- (for testing only admins would be<br></br> able to add a user once in a organization
+              currently all users are admin)
             </Typography>
             <Divider />
             {testOrg.length > 0 &&

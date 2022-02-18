@@ -25,6 +25,7 @@ export type Board = {
   updated_at: string | Date;
   name: string;
   deleted_at?: string | Date;
+  assigned_users?: { name: string; color: string }[];
   image?: string;
 };
 

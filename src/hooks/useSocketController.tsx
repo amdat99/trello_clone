@@ -13,7 +13,7 @@ function useSocketController(room: string) {
     enterRefetchReq((err: null, data: { type: string; resId: string }) => {
       console.log(err);
       let prevMsg: string;
-      if (data && !err && data.resId !== prevMsg) {
+      if (data && !err && data?.resId !== prevMsg) {
         setSocketData(data);
         prevMsg = data.resId;
       }
@@ -22,7 +22,7 @@ function useSocketController(room: string) {
     enterBoardRefetchReq((err: null, data: { type: string; id: string; resId: string; prevId?: string }) => {
       console.log(err);
       let prevMsg: string;
-      if (data && !err && data.resId !== prevMsg) {
+      if (data && !err && data?.resId !== prevMsg) {
         setSocketData(data);
         prevMsg = data.resId;
       }

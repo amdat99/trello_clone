@@ -111,7 +111,11 @@ const Board: React.FC = () => {
     requestHandler({
       route: "board/create",
       type: "post",
-      body: { name: createValue.name, image: createValue.image },
+      body: {
+        name: createValue.name,
+        image: createValue.image,
+        assigned_users: JSON.stringify([{ name: user.name, color: user.color }]),
+      },
     }).then((data) => {
       if (data === "board created successfully") {
         fetchBoards();
@@ -164,6 +168,9 @@ const Board: React.FC = () => {
     setCtxShowMenu(true);
   };
 
+  const onSetPosition = () => {
+    setPosition({ x, y });
+  };
   const menuFunctions = [
     {
       name: "create list",
@@ -203,8 +210,8 @@ const Board: React.FC = () => {
           boards={boards}
           setCurrentBoard={setCurrentBoard}
           position={position}
-          // fetchBoards={fetchBoards}
-          currentBoard={currentBoard?.data}
+          fetchBoards={fetchBoards}
+          currentBoard={currentBoard}
           user={user}
           createType={{ data: createType, set: setCreateType }}
           params={{ board, orgName, taskId, navigate }}
@@ -212,6 +219,7 @@ const Board: React.FC = () => {
           setCreateValue={setCreateValue}
           createBoard={createBoard}
           setCurrentList={setCurrentList}
+          setPosition={onSetPosition}
           currentList={currentList}
         />
       </Box>

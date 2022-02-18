@@ -249,13 +249,13 @@ const List = ({
         />
       )}
       <DragDropContext onDragEnd={onDragEnd}>
-        <Typography variant="h4" color={"white"} sx={{ ml: 0.8 }}>
+        <Typography variant="h4" color={"white"} sx={titleStyles(min1000)}>
           {current.board ? current.board?.name : "Board"}
         </Typography>
         <Fade in={listData !== null} style={{ transitionDelay: "100ms" }}>
           <Box
             m={2}
-            mt={3.2}
+            mt={min1000 ? 3.2 : 6}
             ml={stickyMenu && min700 ? 27 : 4}
             width={min1000 ? (stickyMenu ? "90%" : "105%") : "95%"}
           >
@@ -317,5 +317,14 @@ const List = ({
     </>
   );
 };
+
+const titleStyles = (min1000: boolean) => ({
+  ml: 0.8,
+  fontSize: min1000 ? "2.5rem" : "1.5rem",
+  position: "relative",
+  width: 50,
+  top: min1000 ? 0 : 44,
+  left: min1000 ? 0 : 30,
+});
 
 export default List;
