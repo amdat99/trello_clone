@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 import useFetchData from "../../hooks/useFetchData";
 import boardIcon from "../../assets/images/icons/BORADS_icon.png";
 import background from "../../assets/images/background.png";
+import BoardCard from "../../components/BoardCard/BoardCard"
 
 function Landing() {
   const navigate = useNavigate();
@@ -124,7 +125,7 @@ function Landing() {
           src={background}
           style={{ position: "fixed", zIndex: "-1", top: "0", left: "0" }}
         />
-        {/* <Button
+        <Button
           variant="contained"
           onClick={onLogout}
           sx={{
@@ -136,7 +137,7 @@ function Landing() {
           }}
         >
           Logout
-        </Button> */}
+        </Button>
         {data && (
           <>
             <Card
@@ -208,67 +209,7 @@ function Landing() {
           <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
             {boards &&
               boards.map((item) => (
-                <ImageListItem
-                  sx={{
-                    cursor: "pointer",
-                    width: "361px",
-                    height: "143px!important",
-                    borderRadius: "6px",
-                    overflow: "hidden",
-                    mr: "31px",
-                    boxShadow: "9px 10px 20px 0px #0000006b",
-                    transition: "all .5s",
-                    "&:hover": {
-                      transform: "scale(1.1)",
-                    },
-                  }}
-                  key={item.name}
-                  onClick={() =>
-                    navigate(`/board/${currentOrg}?board=${item.name}&view=l`)
-                  }
-                >
-                  <img
-                    style={{
-                      width: "100%",
-                      filter: " brightness(0.8) blur(.5)",
-                      height: "143px",
-                    }}
-                    src={`${item.image}`}
-                    srcSet={`${item.image}`}
-                    alt={item.name}
-                    loading="lazy"
-                  />
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      color: "white",
-                      padding: "0 20px",
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: " space-around",
-                    }}
-                  >
-                    <Box>
-                      <Typography
-                        style={{ fontSize: "14px", fontWeight: "lighter" }}
-                      >
-                        Members: {3} | Lists: {5} | Attachments: {18}{" "}
-                      </Typography>
-                      <Typography
-                        sx={{ textTransform: "uppercase", fontWeight: "bold" }}
-                        variant="h5"
-                      >
-                        {item.name}
-                      </Typography>
-                    </Box>
-                    <Typography
-                      style={{ fontSize: "14px", fontWeight: "lighter" }}
-                    >
-                      {`Updated ${timeago.format(item.updated_at)}`}
-                    </Typography>
-                  </Box>
-                </ImageListItem>
+                <BoardCard currentOrg={currentOrg} item={item}/>
               ))}
           </ImageList>
         </Box>
@@ -278,67 +219,7 @@ function Landing() {
           <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
             {boards &&
               boards.map((item) => (
-                <ImageListItem
-                  sx={{
-                    cursor: "pointer",
-                    width: "361px",
-                    height: "143px!important",
-                    borderRadius: "6px",
-                    overflow: "hidden",
-                    mr: "31px",
-                    boxShadow: "9px 10px 20px 0px #0000006b",
-                    transition: "all .5s",
-                    "&:hover": {
-                      transform: "scale(1.1)",
-                    },
-                  }}
-                  key={item.name}
-                  onClick={() =>
-                    navigate(`/board/${currentOrg}?board=${item.name}&view=l`)
-                  }
-                >
-                  <img
-                    style={{
-                      width: "100%",
-                      filter: " brightness(0.8) blur(.5)",
-                      height: "143px",
-                    }}
-                    src={`${item.image}`}
-                    srcSet={`${item.image}`}
-                    alt={item.name}
-                    loading="lazy"
-                  />
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      color: "white",
-                      padding: "0 20px",
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: " space-around",
-                    }}
-                  >
-                    <Box>
-                      <Typography
-                        style={{ fontSize: "14px", fontWeight: "lighter" }}
-                      >
-                        Members: {3} | Lists: {5} | Attachments: {18}{" "}
-                      </Typography>
-                      <Typography
-                        sx={{ textTransform: "uppercase", fontWeight: "bold" }}
-                        variant="h5"
-                      >
-                        {item.name}
-                      </Typography>
-                    </Box>
-                    <Typography
-                      style={{ fontSize: "14px", fontWeight: "lighter" }}
-                    >
-                      {`Updated ${timeago.format(item.updated_at)}`}
-                    </Typography>
-                  </Box>
-                </ImageListItem>
+                <BoardCard currentOrg={currentOrg} item={item}/>
               ))}
           </ImageList>
         </Box>
