@@ -1,18 +1,28 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import {
 
-const BoardList = () => {
+  Typography,
+
+  Box,
+  ImageList,
+
+} from "@mui/material";
+
+import BoardCard from "../../components/boardCard/BoardCard";
+const BoardList = (props) => {
   return (
       <Box sx={{ mt: "40px" }}>
-        <Typography sx={{ fontWeight: "bold" }}>RECENT BOARDS</Typography>
+        <Typography sx={{ fontWeight: "bold" }}>{props.listTitle}</Typography>
         <hr />
         <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
-          {boards &&
-            boards.map((item, index) => (
+          {props.boardList &&
+            props.boardList.map((item, index) => (
               <BoardCard
                 index={index}
-                currentOrg={currentOrg}
+                currentOrg={props.currentOrg}
                 item={item}
-                recentBoards={recentBoards}
+                recentBoards={props.recentBoards}
+                boardSize={props.boardListSize}
               />
             ))}
         </ImageList>

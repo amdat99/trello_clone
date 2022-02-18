@@ -4,7 +4,7 @@ import * as timeago from "timeago.js";
 import { useNavigate } from "react-router-dom";
 import { requestHandler } from "../../helpers/requestHandler";
 
-const BoardCard = ({ item, currentOrg, recentBoards }) => {
+const BoardCard = ({ item, currentOrg, recentBoards, boardSize }) => {
   const navigate = useNavigate();
 
   const addRecentBoard = (board) => {
@@ -38,8 +38,8 @@ const BoardCard = ({ item, currentOrg, recentBoards }) => {
     <ImageListItem
       sx={{
         cursor: "pointer",
-        width: "361px",
-        height: "143px!important",
+        width: boardSize?.width || "361px",
+        height: ()=>!!boardSize?.height && `${boardSize?.height}!important` || "143px!important",
         borderRadius: "6px",
         overflow: "hidden",
         mr: "31px",

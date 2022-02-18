@@ -26,11 +26,17 @@ import useFetchData from "../../hooks/useFetchData";
 import boardIcon from "../../assets/images/icons/BORADS_icon.png";
 import background from "../../assets/images/background.png";
 import BoardCard from "../../components/boardCard/BoardCard";
+import BoardList from "../../components/boardList/BoardList";
 
 function Landing() {
   const navigate = useNavigate();
   const [logout, user, currentOrg, setCurrentOrg] = useUserStore(
-    (state) => [state.logout, state.user, state.currentOrg, state.setCurrentOrg],
+    (state) => [
+      state.logout,
+      state.user,
+      state.currentOrg,
+      state.setCurrentOrg,
+    ],
     shallow
   );
   const [testOrg, setTestOrg] = useState([]);
@@ -141,7 +147,10 @@ function Landing() {
           mt: "5vh",
         }}
       >
-        <img src={background} style={{ position: "fixed", zIndex: "-1", top: "0", left: "0" }} />
+        <img
+          src={background}
+          style={{ position: "fixed", zIndex: "-1", top: "0", left: "0" }}
+        />
         <Button
           variant="contained"
           onClick={onLogout}
@@ -166,7 +175,12 @@ function Landing() {
                 top: 100,
               }}
             >
-              {user && <Typography variant="h6"> Organizations for {user.name} </Typography>}
+              {user && (
+                <Typography variant="h6">
+                  {" "}
+                  Organizations for {user.name}{" "}
+                </Typography>
+              )}
               {data.map((org) => (
                 // <Link to={`/board/${org.name}`} key={org.name}>
                 <span onClick={() => setCurrentOrg(org.name)} key={org.name}>
@@ -220,36 +234,25 @@ function Landing() {
             </Box>
           </Box>
         )}
-        <Box sx={{ mt: "40px" }}>
-          <Typography sx={{ fontWeight: "bold" }}>RECENT BOARDS</Typography>
-          <hr />
-          <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
-            {recentBoards &&
-              recentBoards.map((item, index) => (
-                <BoardCard index={index} currentOrg={currentOrg} item={item} recentBoards={recentBoards} />
-              ))}
-          </ImageList>
-        </Box>
-        <Box sx={{ mt: "40px" }}>
-          <Typography sx={{ fontWeight: "bold" }}>All BOARDS</Typography>
-          <hr />
-          <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
-            {boards &&
-              boards.map((item, index) => (
-                <BoardCard key={index} currentOrg={currentOrg} item={item} recentBoards={recentBoards} />
-              ))}
-          </ImageList>
-        </Box>
-        <Box sx={{ mt: "40px" }}>
-          <Typography sx={{ fontWeight: "bold" }}>ACTIVE BOARDS</Typography>
-          <hr />
-          <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
-            {boards &&
-              activeBoards.map((item, index) => (
-                <BoardCard key={index} currentOrg={currentOrg} item={item} recentBoards={recentBoards} />
-              ))}
-          </ImageList>
-        </Box>
+        <BoardList
+          listTitle={"RECENT BOARDS"}
+          recentBoards={recentBoards}
+          boardList={recentBoards}
+          currentOrg={currentOrg}
+          boardListSize={{ width: "200px", height: "100px" }}
+        />
+        <BoardList
+          listTitle={"ALL BOARDS"}
+          recentBoards={recentBoards}
+          boardList={boards}
+          currentOrg={currentOrg}
+        />
+        <BoardList
+          listTitle={"ACTIVE BOARDS"}
+          recentBoards={recentBoards}
+          boardList={activeBoards}
+          currentOrg={currentOrg}
+        />
         <Card
           sx={{
             maxWidth: "60%",
@@ -262,8 +265,9 @@ function Landing() {
         >
           <List component="nav" aria-label="orgsanisations">
             <Typography variant="caption" gutterBottom>
-              Add user to org- (for testing only admins would be<br></br> able to add a user once in a organization
-              currently all users are admin)
+              Add user to org- (for testing only admins would be<br></br> able
+              to add a user once in a organization currently all users are
+              admin)
             </Typography>
             <Divider />
             {testOrg.length > 0 &&
