@@ -18,8 +18,8 @@ const BoardCard = ({ item, currentOrg, recentBoards }) => {
       name: board.name,
       id: board.id,
       lists: board.lists,
-      createdAt: board.createdAt,
-      updatedAt: board.updatedAt,
+      created_at: board.created_at,
+      updated_at: new Date(),
     });
     requestHandler({
       route: "profile/updateboards",
