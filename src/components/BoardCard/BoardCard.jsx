@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { requestHandler } from "../../helpers/requestHandler";
 
 const BoardCard = ({ item, currentOrg, recentBoards }) => {
+  
   const navigate = useNavigate();
 
   const addRecentBoard = (board) => {

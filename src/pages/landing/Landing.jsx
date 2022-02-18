@@ -30,12 +30,18 @@ import BoardCard from "../../components/BoardCard/BoardCard";
 function Landing() {
   const navigate = useNavigate();
   const [logout, user, currentOrg, setCurrentOrg] = useUserStore(
-    (state) => [state.logout, state.user, state.currentOrg, state.setCurrentOrg],
+    (state) => [
+      state.logout,
+      state.user,
+      state.currentOrg,
+      state.setCurrentOrg,
+    ],
     shallow
   );
   const [testOrg, setTestOrg] = useState([]);
   const [showDetail, setShowDetail] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
+  const [activeBoards, setActiveBoards] = useState([]);
   const { data, fetchData } = useFetchData(
     {
       type: "post",
@@ -72,6 +78,20 @@ function Landing() {
   useEffect(() => {
     fetchRecentBoards();
   }, [currentOrg]);
+
+  useEffect(() => {
+    let currentActiveBoards = [];
+    if(boards){
+    boards.forEach((board) => {
+      board.assigned_users.forEach((boardUser) => {
+        if (boardUser.name === user.name) {
+          currentActiveBoards.push(board);
+        }
+      });
+    });
+    setActiveBoards(currentActiveBoards);
+  }
+  }, [boards]);
 
   useEffect(() => {
     const checkOrgAndFetchBoards = () => {
@@ -116,7 +136,6 @@ function Landing() {
       }
     });
   };
-
   // for reference:
   return (
     <>
@@ -128,7 +147,10 @@ function Landing() {
           mt: "5vh",
         }}
       >
-        <img src={background} style={{ position: "fixed", zIndex: "-1", top: "0", left: "0" }} />
+        <img
+          src={background}
+          style={{ position: "fixed", zIndex: "-1", top: "0", left: "0" }}
+        />
         <Button
           variant="contained"
           onClick={onLogout}
@@ -153,7 +175,12 @@ function Landing() {
                 top: 100,
               }}
             >
-              {user && <Typography variant="h6"> Organizations for {user.name} </Typography>}
+              {user && (
+                <Typography variant="h6">
+                  {" "}
+                  Organizations for {user.name}{" "}
+                </Typography>
+              )}
               {data.map((org) => (
                 // <Link to={`/board/${org.name}`} key={org.name}>
                 <span onClick={() => setCurrentOrg(org.name)} key={org.name}>
@@ -189,13 +216,16 @@ function Landing() {
                   sx={{ width: "250px", mr: "10px" }}
                   placeholder="Select Workspace"
                   labelId="select-workspace"
-                  value=""
+                  value={currentOrg}
                   label="Workspace"
-                  onChange={() => {}}
+                  onChange={(item) => setCurrentOrg(item)}
                 >
-                  <MenuItem value="">Workspace One</MenuItem>
-                  <MenuItem value="">Workspace Two</MenuItem>
-                  <MenuItem value="">Workspace Three</MenuItem>
+                 {data && data.map(item => {
+                   return (
+                  <MenuItem key={item.name}  value={item.name}>{item.name}</MenuItem>
+                   )
+                
+})}
                 </Select>
               </FormControl>
               <Button variant="outlined">New Board</Button>
@@ -203,11 +233,18 @@ function Landing() {
           </Box>
         )}
         <Box sx={{ mt: "40px" }}>
-          <Typography sx={{ fontWeight: "bold" }}>ACTIVE BOARDS</Typography>
+          <Typography sx={{ fontWeight: "bold" }}>RECENT BOARDS</Typography>
           <hr />
           <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
             {boards &&
-              boards.map((item) => <BoardCard currentOrg={currentOrg} item={item} recentBoards={recentBoards} />)}
+              boards.map((item, index) => (
+                <BoardCard
+                  index={index}
+                  currentOrg={currentOrg}
+                  item={item}
+                  recentBoards={recentBoards}
+                />
+              ))}
           </ImageList>
         </Box>
         <Box sx={{ mt: "40px" }}>
@@ -215,7 +252,29 @@ function Landing() {
           <hr />
           <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
             {boards &&
-              boards.map((item) => <BoardCard currentOrg={currentOrg} item={item} recentBoards={recentBoards} />)}
+              boards.map((item, index) => (
+                <BoardCard
+                  key={index}
+                  currentOrg={currentOrg}
+                  item={item}
+                  recentBoards={recentBoards}
+                />
+              ))}
+          </ImageList>
+        </Box>
+        <Box sx={{ mt: "40px" }}>
+          <Typography sx={{ fontWeight: "bold" }}>ACTIVE BOARDS</Typography>
+          <hr />
+          <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
+            {boards &&
+              activeBoards.map((item, index) => (
+                <BoardCard
+                  key={index}
+                  currentOrg={currentOrg}
+                  item={item}
+                  recentBoards={recentBoards}
+                />
+              ))}
           </ImageList>
         </Box>
         <Card
@@ -230,8 +289,9 @@ function Landing() {
         >
           <List component="nav" aria-label="orgsanisations">
             <Typography variant="caption" gutterBottom>
-              Add user to org- (for testing only admins would be<br></br> able to add a user once in a organization
-              currently all users are admin)
+              Add user to org- (for testing only admins would be<br></br> able
+              to add a user once in a organization currently all users are
+              admin)
             </Typography>
             <Divider />
             {testOrg.length > 0 &&
