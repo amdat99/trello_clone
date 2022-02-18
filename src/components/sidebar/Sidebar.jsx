@@ -7,12 +7,25 @@ import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
 // import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 
-function Sidebar({ stickyMenu, setStickyMenu, setShowDetail, showDetail, navigate, orgName, boradName }) {
+function Sidebar({
+  stickyMenu,
+  setStickyMenu,
+  setShowDetail,
+  showDetail,
+  navigate,
+  orgName,
+  boradName,
+  landing = false,
+}) {
   const spanStyle = showDetail || stickyMenu ? { display: "flex", marginLeft: "10px" } : { display: "none" };
   const divStyle = { display: "flex", flexDirection: "row", width: "200px" };
 
   const setView = (view) => {
-    navigate(`/board/${orgName}?board=${boradName}&view=${view}`);
+    if (landing) {
+      navigate(`/board/${orgName}?view=${view}`);
+    } else {
+      navigate(`/board/${orgName}?board=${boradName}&view=${view}`);
+    }
   };
 
   return (
@@ -26,11 +39,15 @@ function Sidebar({ stickyMenu, setStickyMenu, setShowDetail, showDetail, navigat
               <span style={spanStyle}>Home</span>
             </div>
             <Divider />
-            <div onClick={() => setView("l")} style={divStyle}>
-              <ViewKanbanIcon />
-              <span style={spanStyle}>Board View</span>
-            </div>
-            <Divider />
+            {!landing && (
+              <>
+                <div onClick={() => setView("l")} style={divStyle}>
+                  <ViewKanbanIcon />
+                  <span style={spanStyle}>Board View</span>
+                </div>
+                <Divider />
+              </>
+            )}
             <div onClick={() => setView("t")} style={divStyle}>
               <TableViewIcon />
               <span style={spanStyle}>Table View</span>

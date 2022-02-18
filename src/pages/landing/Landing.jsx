@@ -16,7 +16,6 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
-import * as timeago from "timeago.js";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import { useUserStore } from "../../store";
 import shallow from "zustand/shallow";
@@ -253,10 +252,12 @@ function Landing() {
       <Sidebar
         setStickyMenu={setStickyMenu}
         stickyMenu={stickyMenu}
+        orgName={currentOrg}
         setShowDetail={setShowDetail}
         showDetail={showDetail}
         navigate={navigate}
         setView={() => {}}
+        landing={true}
       />
     </>
   );

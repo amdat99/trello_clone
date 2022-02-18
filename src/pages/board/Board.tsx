@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Suspense } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Divider, Button, Box } from "@mui/material/";
+import { Divider, Button, Box, Typography } from "@mui/material/";
 import { requestHandler } from "../../helpers/requestHandler";
 import { useUserStore, useRequestStore } from "../../store";
 import shallow from "zustand/shallow";
@@ -12,6 +12,7 @@ import BoardMenu from "../../components/boardMenu/BoardMenu";
 import Sidebar from "../../components/sidebar/Sidebar";
 import ContextMenu from "components/contextMenu/ContextMenu";
 import { sendRefetchReq, sendBoardrefetchReq } from "../../sockets/orgSockets";
+import background from "../../assets/images/background.png";
 import { Board as BoardType } from "../../components/models";
 
 const Table = React.lazy(() => import("../../components/table/Table"));
@@ -188,7 +189,7 @@ const Board: React.FC = () => {
       onDoubleClick={onShowCtxMenu}
       onClick={() => (showCtxMenu ? setCtxShowMenu(false) : () => {})}
       sx={{
-        backgroundImage: "url(" + currentBoard?.image + ")",
+        backgroundImage: currentBoard?.image ? "url(" + currentBoard?.image + ")" : background,
       }}
     >
       <ContextMenu x={position.x} y={position.y} showCtxMenu={showCtxMenu}>
