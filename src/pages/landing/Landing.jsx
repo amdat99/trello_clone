@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 import useFetchData from "../../hooks/useFetchData";
 import boardIcon from "../../assets/images/icons/BORADS_icon.png";
 import background from "../../assets/images/background.png";
-import BoardCard from "../../components/BoardCard/BoardCard";
+import BoardCard from "../../components/boardCard/BoardCard";
 
 function Landing() {
   const navigate = useNavigate();
@@ -81,16 +81,16 @@ function Landing() {
 
   useEffect(() => {
     let currentActiveBoards = [];
-    if(boards){
-    boards.forEach((board) => {
-      board.assigned_users.forEach((boardUser) => {
-        if (boardUser.name === user.name) {
-          currentActiveBoards.push(board);
-        }
+    if (boards) {
+      boards.forEach((board) => {
+        board.assigned_users.forEach((boardUser) => {
+          if (boardUser.name === user.name) {
+            currentActiveBoards.push(board);
+          }
+        });
       });
-    });
-    setActiveBoards(currentActiveBoards);
-  }
+      setActiveBoards(currentActiveBoards);
+    }
   }, [boards]);
 
   useEffect(() => {
@@ -220,12 +220,14 @@ function Landing() {
                   label="Workspace"
                   onChange={(item) => setCurrentOrg(item)}
                 >
-                 {data && data.map(item => {
-                   return (
-                  <MenuItem key={item.name}  value={item.name}>{item.name}</MenuItem>
-                   )
-                
-})}
+                  {data &&
+                    data.map((item) => {
+                      return (
+                        <MenuItem key={item.name} value={item.name}>
+                          {item.name}
+                        </MenuItem>
+                      );
+                    })}
                 </Select>
               </FormControl>
               <Button variant="outlined">New Board</Button>
