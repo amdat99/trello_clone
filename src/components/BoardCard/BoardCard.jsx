@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { requestHandler } from "../../helpers/requestHandler";
 
 const BoardCard = ({ item, currentOrg, recentBoards }) => {
-  
   const navigate = useNavigate();
 
   const addRecentBoard = (board) => {
@@ -13,7 +12,14 @@ const BoardCard = ({ item, currentOrg, recentBoards }) => {
       recentBoards.pop();
     }
     recentBoards.filter((recentBoard) => recentBoard.id !== board.id);
-    recentBoards.unshift({ image: board.image, name: board.name, id: board.id });
+    recentBoards.unshift({
+      image: board.image,
+      name: board.name,
+      id: board.id,
+      lists: board.lists,
+      createdAt: board.createdAt,
+      updatedAt: board.updatedAt,
+    });
     requestHandler({
       route: "profile/updateboards",
       type: "put",
