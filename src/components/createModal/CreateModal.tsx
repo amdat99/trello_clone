@@ -46,7 +46,7 @@ function CreateModal({
       anchor={createType?.data?.val !== ""}
       position={position}
       onContext={createType?.data?.onCtxMenu}
-      ml={createType?.data?.val === "board" ? (min600 ? 8 : 0) : min600 ? 12.5 : 5}
+      ml={createType?.data?.val === "board" ? (min600 ? 11 : 0) : min600 ? 15.5 : 5}
       onClose={() => createType.set({ val: "", onCtxMenu: false })}
     >
       <Card sx={{ p: 1, width: "300px" }}>

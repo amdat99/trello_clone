@@ -13,6 +13,7 @@ import Inputs from "../inputs/Inputs";
 import PopoverWrapper from "../popover/PopoverWrapper";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import AddAssignedUsers from "components/createModal/AddAssignedUsers";
+import AvatarGroup from "../avatarGroup/AvatarGroup";
 import TaskSideBar from "./TaskSideBar";
 import CommentsActivity from "./Comments&Activity";
 import getTheme from "../../theme";
@@ -197,7 +198,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
           }
         });
       } else {
-        fetchTask();
+        users.pop();
         alert(response?.errors ? response.errors : "no data found");
       }
     });
@@ -272,14 +273,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                   Assigned Users:
                 </Typography>
                 <Box flexDirection={"row"} sx={{ display: "flex" }}>
-                  {taskData?.assigned_users &&
-                    taskData.assigned_users.map((user: { name: {}; color: any }, i: React.Key) => (
-                      <Tooltip title={user.name} placement="bottom" key={i}>
-                        <Avatar sx={{ width: 25, height: 25, mr: 0.7, bgcolor: user.color, fontSize: 15, mb: 0.5 }}>
-                          {user.name[0].toUpperCase()}
-                        </Avatar>
-                      </Tooltip>
-                    ))}
+                  {taskData?.assigned_users && <AvatarGroup users={taskData?.assigned_users} />}
                   <IconButton
                     onClick={() => {
                       onShowCtxMenu();

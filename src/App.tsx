@@ -19,6 +19,8 @@ const App = () => {
   const [user, colorMode] = useUserStore((state) => [state.user, state.colorMode], shallow);
   const theme = createTheme(getTheme(colorMode));
 
+  console.log(useUserStore);
+
   //For reference:
   // const [currentCacheData, setCurrentCacheData] = useState({});
   // const value = useMemo(() => ({ currentCacheData, setCurrentCacheData }), [currentCacheData]);
