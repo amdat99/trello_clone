@@ -37,7 +37,7 @@ function Landing() {
   const [testOrg, setTestOrg] = useState([]);
   const [showDetail, setShowDetail] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
-  const { data, fetchData, error, isFetching } = useFetchData(
+  const { data, fetchData } = useFetchData(
     {
       type: "post",
       route: "org/user",
@@ -118,23 +118,6 @@ function Landing() {
     });
   };
 
-  const addRecentBoard = (board) => {
-    if (recentBoards.length >= 10) {
-      recentBoards.pop();
-    }
-    recentBoards.unshift({ image: board.image, name: board.name, id: board.id });
-    requestHandler({
-      route: "profile/updateboards",
-      type: "put",
-      body: { recent_boards: JSON.stringify(recentBoards) },
-    }).then((res) => {
-      if (res === "board updated successfully") {
-        console.log("worked");
-      } else {
-        alert(res?.errors ? res.errors : "error adding recent board");
-      }
-    });
-  };
   // for reference:
   return (
     <>
@@ -224,14 +207,16 @@ function Landing() {
           <Typography sx={{ fontWeight: "bold" }}>ACTIVE BOARDS</Typography>
           <hr />
           <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
-            {boards && boards.map((item) => <BoardCard currentOrg={currentOrg} item={item} />)}
+            {boards &&
+              boards.map((item) => <BoardCard currentOrg={currentOrg} item={item} recentBoards={recentBoards} />)}
           </ImageList>
         </Box>
         <Box sx={{ mt: "40px" }}>
           <Typography sx={{ fontWeight: "bold" }}>All BOARDS</Typography>
           <hr />
           <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
-            {boards && boards.map((item) => <BoardCard currentOrg={currentOrg} item={item} />)}
+            {boards &&
+              boards.map((item) => <BoardCard currentOrg={currentOrg} item={item} recentBoards={recentBoards} />)}
           </ImageList>
         </Box>
         <Card
