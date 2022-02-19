@@ -101,6 +101,7 @@ const List = ({
             board_id: current.board.id,
             name: createValue.name,
             lists: JSON.stringify(currentListsData),
+            image: createValue?.color && createValue.color,
             id,
             board_name: current.board.name,
           },

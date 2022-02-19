@@ -41,7 +41,7 @@ const Board: React.FC = () => {
   const { x, y } = useMousePosition();
   let params = useParams();
   const [todo, setTodo] = useState("");
-  const [createValue, setCreateValue] = useState({ name: "", image: "" });
+  const [createValue, setCreateValue] = useState({ name: "", image: "", color: "" });
   const [createType, setCreateType] = useState({ val: "", onCtxMenu: false });
   const [currentResId, setCurrentResId] = useState({ id: "", rerender: 0 });
   const [showDetail, setShowDetail] = useState(false);
@@ -130,7 +130,7 @@ const Board: React.FC = () => {
     e.preventDefault();
     const id = (Math.random() / Math.random()).toString();
     let currentTasks = currentList.data[0]?.tasks ? currentList.data[0].tasks : [];
-    currentTasks.push({ id, name: todo, assigned_users: [{ name: user.name, color: user.color }] });
+    currentTasks.push({ id, name: todo, assigned_users: [{ name: user.name, color: user.color }], color: "#3f51b5" });
     requestHandler({
       type: "post",
       route: "task/create",
@@ -140,6 +140,7 @@ const Board: React.FC = () => {
         id: id,
         tasks: JSON.stringify(currentTasks),
         board_name: currentBoard.name,
+        color: createValue.color || null,
         created_by: user.name,
         assigned_users: JSON.stringify([{ name: user.name, color: user.color }]),
         updateList: !currentList.has_tasks ? true : false,

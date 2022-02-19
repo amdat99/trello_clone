@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Slide, Card, Divider } from "@mui/material/";
+import React from "react";
+import { Slide, Card, Divider, Box } from "@mui/material/";
 import Tags from "../tags/Tags";
+import TaskSettings from "../taskSettings/TaskSettings";
 import { Task, User } from "../models";
 
 type Props = {
@@ -9,17 +10,23 @@ type Props = {
   pushNewActivity: Function;
   user: User;
   fetchTask: Function;
+  StyledButton: any;
   toggleSideBar: boolean;
+  onAssignTask: Function;
   min700: boolean;
   min600: boolean;
+  setCurrentResId: ({ id: string, rerender: number }) => void;
 };
 function TaskSideBar({
   dividerStyles,
   taskData,
+  StyledButton,
   pushNewActivity,
+  onAssignTask,
   user,
   fetchTask,
   toggleSideBar,
+  setCurrentResId,
   min700,
   min600,
 }: Props) {
@@ -32,6 +39,18 @@ function TaskSideBar({
             <Divider sx={{ mt: 2 }} />
             <Tags taskData={taskData} pushNewActivity={pushNewActivity} user={user} fetchTask={fetchTask} />
             <Divider sx={dividerStyles} />
+            <Box sx={{ bottom: 0, position: "absolute", width: "92%" }}>
+              <Divider sx={dividerStyles} />
+              <TaskSettings
+                taskData={taskData}
+                pushNewActivity={pushNewActivity}
+                user={user}
+                fetchTask={fetchTask}
+                onAssignTask={onAssignTask}
+                setCurrentResId={setCurrentResId}
+              />
+              <Divider sx={dividerStyles} />
+            </Box>
           </Card>
         </Slide>
       )}

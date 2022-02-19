@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { IconButton, Divider, Box, Grow, Typography, Avatar, Tooltip, Card, Button, Modal } from "@mui/material/";
+import { IconButton, Divider, Box, Grow, Typography, Card, Button, Modal } from "@mui/material/";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 import ViewSidebarRoundedIcon from "@mui/icons-material/ViewSidebarRounded";
 import * as timeago from "timeago.js";
 import UpdateIcon from "@mui/icons-material/Update";
+import { styled } from "@mui/material/styles";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import InputAdornment from "@mui/material/InputAdornment";
 import ReactMde, { getDefaultToolbarCommands } from "react-mde";
@@ -36,7 +38,6 @@ type Props = {
 
 function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu, position }: Props) {
   const theme = getTheme("light").palette;
-  const styles = makeStyles(theme.primary.main);
   const {
     data: task,
     fetchData: fetchTask,
@@ -45,12 +46,14 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
   const min600 = useMediaQuery("(min-width:600px)");
   const min700 = useMediaQuery("(min-width:700px)");
   const [uneditedDesc, setUnEditedDesc] = useState("");
+  const [open, setOpen] = useState(true);
   const [toggleSideBar, setToggleSideBar] = useState(true);
   const [hasEdited, setHasEdited] = useState(false);
   const [loading, setLoading] = useState(false);
   const [taskData, setTaskData] = useState(null);
   const [showAssignedUsers, setShowAssignedUsers] = useState(false);
   const [selectedTab, setSelectedTab] = useState<"write" | "preview">("preview");
+  const styles = makeStyles(taskData?.color);
   const reqData: any = { req: null };
   const commands = getDefaultToolbarCommands();
   const converter = new Showdown.Converter({
@@ -98,10 +101,9 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     const currentTaskData = [];
     const date = new Date();
 
-    getAssignedUsers(currentTaskData, taskData.assigned_users);
+    onAssignTask(currentTaskData, taskData.assigned_users);
 
     try {
-      //@ts-ignore
       pushNewActivity(activity, new Date().toLocaleString(), " updated this task ");
     } catch (e) {
       setLoading(false);
@@ -152,10 +154,17 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     });
   };
 
-  const getAssignedUsers = (currentTaskData: any, assignedUsers: object) => {
+  const onAssignTask = (currentTaskData: any, assignedUsers: object) => {
     todos[taskData.list_id].map((task: any) => {
       if (task.id === taskData.id) {
-        currentTaskData.push({ id: taskData.id, name: taskData.name, assigned_users: assignedUsers });
+        currentTaskData.push({
+          id: taskData.id,
+          name: taskData.name,
+          assigned_users: assignedUsers,
+          color: taskData.color,
+          due_date: taskData.due_date,
+          tags: taskData.labels,
+        });
       } else {
         currentTaskData.push(task);
       }
@@ -168,7 +177,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
 
     pushNewActivity(task_activity, new Date().toLocaleString(), ` to this task `, user.user_name);
     users.push({ name: user.user_name, color: user.color });
-    getAssignedUsers(currentTaskData, users);
+    onAssignTask(currentTaskData, users);
 
     requestHandler({
       type: "put",
@@ -209,9 +218,19 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
     console.log("save");
   };
 
+  const StyledButton = styled(Button)(() => ({
+    width: "20%",
+    textTransform: "none",
+    marginTop: 7,
+    backgroundColor: taskData?.color,
+    ":hover": {
+      backgroundColor: taskData?.color,
+    },
+  }));
+
   return (
     <>
-      <Modal open={taskId !== "" || taskId !== null} onClose={() => setUrl(null)} sx={styles.modal}>
+      <Modal open={(taskId !== "" || taskId !== null) && open} onClose={() => setUrl(null)} sx={styles.modal}>
         {taskData ? (
           <Grow in={true}>
             <Card className="hide-scroll" sx={styles.container}>
@@ -228,29 +247,35 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
               >
                 <AddAssignedUsers onAssignUser={onAssignUser} />
               </PopoverWrapper>
+
               <Box
                 sx={{ p: 1, flexDirection: "column", display: "flex", width: 530 }}
                 onSubmit={onSubmit}
                 component="form"
               >
-                <Box sx={{ position: "relative", bottom: 15 }}>
-                  <UpdateIcon color="primary" sx={{ height: 15 }} />
+                <Box sx={{ position: "relative", bottom: 15, borderRadius: "10px" }}>
+                  <UpdateIcon color={taskData?.color || "primary"} sx={{ height: 15 }} />
                   <Typography sx={{ fontSize: 11 }} variant="caption">
                     Updated: {timeago.format(taskData.updated_at)}
                   </Typography>
+                  <CalendarTodayRoundedIcon color={taskData?.color || "primary"} sx={{ height: 15, ml: 1 }} />
+                  <Typography sx={{ fontSize: 11 }} variant="caption">
+                    Due : {new Date(taskData.due_date).toLocaleDateString()}
+                  </Typography>
                   {!min700 && (
                     <ViewSidebarRoundedIcon
-                      color="primary"
+                      color={taskData?.color || "primary"}
                       onClick={() => setToggleSideBar(!toggleSideBar)}
                       sx={{ ml: "50vw", cursor: "pointer", height: 25 }}
                     />
                   )}
-                  <Divider />
+                  <Divider color={taskData?.color || "grey"} />
                 </Box>
                 <Inputs
                   value={taskData?.name || ""}
                   type={"name"}
                   handleChange={onHandleChange}
+                  color={taskData?.color || "primary"}
                   name={"name"}
                   variant="standard"
                   sx={{
@@ -269,7 +294,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                   }}
                 />
 
-                <Typography sx={{ fontSize: 11 }} color="primary" variant="body2" gutterBottom>
+                <Typography sx={{ fontSize: 11 }} color={taskData?.color || "primary"} variant="body2" gutterBottom>
                   Assigned Users:
                 </Typography>
                 <Box flexDirection={"row"} sx={{ display: "flex" }}>
@@ -329,26 +354,20 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                   {selectedTab !== "preview" && (
                     <>
                       <Grow in={true}>
-                        <Button
-                          variant="contained"
-                          sx={styles.button}
-                          size="small"
-                          type={"submit"}
-                          disabled={loading || isFetching}
-                        >
+                        <StyledButton variant="contained" size="small" type={"submit"} disabled={loading || isFetching}>
                           Save
-                        </Button>
+                        </StyledButton>
                       </Grow>
                       <Grow in={true}>
-                        <Button
+                        <StyledButton
                           onClick={() => setSelectedTab("preview")}
                           variant="contained"
-                          sx={{ width: "20%", mt: 1, ml: 1, textTransform: "none" }}
+                          sx={{ ml: 1 }}
                           size="small"
                           type={"button"}
                         >
                           Cancel
-                        </Button>
+                        </StyledButton>
                       </Grow>
                     </>
                   )}
@@ -356,11 +375,9 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                 <CommentsActivity
                   user={user}
                   reqData={reqData}
-                  buttonStyles={styles.button}
+                  StyledButton={StyledButton}
                   taskData={taskData}
-                  isFetching={isFetching}
                   fetchTask={fetchTask}
-                  primaryColor={theme.primary.main}
                   pushNewActivity={pushNewActivity}
                 />
               </Box>
@@ -371,24 +388,17 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                 pushNewActivity={pushNewActivity}
                 user={user}
                 fetchTask={fetchTask}
+                StyledButton={StyledButton}
                 min700={min700}
+                setCurrentResId={setCurrentResId}
                 min600={min600}
+                onAssignTask={onAssignTask}
                 toggleSideBar={toggleSideBar}
               />
             </Card>
           </Grow>
         ) : (
-          <iframe
-            style={{
-              position: "fixed",
-              border: "none",
-              zIndex: 999999999,
-              left: "15%",
-              width: "70%",
-              height: "100%",
-            }}
-            src="https://embed.lottiefiles.com/animation/88282"
-          ></iframe>
+          <span>Loading...</span>
         )}
       </Modal>
     </>
@@ -423,11 +433,6 @@ const makeStyles = (color: string) => ({
   },
   divider: {
     m: 1,
-  },
-  button: {
-    width: "20%",
-    textTransform: "none",
-    mt: 1,
   },
 });
 

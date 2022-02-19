@@ -176,55 +176,55 @@ function Landing() {
             </Card>
           </>
         )}
-        {currentOrg && (
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <img style={{ marginRight: "10px" }} src={boardIcon} />
-              <Box>
-                <Typography
-                  style={{
-                    fontSize: "11px",
-                    marginLeft: "4px",
-                    marginBottom: "-10px",
-                  }}
-                >
-                  WORKSPACE
-                </Typography>
-                <Typography color="primary" variant="h2">
-                  Boards
-                </Typography>
-              </Box>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <FormControl>
-                <InputLabel id="select-workspace">Workspace</InputLabel>
-                <Select
-                  sx={{ width: "250px", mr: "10px" }}
-                  placeholder="Select Workspace"
-                  labelId="select-workspace"
-                  value={currentOrg}
-                  label="Workspace"
-                  onChange={(item) => setCurrentOrg(item)}
-                >
-                  {data &&
-                    data.map((item) => {
-                      return (
-                        <MenuItem key={item.name} value={item.name}>
-                          {item.name}
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
-              </FormControl>
-              <Button variant="outlined">New Board</Button>
+
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <img style={{ marginRight: "10px" }} src={boardIcon} />
+            <Box>
+              <Typography
+                style={{
+                  fontSize: "11px",
+                  marginLeft: "4px",
+                  marginBottom: "-10px",
+                }}
+              >
+                WORKSPACE
+              </Typography>
+              <Typography color="primary" variant="h2">
+                Boards
+              </Typography>
             </Box>
           </Box>
-        )}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <FormControl>
+              <InputLabel id="select-workspace">Workspace</InputLabel>
+              <Select
+                sx={{ width: "250px", mr: "10px" }}
+                placeholder="Select Workspace"
+                labelId="select-workspace"
+                value={currentOrg}
+                label="Workspace"
+              >
+                {data &&
+                  data.map((item) => {
+                    return (
+                      <MenuItem onClick={() => setCurrentOrg(item.name)} key={item.name} value={item.name}>
+                        {item.name}
+                      </MenuItem>
+                    );
+                  })}
+              </Select>
+            </FormControl>
+            <Button variant="outlined">New Board</Button>
+          </Box>
+        </Box>
+
         <Box sx={{ mt: "40px" }}>
           <Typography sx={{ fontWeight: "bold" }}>RECENT BOARDS</Typography>
           <hr />
           <ImageList cols={4} sx={{ overflowY: "unset", margin: "10px 0" }}>
             {recentBoards &&
+              currentOrg &&
               recentBoards.map((item, index) => (
                 <BoardCard index={index} currentOrg={currentOrg} item={item} recentBoards={recentBoards} />
               ))}

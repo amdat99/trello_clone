@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import Card from "@mui/material/Card";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import ImageListItem from "@mui/material/ImageListItem";
+import { Card, Button, Box, ImageListItem, Typography } from "@mui/material/";
 import Inputs from "../inputs/Inputs";
 import PopoverWrapper from "../popover/PopoverWrapper";
 
@@ -14,13 +11,13 @@ function CreateModal({
   setCurrentList,
   currentList,
   position,
-  min600,
+  min1000,
 }) {
   const [currentImage, setCurrentImage] = useState("");
   const [imageChecked, setImageChecked] = useState(false);
   const createInputs = [
     { name: "name", type: "text", required: true },
-    { name: "image", type: "url" },
+    createType?.data?.val === "board" ? { name: "image", type: "url" } : { name: "colour", type: "color" },
   ];
   const onHandleChange = (value: string, name: string) => {
     setCreateValue({ ...createValue, [name]: value });
@@ -46,11 +43,14 @@ function CreateModal({
       anchor={createType?.data?.val !== ""}
       position={position}
       onContext={createType?.data?.onCtxMenu}
-      ml={createType?.data?.val === "board" ? (min600 ? 11 : 0) : min600 ? 15.5 : 5}
+      ml={createType?.data?.val === "board" ? (min1000 ? 11 : 0) : min1000 ? 15.5 : 5}
       onClose={() => createType.set({ val: "", onCtxMenu: false })}
     >
       <Card sx={{ p: 1, width: "300px" }}>
         <Box sx={{ p: 1 }} component="form" onSubmit={onCreate}>
+          <Typography variant="subtitle1" gutterBottom>
+            Create {createType.data?.val}
+          </Typography>
           {createType.data?.val === "list" || createType.data?.val === "board"
             ? createInputs.map((input) => (
                 <Inputs
@@ -77,7 +77,7 @@ function CreateModal({
           </ImageListItem>
           {createType.data?.val !== "users" && (
             <Button type={"submit"} sx={{ mt: 1, textTransform: "none" }} variant="contained" size="small">
-              {createValue.image && !imageChecked ? "Check Image" : `Add ${createType.data?.val}`}
+              {createValue.image && !imageChecked ? "Check Image" : `Create ${createType.data?.val}`}
             </Button>
           )}
         </Box>

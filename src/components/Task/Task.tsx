@@ -43,6 +43,7 @@ function Task({ todo, setTodos, todos, i, id, setUrl }: Props) {
   React.useEffect(() => {
     inputRef.current?.focus();
   }, [onEdit]);
+
   return (
     <>
       {todo?.id && todo?.id !== undefined && (
@@ -56,7 +57,7 @@ function Task({ todo, setTodos, todos, i, id, setUrl }: Props) {
               {...provided.draggableProps}
               {...provided.dragHandleProps}
             >
-              <Card className="todos__single">
+              <Card className="todos__single" sx={{ border: `1px solid ${todo.color || "white"}` }}>
                 {onEdit ? (
                   <input ref={inputRef} type="text" value={editTodo} onChange={(e) => setEditTodo(e.target.value)} />
                 ) : (

@@ -35,8 +35,8 @@ function TagManager({
   const min700 = useMediaQuery("(min-width:700px)");
 
   const tagInputs = [
-    { name: "name", type: "text", required: true },
-    { name: "color", type: "color" },
+    { name: "name", type: "text", label: "name", required: true },
+    { name: "color", type: "color", label: "colour" },
   ];
 
   React.useEffect(() => {
@@ -70,13 +70,13 @@ function TagManager({
         <Card sx={{ p: 1, width: "200px" }}>
           <Typography>{edit ? "Edit" : "Create"}Tag</Typography>
           <Box component="form" onSubmit={onSubmit}>
-            {tagInputs.map((input: { name: string; type: string; required?: boolean }, i: number) => (
+            {tagInputs.map((input: { name: string; type: string; label?: string; required?: boolean }, i: number) => (
               <Inputs
                 key={i}
                 value={tagData[input.name]}
                 type={input.type}
                 handleChange={(val) => setTagData({ ...tagData, [input.name]: val })}
-                label={input.name}
+                label={input.label}
                 name={input.name}
                 required={input.required ? true : false}
                 sx={{ mt: 1 }}
