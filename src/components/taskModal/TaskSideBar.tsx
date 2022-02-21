@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Slide, Card, Divider } from "@mui/material/";
+import React from "react";
+import { Slide, Card, Divider, Box } from "@mui/material/";
 import Tags from "../tags/Tags";
+import TaskSettings from "../taskSettings/TaskSettings";
 import { Task, User } from "../models";
 
 type Props = {
@@ -9,19 +10,27 @@ type Props = {
   pushNewActivity: Function;
   user: User;
   fetchTask: Function;
+  StyledButton: any;
   toggleSideBar: boolean;
+  onAssignTask: Function;
   min700: boolean;
   min600: boolean;
+  archive: boolean;
+  setCurrentResId: ({ id: string, rerender: number }) => void;
 };
 function TaskSideBar({
   dividerStyles,
   taskData,
+  StyledButton,
   pushNewActivity,
+  onAssignTask,
   user,
   fetchTask,
   toggleSideBar,
+  setCurrentResId,
   min700,
   min600,
+  archive,
 }: Props) {
   const styles = makeStyles(min700, min600);
   return (
@@ -32,6 +41,19 @@ function TaskSideBar({
             <Divider sx={{ mt: 2 }} />
             <Tags taskData={taskData} pushNewActivity={pushNewActivity} user={user} fetchTask={fetchTask} />
             <Divider sx={dividerStyles} />
+            <Box sx={{ bottom: 0, position: "absolute", width: "92%" }}>
+              <Divider sx={dividerStyles} />
+              <TaskSettings
+                taskData={taskData}
+                pushNewActivity={pushNewActivity}
+                user={user}
+                fetchTask={fetchTask}
+                archive={archive}
+                onAssignTask={onAssignTask}
+                setCurrentResId={setCurrentResId}
+              />
+              <Divider sx={dividerStyles} />
+            </Box>
           </Card>
         </Slide>
       )}
@@ -49,7 +71,7 @@ const makeStyles = (min700, min600) => ({
     height: "82vh",
     overflowY: "scroll",
     ml: 70.1,
-    opacity: 0.9,
+    opacity: min700 ? 0.9 : 0.99,
     ":hover": {
       border: "1px solid black",
     },

@@ -28,8 +28,8 @@ function AddAssignedUsers({ onAssignUser }) {
       <Divider sx={{ mb: 1 }} />
 
       {users &&
-        users.map((option) => (
-          <Box key={option.public_id}>
+        users.map((option, i) => (
+          <Box key={i}>
             <MenuItem dense value={option} onClick={() => onAssignUser(option)} sx={{ fontSize: "0.9rem" }}>
               <Tooltip title={option.user_name} placement="bottom" key={option.user_name}>
                 <Avatar sx={avatarStyles(option.color)}>{option.user_name[0].toUpperCase()}</Avatar>

@@ -79,12 +79,14 @@ function Tags({ taskData, pushNewActivity, user, fetchTask }: Props) {
       edit && setEdit(null);
     });
   };
-
   return (
     <>
       <Box sx={{ flexDirection: "row", display: "flex" }}>
-        <LocalOfferIcon color="primary" sx={{ height: 17, transform: "rotate(100deg)", mt: 0.2 }} />
-        <Typography variant="subtitle2" gutterBottom>
+        <LocalOfferIcon
+          color="primary"
+          sx={{ height: 17, transform: "rotate(100deg)", mt: 0.2, color: taskData?.color || "primary" }}
+        />
+        <Typography variant="subtitle1" gutterBottom>
           Tags
         </Typography>
         <AddIcon sx={{ cursor: "pointer" }} onClick={() => toggleManager(false)} />
@@ -101,6 +103,7 @@ function Tags({ taskData, pushNewActivity, user, fetchTask }: Props) {
           ))}
         <TagManager
           position={position}
+          color={taskData?.color}
           showTagManager={showTagManager}
           setShowTagManager={setShowTagManager}
           tagData={tagData}
@@ -115,7 +118,7 @@ function Tags({ taskData, pushNewActivity, user, fetchTask }: Props) {
 }
 
 const chipStyles = (color: string) => ({
-  mr: 0.5,
+  ml: 0.5,
   mt: 0.5,
   fontSize: 10,
   bgcolor: color,

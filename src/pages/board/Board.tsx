@@ -16,6 +16,7 @@ import background from "../../assets/images/background.png";
 import { Board as BoardType } from "../../components/models";
 
 const Table = React.lazy(() => import("../../components/table/Table"));
+const Archive = React.lazy(() => import("../../components/archive/Archive"));
 
 export type CurrentListId = {
   data: any;
@@ -41,7 +42,7 @@ const Board: React.FC = () => {
   const { x, y } = useMousePosition();
   let params = useParams();
   const [todo, setTodo] = useState("");
-  const [createValue, setCreateValue] = useState({ name: "", image: "" });
+  const [createValue, setCreateValue] = useState({ name: "", image: "", color: "" });
   const [createType, setCreateType] = useState({ val: "", onCtxMenu: false });
   const [currentResId, setCurrentResId] = useState({ id: "", rerender: 0 });
   const [showDetail, setShowDetail] = useState(false);
@@ -130,7 +131,7 @@ const Board: React.FC = () => {
     e.preventDefault();
     const id = (Math.random() / Math.random()).toString();
     let currentTasks = currentList.data[0]?.tasks ? currentList.data[0].tasks : [];
-    currentTasks.push({ id, name: todo, assigned_users: [{ name: user.name, color: user.color }] });
+    currentTasks.push({ id, name: todo, assigned_users: [{ name: user.name, color: user.color }], color: "#3f51b5" });
     requestHandler({
       type: "post",
       route: "task/create",
@@ -140,6 +141,7 @@ const Board: React.FC = () => {
         id: id,
         tasks: JSON.stringify(currentTasks),
         board_name: currentBoard.name,
+        color: createValue.color || null,
         created_by: user.name,
         assigned_users: JSON.stringify([{ name: user.name, color: user.color }]),
         updateList: !currentList.has_tasks ? true : false,
@@ -186,7 +188,7 @@ const Board: React.FC = () => {
   return (
     <Box
       className="background"
-      onDoubleClick={onShowCtxMenu}
+      onDoubleClick={!showCtxMenu ? onShowCtxMenu : () => {}}
       onClick={() => (showCtxMenu ? setCtxShowMenu(false) : () => {})}
       sx={{
         backgroundImage: currentBoard?.image ? "url(" + currentBoard?.image + ")" : background,
@@ -230,18 +232,32 @@ const Board: React.FC = () => {
           currentResId={currentResId}
           setCurrentResId={setCurrentResId}
           handleAdd={handleAdd}
+          y={y}
           user={user}
           onShowCtxMenu={onShowCtxMenu}
           setTodo={setTodo}
           params={{ board, orgName, taskId, navigate }}
           stickyMenu={stickyMenu}
           position={position}
+          x={x}
           createValue={createValue}
           socketData={socketData}
           current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentList, setList: setCurrentList }}
         />
       )}
-      <Suspense fallback={<div>Loading...</div>}>{view === "t" && <Table orgName={orgName} />}</Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
+        {view === "t" && <Table orgName={orgName} stickyMenu={stickyMenu} />}
+        {view === "a" && (
+          <Archive
+            orgName={orgName}
+            boardName={board}
+            user={user}
+            taskId={taskId}
+            position={position}
+            onShowCtxMenu={onShowCtxMenu}
+          />
+        )}
+      </Suspense>
       <Sidebar
         setStickyMenu={setStickyMenu}
         stickyMenu={stickyMenu}

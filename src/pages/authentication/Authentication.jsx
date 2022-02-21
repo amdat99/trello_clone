@@ -56,7 +56,9 @@ function Authentication({ formType, setShowFormType }) {
       type: "password",
       name: "confirmPassword",
       minLength: 6,
-      helperText: passwordUnMatch ? "Passwords do not match" : "6 characters are required for password",
+      helperText: passwordUnMatch
+        ? "Passwords do not match"
+        : registerData.password.length < 6 && "6 characters are required for password",
       error: passwordUnMatch,
     },
   ];

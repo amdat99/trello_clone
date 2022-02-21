@@ -79,6 +79,7 @@ export type OrgUser = {
 export type Task = {
   id?: string;
   org_id: string;
+  color?: string;
   public_id: string;
   status: string;
   list_id: string;
@@ -100,6 +101,7 @@ export type CreateVal = {
   name: string;
   description?: string;
   image?: string;
+  color?: string;
 };
 
 export type Labels = {

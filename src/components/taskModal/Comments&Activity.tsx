@@ -23,31 +23,20 @@ type CommentsActivity = {
 };
 
 type Props = {
-  buttonStyles: object;
+  StyledButton: any;
   taskData: any;
-  isFetching?: boolean;
   user: User;
   reqData: any;
   fetchTask: Function;
-  primaryColor: string;
   pushNewActivity: (name: string, date: string, message: string, user: string) => void;
 };
 
-function CommentsActivity({
-  primaryColor,
-  buttonStyles,
-  taskData,
-  isFetching,
-  user,
-  reqData,
-  fetchTask,
-  pushNewActivity,
-}: Props) {
+function CommentsActivity({ StyledButton, taskData, user, reqData, fetchTask, pushNewActivity }: Props) {
   const [showActivity, setShowActivity] = useState(true);
   const [showComments, setShowComments] = useState(true);
   const [commentsAct, setCommentsAct] = useState<CommentsActivity[]>([]);
   const [comment, setComment] = useState("");
-  const styles = makeStyles(primaryColor);
+  const styles = makeStyles(taskData?.color);
 
   const addComment = () => {
     const id = (Math.random() / Math.random()).toString();
@@ -81,7 +70,7 @@ function CommentsActivity({
   React.useEffect(() => {
     const { comments, task_activity } = taskData;
     let commentsActivity = [];
-    commentsActivity = comments?.sortDate && task_activity?.sortDate ? [...comments, ...task_activity] : task_activity;
+    commentsActivity = comments && comments.length ? [...comments, ...task_activity] : task_activity;
 
     const sortItems = (a, b) => {
       const dateA = a.sortDate;
@@ -134,9 +123,9 @@ function CommentsActivity({
       />
       {comment !== "" && (
         <Grow in={comment !== ""}>
-          <Button onClick={addComment} size="small" variant="contained" sx={buttonStyles}>
+          <StyledButton onClick={addComment} size="small" variant="contained">
             Send
-          </Button>
+          </StyledButton>
         </Grow>
       )}
       <Box>
@@ -144,7 +133,7 @@ function CommentsActivity({
           onClick={() => setShowActivity(!showActivity)}
           sx={{ cursor: "pointer", fontSize: 11, width: !showActivity ? 70 : 88, mr: 1 }}
           variant="caption"
-          color={showActivity ? "primary" : "secondary"}
+          color={showActivity ? taskData?.color || "primary" : "secondary"}
         >
           {showActivity ? "Hide activity" : "Show activity"}
         </Typography>
@@ -152,7 +141,7 @@ function CommentsActivity({
           onClick={() => setShowComments(!showComments)}
           sx={{ cursor: "pointer", fontSize: 11, width: !showActivity ? 70 : 88 }}
           variant="caption"
-          color={showComments ? "primary" : "secondary"}
+          color={showComments ? taskData?.color || "primary" : "secondary"}
         >
           {showComments ? "Hide Comments" : "Show Comments"}
         </Typography>

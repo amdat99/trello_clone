@@ -171,7 +171,7 @@ function BoardMenu({
             createBoard={createBoard}
             setCurrentList={setCurrentList}
             currentList={currentList}
-            min600={min600}
+            min1000={min1000}
           />
         </div>
       </Card>

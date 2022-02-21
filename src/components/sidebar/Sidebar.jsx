@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Box, Divider } from "@mui/material/";
 import CottageOutlinedIcon from "@mui/icons-material/CottageOutlined";
 import PushPinIcon from "@mui/icons-material/PushPin";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
 import TableViewIcon from "@mui/icons-material/TableView";
 import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
 // import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
@@ -18,7 +19,7 @@ function Sidebar({
   landing = false,
 }) {
   const spanStyle = showDetail || stickyMenu ? { display: "flex", marginLeft: "10px" } : { display: "none" };
-  const divStyle = { display: "flex", flexDirection: "row", width: "200px" };
+  const divStyle = { display: "flex", flexDirection: "row", width: "200px", color: "primary" };
 
   const setView = (view) => {
     if (landing) {
@@ -34,34 +35,39 @@ function Sidebar({
         <Card raised sx={{ bgColor: "rgb(234, 238, 238)" }} className={stickyMenu ? "sideBar1" : "sideBar"}>
           <div style={{ position: "relative", right: "5px", marginTop: "5px" }}>
             {/* {showDetail && <Typography sx={{ mb: 1, ml: 0.5 }}>Menu</Typography>} */}
-            <div onClick={() => navigate("/")} style={divStyle}>
+            <Box onClick={() => navigate("/")} sx={divStyle}>
               <CottageOutlinedIcon />
               <span style={spanStyle}>Home</span>
-            </div>
+            </Box>
             <Divider />
             {!landing && (
               <>
-                <div onClick={() => setView("l")} style={divStyle}>
+                <Box onClick={() => setView("l")} sx={divStyle}>
                   <ViewKanbanIcon />
                   <span style={spanStyle}>Board View</span>
-                </div>
+                </Box>
                 <Divider />
               </>
             )}
-            <div onClick={() => setView("t")} style={divStyle}>
+            <Box onClick={() => setView("t")} sx={divStyle}>
               <TableViewIcon />
               <span style={spanStyle}>Table View</span>
-            </div>
+            </Box>
+            <Divider />
+            <Box onClick={() => setView("a")} sx={divStyle}>
+              <Inventory2Icon />
+              <span style={spanStyle}>Archive View</span>
+            </Box>
             <Divider />
 
-            <div
+            <Box
               style={{ zIndex: 999, position: "relative" }}
               onClick={() => {
                 console.log("test");
               }}
             >
               <CorporateFareIcon />
-            </div>
+            </Box>
           </div>
 
           <div style={{ position: "absolute", bottom: "0", left: "2px" }} onClick={() => setStickyMenu(!stickyMenu)}>
