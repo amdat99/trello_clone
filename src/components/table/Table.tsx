@@ -131,6 +131,7 @@ function Table({ orgName, stickyMenu }) {
                   columnResizable: true,
                   sorting: true,
                   filtering: true,
+                  //@ts-ignore
                   cellStyle: {
                     fontSize: 13,
                   },

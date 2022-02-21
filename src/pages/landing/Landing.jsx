@@ -31,12 +31,7 @@ import BoardList from "../../components/boardList/BoardList";
 function Landing() {
   const navigate = useNavigate();
   const [logout, user, currentOrg, setCurrentOrg] = useUserStore(
-    (state) => [
-      state.logout,
-      state.user,
-      state.currentOrg,
-      state.setCurrentOrg,
-    ],
+    (state) => [state.logout, state.user, state.currentOrg, state.setCurrentOrg],
     shallow
   );
   const [testOrg, setTestOrg] = useState([]);
@@ -147,10 +142,7 @@ function Landing() {
           mt: "5vh",
         }}
       >
-        <img
-          src={background}
-          style={{ position: "fixed", zIndex: "-1", top: "0", left: "0" }}
-        />
+        <img src={background} style={{ position: "fixed", zIndex: "-1", top: "0", left: "0" }} />
         <Button
           variant="contained"
           onClick={onLogout}
@@ -175,12 +167,7 @@ function Landing() {
                 top: 100,
               }}
             >
-              {user && (
-                <Typography variant="h6">
-                  {" "}
-                  Organizations for {user.name}{" "}
-                </Typography>
-              )}
+              {user && <Typography variant="h6"> Organizations for {user.name} </Typography>}
               {data.map((org) => (
                 // <Link to={`/board/${org.name}`} key={org.name}>
                 <span onClick={() => setCurrentOrg(org.name)} key={org.name}>
@@ -190,23 +177,46 @@ function Landing() {
             </Card>
           </>
         )}
-
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <img style={{ marginRight: "10px" }} src={boardIcon} />
-            <Box>
-              <Typography
-                style={{
-                  fontSize: "11px",
-                  marginLeft: "4px",
-                  marginBottom: "-10px",
-                }}
-              >
-                WORKSPACE
-              </Typography>
-              <Typography color="primary" variant="h2">
-                Boards
-              </Typography>
+        {currentOrg && (
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <img style={{ marginRight: "10px" }} src={boardIcon} />
+              <Box>
+                <Typography
+                  style={{
+                    fontSize: "11px",
+                    marginLeft: "4px",
+                    marginBottom: "-10px",
+                  }}
+                >
+                  WORKSPACE
+                </Typography>
+                <Typography color="primary" variant="h2">
+                  Boards
+                </Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <FormControl>
+                <InputLabel id="select-workspace">Workspace</InputLabel>
+                <Select
+                  sx={{ width: "250px", mr: "10px" }}
+                  placeholder="Select Workspace"
+                  labelId="select-workspace"
+                  value={currentOrg}
+                  label="Workspace"
+                >
+                  {data &&
+                    data.map((item) => {
+                      return (
+                        <MenuItem onClick={() => setCurrentOrg(item.name)} key={item.name} value={item.name}>
+                          {item.name}
+                        </MenuItem>
+                      );
+                    })}
+                </Select>
+              </FormControl>
+              <Button variant="outlined">New Board</Button>
             </Box>
           </Box>
         )}
@@ -217,12 +227,7 @@ function Landing() {
           currentOrg={currentOrg}
           boardListSize={{ width: "200px", height: "100px" }}
         />
-        <BoardList
-          listTitle={"ALL BOARDS"}
-          recentBoards={recentBoards}
-          boardList={boards}
-          currentOrg={currentOrg}
-        />
+        <BoardList listTitle={"ALL BOARDS"} recentBoards={recentBoards} boardList={boards} currentOrg={currentOrg} />
         <BoardList
           listTitle={"ACTIVE BOARDS"}
           recentBoards={recentBoards}
@@ -241,9 +246,8 @@ function Landing() {
         >
           <List component="nav" aria-label="orgsanisations">
             <Typography variant="caption" gutterBottom>
-              Add user to org- (for testing only admins would be<br></br> able
-              to add a user once in a organization currently all users are
-              admin)
+              Add user to org- (for testing only admins would be<br></br> able to add a user once in a organization
+              currently all users are admin)
             </Typography>
             <Divider />
             {testOrg.length > 0 &&

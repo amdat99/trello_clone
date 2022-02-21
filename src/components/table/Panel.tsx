@@ -13,11 +13,13 @@ function Panel({ rowData, orgName }) {
       let currentDate = null;
       let index = 0;
       rowData.task_activity.forEach((act: Activity) => {
+        //@ts-ignore
         if (currentDate !== act.date.slice(0, 10)) {
           clndrData.push({
             value: rowData.task_activity.length,
             day: new Date(act.sortDate).toISOString().split("T")[0],
           });
+          //@ts-ignore
           currentDate = act.date.slice(0, 10);
           index++;
         } else if (clndrData[index]?.value) {
