@@ -2,7 +2,7 @@ import React from "react";
 import { Tooltip, Avatar } from "@mui/material";
 
 type Props = {
-  users: { name?: string; user_name?: string; color?: string }[];
+  users: { name?: string; user_name?: string; color: string }[];
   size?: number;
 };
 function AvatarGroup({ users, size = 25 }: Props) {

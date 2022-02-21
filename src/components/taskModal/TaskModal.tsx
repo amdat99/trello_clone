@@ -32,11 +32,12 @@ type Props = {
   setUrl: (url: string) => void;
   todos: any;
   position: { x: number; y: number };
-  setCurrentResId: ({ id: string, rerender: number }) => void;
+  setCurrentResId?: ({ id: string, rerender: number }) => void;
   onShowCtxMenu: Function;
+  archive?: boolean;
 };
 
-function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu, position }: Props) {
+function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu, position, archive = false }: Props) {
   const theme = getTheme("light").palette;
   const {
     data: task,
@@ -149,13 +150,15 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
       name: user.name,
       color: user.color,
       sortDate: new Date().getTime(),
+      oDate: new Date(),
       date: date,
       receiver: receiver,
     });
   };
 
   const onAssignTask = (currentTaskData: any, assignedUsers: object) => {
-    todos[taskData.list_id].map((task: any) => {
+    const currentTasks = archive ? todos : todos[taskData.list_id];
+    currentTasks.map((task: any) => {
       if (task.id === taskData.id) {
         currentTaskData.push({
           id: taskData.id,
@@ -258,15 +261,24 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                   <Typography sx={{ fontSize: 11 }} variant="caption">
                     Updated: {timeago.format(taskData.updated_at)}
                   </Typography>
-                  <CalendarTodayRoundedIcon color={taskData?.color || "primary"} sx={{ height: 15, ml: 1 }} />
-                  <Typography sx={{ fontSize: 11 }} variant="caption">
-                    Due : {new Date(taskData.due_date).toLocaleDateString()}
-                  </Typography>
+                  {taskData?.due_date && (
+                    <>
+                      <CalendarTodayRoundedIcon color={taskData?.color || "primary"} sx={{ height: 15, ml: 1 }} />
+                      <Typography sx={{ fontSize: 11 }} variant="caption">
+                        Due : {new Date(taskData.due_date).toLocaleString()}
+                      </Typography>
+                    </>
+                  )}
                   {!min700 && (
                     <ViewSidebarRoundedIcon
-                      color={taskData?.color || "primary"}
                       onClick={() => setToggleSideBar(!toggleSideBar)}
-                      sx={{ ml: "50vw", cursor: "pointer", height: 25 }}
+                      sx={{
+                        position: "absolute",
+                        right: 0,
+                        cursor: "pointer",
+                        height: 25,
+                        color: taskData?.color || "primary",
+                      }}
                     />
                   )}
                   <Divider color={taskData?.color || "grey"} />
@@ -387,6 +399,7 @@ function TaskModal({ taskId, setUrl, user, todos, setCurrentResId, onShowCtxMenu
                 taskData={taskData}
                 pushNewActivity={pushNewActivity}
                 user={user}
+                archive={archive}
                 fetchTask={fetchTask}
                 StyledButton={StyledButton}
                 min700={min700}

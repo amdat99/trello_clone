@@ -16,6 +16,7 @@ import background from "../../assets/images/background.png";
 import { Board as BoardType } from "../../components/models";
 
 const Table = React.lazy(() => import("../../components/table/Table"));
+const Archive = React.lazy(() => import("../../components/archive/Archive"));
 
 export type CurrentListId = {
   data: any;
@@ -187,7 +188,7 @@ const Board: React.FC = () => {
   return (
     <Box
       className="background"
-      onDoubleClick={onShowCtxMenu}
+      onDoubleClick={!showCtxMenu ? onShowCtxMenu : () => {}}
       onClick={() => (showCtxMenu ? setCtxShowMenu(false) : () => {})}
       sx={{
         backgroundImage: currentBoard?.image ? "url(" + currentBoard?.image + ")" : background,
@@ -231,18 +232,32 @@ const Board: React.FC = () => {
           currentResId={currentResId}
           setCurrentResId={setCurrentResId}
           handleAdd={handleAdd}
+          y={y}
           user={user}
           onShowCtxMenu={onShowCtxMenu}
           setTodo={setTodo}
           params={{ board, orgName, taskId, navigate }}
           stickyMenu={stickyMenu}
           position={position}
+          x={x}
           createValue={createValue}
           socketData={socketData}
           current={{ board: currentBoard, setBoard: setCurrentBoard, list: currentList, setList: setCurrentList }}
         />
       )}
-      <Suspense fallback={<div>Loading...</div>}>{view === "t" && <Table orgName={orgName} />}</Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
+        {view === "t" && <Table orgName={orgName} stickyMenu={stickyMenu} />}
+        {view === "a" && (
+          <Archive
+            orgName={orgName}
+            boardName={board}
+            user={user}
+            taskId={taskId}
+            position={position}
+            onShowCtxMenu={onShowCtxMenu}
+          />
+        )}
+      </Suspense>
       <Sidebar
         setStickyMenu={setStickyMenu}
         stickyMenu={stickyMenu}

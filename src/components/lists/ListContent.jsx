@@ -6,11 +6,8 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-
 import Inputs from "../inputs/Inputs";
-
 import "../../App.css";
-import { ConstructionOutlined } from "@mui/icons-material";
 
 function ListContent({
   todos,
@@ -19,6 +16,7 @@ function ListContent({
   currentResId,
   provided,
   current,
+  setTaskDragging,
   todo,
   setTodo,
   handleAdd,
@@ -53,7 +51,16 @@ function ListContent({
     <>
       {todos[list.id] &&
         todos[list.id].map((todo, i) => (
-          <Task key={todo.id} todo={todo} setTodos={setTodos} todos={todos} i={i} id={list.id} setUrl={setUrl} />
+          <Task
+            key={i}
+            todo={todo}
+            setTodos={setTodos}
+            todos={todos}
+            i={i}
+            id={list.id}
+            setUrl={setUrl}
+            setTaskDragging={setTaskDragging}
+          />
         ))}
       {provided.placeholder}
       {current.list.data?.id !== list.id && (

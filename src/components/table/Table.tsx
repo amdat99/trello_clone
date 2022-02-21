@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import MaterialTable from "@material-table/core";
-import { Fade, LinearProgress, Card, Button, Avatar, Tooltip } from "@mui/material";
+import { Fade, LinearProgress, Card } from "@mui/material";
 import { ExportCsv, ExportPdf } from "@material-table/exporters";
+import Panel from "./Panel";
 import useFetchData from "../../hooks/useFetchData";
 
 const options = [
@@ -17,6 +18,8 @@ const options = [
   "public_id",
   "created_at",
   "list_id",
+  "color",
+  "due_date",
   "name",
   "deleted_at",
   "image",
@@ -24,8 +27,13 @@ const options = [
   "id",
   "comments",
 ];
-function Table({ orgName }) {
-  const { data: tasks, fetchData: fetchTasks } = useFetchData(
+function Table({ orgName, stickyMenu }) {
+  const [tableData, setTableData] = useState(null);
+  const {
+    data: tasks,
+    fetchData: fetchTasks,
+    error,
+  } = useFetchData(
     {
       type: "post",
       route: "task/orgtasks",
@@ -56,6 +64,10 @@ function Table({ orgName }) {
       title: "Board",
     },
     {
+      field: "due_date",
+      title: "Due date",
+    },
+    {
       field: "created_at",
       title: "Created at",
     },
@@ -65,24 +77,63 @@ function Table({ orgName }) {
     },
   ];
 
+  const setCacheData = React.useCallback(() => {
+    let currentTasks = [];
+    if (tasks) {
+      tasks.forEach((task) => {
+        currentTasks.push({
+          id: task.id,
+          name: task.name,
+          created_by: task.created_by,
+          description: task.description,
+          board_name: task.board_name,
+          created_at: new Date(task.created_at).toLocaleString(),
+          updated_at: new Date(task.updated_at).toLocaleString(),
+          task_activity: task.task_activity,
+          labels: task.labels,
+          assigned_users: task.assigned_users,
+        });
+      });
+    }
+    setTableData(currentTasks);
+  }, [tasks]);
+
+  useEffect(() => {
+    if (tasks) {
+      setCacheData();
+    }
+  }, [tasks]);
+
   return (
     <>
-      {!tasks && <LinearProgress sx={{ m: 50 }} />}
+      {!tasks && !error && <LinearProgress sx={{ m: 50 }} />}
       <Fade in={tasks !== null}>
         <Card
           raised
-          sx={{ overflowY: "scroll", maxHeight: "90%", m: 2, ml: 5, mt: 7.5, bgcolor: "#F2F2F2", p: 1, pr: 0 }}
+          sx={{
+            overflowY: "scroll",
+            maxHeight: "90%",
+            m: 2,
+            ml: stickyMenu ? 27 : 5,
+            mt: 7.5,
+            bgcolor: "#F2F2F2",
+            p: 1,
+            pr: 0,
+          }}
         >
           <Card>
-            {tasks && (
+            {tableData && (
               <MaterialTable
                 columns={columns}
-                data={tasks}
+                data={tableData}
                 title="Org Tasks"
                 options={{
                   columnResizable: true,
                   sorting: true,
                   filtering: true,
+                  cellStyle: {
+                    fontSize: 13,
+                  },
                   headerStyle: {
                     color: "#3f51b5",
                   },
@@ -98,36 +149,7 @@ function Table({ orgName }) {
                   ],
                 }}
                 detailPanel={({ rowData }: any) => {
-                  return (
-                    <>
-                      Assigned Users + comments + activity
-                      <Button
-                        onClick={() => {
-                          window
-                            .open(`/board/${orgName}?board=${rowData.board_name}&task=${rowData.id}&view=l`, "_blank")
-                            .focus();
-                        }}
-                      >
-                        Open task
-                      </Button>
-                      <pre style={{ maxWidth: "90vw", whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
-                        {rowData?.assigned_users &&
-                          rowData.assigned_users.map((user: { name: {}; color: any }, i: React.Key) => (
-                            <Tooltip title={user.name} placement="bottom" key={i}>
-                              <Avatar
-                                sx={{ width: 25, height: 25, mr: 0.7, bgcolor: user.color, fontSize: 15, mb: 0.5 }}
-                              >
-                                {user.name[0].toUpperCase()}
-                              </Avatar>
-                            </Tooltip>
-                          ))}
-                        Activity:
-                        {JSON.stringify(rowData.task_activity)}
-                        Comments:
-                        {JSON.stringify(rowData.task_comments)}
-                      </pre>
-                    </>
-                  );
+                  return <Panel rowData={rowData} orgName={orgName} />;
                 }}
               />
             )}

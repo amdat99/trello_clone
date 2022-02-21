@@ -32,6 +32,8 @@ type Props = {
   user: User;
   position: { x: number; y: number };
   onShowCtxMenu: Function;
+  x: number;
+  y: number;
 };
 const List = ({
   todo,
@@ -42,6 +44,8 @@ const List = ({
   onShowCtxMenu,
   handleAdd,
   position,
+  x,
+  y,
   currentResId,
   setCurrentResId,
   current,
@@ -50,6 +54,8 @@ const List = ({
 }: Props) => {
   const [todos, setTodos] = useState({});
   const [listData, setListData] = useState(null);
+  const [taskDragging, setTaskDragging] = useState(false);
+  const providedRef = React.useRef(null);
 
   const {
     data: board,
@@ -125,14 +131,35 @@ const List = ({
     //es-lint-disable-next-line
   }, [socketData]);
 
+  useEffect(() => {
+    //scroll based on mouse position before react-beautiful-dnd doesnt support nested scrolling
+    if (taskDragging) {
+      if (x > window.innerWidth - 40) {
+        providedRef.current.scrollLeft = providedRef.current.scrollLeft + 100;
+      } else if (x < 40) {
+        providedRef.current.scrollLeft = providedRef.current.scrollLeft - 100;
+      }
+
+      if (!min700) {
+        if (y > window.innerHeight - 40) {
+          providedRef.current.scrollTop = providedRef.current.scrollTop + 100;
+        } else if (y < 40) {
+          providedRef.current.scrollTop = providedRef.current.scrollTop - 100;
+        }
+      }
+    }
+  }, [x, y]);
+
   // handles all drag and drop of tasks and lists and db updates
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
+    setTaskDragging(false);
     if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) return; // if not dragged to destination then return
     //@ts-ignore
     Array.prototype.insert = function (index: number, item: Task) {
       this.splice(index, 0, item);
     };
+
     if (source.droppableId === "board") {
       // for list drag and drop
       const sourceData: ListType = listData[source.index];
@@ -236,6 +263,7 @@ const List = ({
     const { navigate, orgName, board } = params;
     navigate(`/board/${orgName}?board=${board}&view=l${taskId ? `&task=${taskId}` : ""}`);
   };
+  console.log(taskDragging);
   return (
     <>
       {params.taskId && (
@@ -257,7 +285,7 @@ const List = ({
           <Box
             m={2}
             mt={min1000 ? 3.2 : 6}
-            ml={stickyMenu && min700 ? 27 : 4}
+            ml={stickyMenu && min700 ? 26.5 : 4}
             width={min1000 ? (stickyMenu ? "90%" : "105%") : "95%"}
           >
             {/* // for reference */}
@@ -266,50 +294,55 @@ const List = ({
         </button> */}
             <div>
               <Droppable droppableId="board" type="ROW" direction={min700 ? "horizontal" : "vertical"}>
-                {(provided) => (
-                  <div ref={provided.innerRef} {...provided.droppableProps} className="container ">
-                    {/* //causes issues with drag drop */}
-                    {/* <> {provided.placeholder}</> */}
-                    {listData &&
-                      listData.map((list: ListType, i: number) => (
-                        <Draggable key={list.id} draggableId={list.id.toString()} index={i}>
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className={`todos hide-scroll`}
-                            >
-                              <Droppable key={list?.id} droppableId={list?.id} type="COLUMN" direction="vertical">
-                                {(provided, _snapshot) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.droppableProps}
-                                    style={{ display: "flex", flexDirection: "column" }}
-                                  >
-                                    <Typography sx={{ opacity: 0.95 }}>{list.name}</Typography>
-                                    <ListContent
-                                      list={list}
-                                      current={current}
-                                      lists={listData}
-                                      todo={todo}
-                                      setTodo={setTodo}
-                                      handleAdd={handleAdd}
-                                      todos={todos}
-                                      setTodos={setTodos}
-                                      currentResId={currentResId}
-                                      provided={provided}
-                                      setUrl={setUrl}
-                                    />
-                                  </div>
-                                )}
-                              </Droppable>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                  </div>
-                )}
+                {(provided) => {
+                  return (
+                    <div style={{ overflowX: "scroll", overflowY: "hidden", maxWidth: "97vw", height: "90vh" }}>
+                      <div ref={provided.innerRef} {...provided.droppableProps} className="container ">
+                        {/* //causes issues with drag drop */}
+                        {/* <> {provided.placeholder}</> */}
+                        {listData &&
+                          listData.map((list: ListType, i: number) => (
+                            <Draggable key={list.id} draggableId={list.id.toString()} index={i}>
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`todos hide-scroll`}
+                                >
+                                  <Droppable key={list?.id} droppableId={list?.id} type="COLUMN" direction="vertical">
+                                    {(provided, _snapshot) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                        style={{ display: "flex", flexDirection: "column" }}
+                                      >
+                                        <Typography sx={{ opacity: 0.95 }}>{list.name}</Typography>
+                                        <ListContent
+                                          list={list}
+                                          current={current}
+                                          lists={listData}
+                                          todo={todo}
+                                          setTodo={setTodo}
+                                          handleAdd={handleAdd}
+                                          todos={todos}
+                                          setTodos={setTodos}
+                                          currentResId={currentResId}
+                                          provided={provided}
+                                          setUrl={setUrl}
+                                          setTaskDragging={setTaskDragging}
+                                        />
+                                      </div>
+                                    )}
+                                  </Droppable>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                      </div>
+                    </div>
+                  );
+                }}
               </Droppable>
             </div>
           </Box>

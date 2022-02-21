@@ -5,27 +5,49 @@ import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import Inputs from "../inputs/Inputs";
 import { requestHandler } from "../../helpers/requestHandler";
 
-function TaskSettings({ taskData, user, pushNewActivity, setCurrentResId, fetchTask, onAssignTask }) {
+function TaskSettings({ taskData, user, pushNewActivity, setCurrentResId, fetchTask, onAssignTask, archive }) {
   const [edited, setEdited] = React.useState({ color: false, dueDate: false });
   const [onAction, setOnAction] = React.useState({ archive: false });
 
-  const suspendTask = () => {
+  const suspendRestoreTask = () => {
     let task_activity = taskData.task_activity;
-    pushNewActivity(task_activity, new Date().toLocaleString(), ` archived this task`);
+    pushNewActivity(
+      task_activity,
+      new Date().toLocaleString(),
+      ` ${archive ? "restored this task" : "archived this task"}`
+    );
     requestHandler({
       route: "task/suspendrestore",
       type: "post",
       body: {
         id: taskData.id,
-        type: "suspend",
+        type: archive ? "restore" : "suspend",
         task_activity: JSON.stringify(task_activity),
         list_id: taskData.list_id,
+        name: taskData.name,
+        color: taskData.color,
+        assigned_users: taskData.assigned_users,
+        due_date: taskData.due_date,
+        labels: taskData.labels,
       },
     }).then((res) => {
-      if (res === "task suspended successfully") {
-        setCurrentResId({ id: taskData.list_id, rerender: Date.now() });
+      const msg = archive ? "task restored successfully" : "task suspended successfully";
+      if (res === msg) {
+        archive ? setCurrentResId() : setCurrentResId({ id: taskData.list_id, rerender: Date.now() });
+        setOnAction({ archive: false });
       } else {
-        alert(res?.errors ? res.errors : "error suspending task");
+        alert(res?.errors ? res.errors : "error updating task");
+        task_activity.pop();
+      }
+    });
+  };
+
+  const deleteTask = () => {
+    requestHandler({ type: "delete", route: "task/delete", body: { id: taskData.id } }).then((res) => {
+      if (res === "task deleted successfully") {
+        setCurrentResId();
+      } else {
+        alert(res?.errors ? res.errors : "error deleting task");
       }
     });
   };
@@ -79,7 +101,7 @@ function TaskSettings({ taskData, user, pushNewActivity, setCurrentResId, fetchT
       name: "date",
       label: "Due Date",
       type: "datetime-local",
-      value: taskData?.due_date,
+      value: new Date(taskData?.due_date).toLocaleDateString(),
       onChange: (val) => onChange(val, false),
     },
     {
@@ -141,17 +163,19 @@ function TaskSettings({ taskData, user, pushNewActivity, setCurrentResId, fetchT
       <Tooltip
         title={
           onAction.archive
-            ? "Archiving will move the task to the archive view (hold to unlock permenant delete)"
+            ? !archive
+              ? "Archiving will move the task to the archive view (hold to unlock permenant delete)"
+              : "Restoring will move the task back to the list view"
             : "Archive"
         }
       >
         <Button
           size="small"
           sx={{ mt: 1, bgcolor: onAction.archive ? "#B02627" : taskData?.color }}
-          onClick={() => (onAction.archive ? suspendTask() : setOnAction({ ...onAction, archive: true }))}
+          onClick={() => (onAction.archive ? suspendRestoreTask() : setOnAction({ ...onAction, archive: true }))}
           variant="contained"
         >
-          {!onAction.archive ? "Archive" : "Confirm?"}
+          {!onAction.archive ? (archive ? "Restore" : "Archive") : "Confirm?"}
         </Button>
       </Tooltip>
       {onAction.archive && (
@@ -161,6 +185,11 @@ function TaskSettings({ taskData, user, pushNewActivity, setCurrentResId, fetchT
             onClick={() => setOnAction({ ...onAction, archive: false })}
           />
         </Tooltip>
+      )}
+      {archive && (
+        <Button size="small" onClick={deleteTask} sx={{ mt: 1 }} variant="contained" color="error">
+          Delete Task
+        </Button>
       )}
     </>
   );

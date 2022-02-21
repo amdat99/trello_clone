@@ -15,6 +15,7 @@ type Props = {
   onAssignTask: Function;
   min700: boolean;
   min600: boolean;
+  archive: boolean;
   setCurrentResId: ({ id: string, rerender: number }) => void;
 };
 function TaskSideBar({
@@ -29,6 +30,7 @@ function TaskSideBar({
   setCurrentResId,
   min700,
   min600,
+  archive,
 }: Props) {
   const styles = makeStyles(min700, min600);
   return (
@@ -46,6 +48,7 @@ function TaskSideBar({
                 pushNewActivity={pushNewActivity}
                 user={user}
                 fetchTask={fetchTask}
+                archive={archive}
                 onAssignTask={onAssignTask}
                 setCurrentResId={setCurrentResId}
               />
@@ -68,7 +71,7 @@ const makeStyles = (min700, min600) => ({
     height: "82vh",
     overflowY: "scroll",
     ml: 70.1,
-    opacity: 0.9,
+    opacity: min700 ? 0.9 : 0.99,
     ":hover": {
       border: "1px solid black",
     },

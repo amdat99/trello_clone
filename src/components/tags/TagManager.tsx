@@ -18,6 +18,7 @@ type Props = {
   setTagData: (data: TagData) => void;
   onUpdateTag: Function;
   edit: any;
+  color?: string;
   setEdit: Function;
 };
 function TagManager({
@@ -27,6 +28,7 @@ function TagManager({
   tagData,
   setTagData,
   onUpdateTag,
+  color,
   edit,
   setEdit,
 }: Props) {
@@ -82,7 +84,12 @@ function TagManager({
                 sx={{ mt: 1 }}
               />
             ))}
-            <Button type={"submit"} sx={{ mt: 1, textTransform: "none" }} variant="contained" size="small">
+            <Button
+              type={"submit"}
+              sx={{ mt: 1, textTransform: "none", bgcolor: color || "primary" }}
+              variant="contained"
+              size="small"
+            >
               {edit ? "Edit" : "Create"} Tag
             </Button>
             {edit && (

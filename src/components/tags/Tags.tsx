@@ -103,6 +103,7 @@ function Tags({ taskData, pushNewActivity, user, fetchTask }: Props) {
           ))}
         <TagManager
           position={position}
+          color={taskData?.color}
           showTagManager={showTagManager}
           setShowTagManager={setShowTagManager}
           tagData={tagData}
